@@ -1,0 +1,6 @@
+theory mtproto2
+
+begin
+  builtins: signing
+
+

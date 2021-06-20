@@ -1,0 +1,12 @@
+{
+    "lemma_allow_list": [
+        "TestContinueIf"
+    ],
+    "lemma_deny_list": [],
+    "global_annotations": {
+        "important_facts": [],
+        "unimportant_facts": [],
+        "neutral_facts": []
+    },
+    "lemma_annotations": []
+}

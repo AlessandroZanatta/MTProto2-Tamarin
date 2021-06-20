@@ -1,0 +1,8 @@
+
+/*****************************************************************/
+/* Diffie-Hellman with small/bad subgroup attacks                */
+/*****************************************************************/
+ 
+  restriction CheckContinueIf:
+    "∀ X #i. ContinueIf(X) @i ==> X = true"
+

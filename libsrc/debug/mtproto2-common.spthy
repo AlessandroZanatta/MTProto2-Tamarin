@@ -1,0 +1,19 @@
+
+  rule Test1:
+      []
+    --[ ContinueIf(true), End('TestTrue') ]->
+      []
+
+  rule Test2:
+      [ Fr(~not_true) ]
+    --[ ContinueIf(~not_true), End('TestFalse') ]->
+      []
+  
+  lemma TestContinueIf:
+    "
+      ∀ #i.
+        End('TestTrue') @i
+        ==>
+        ¬(∃ #j. End('TestFalse') @j)
+    "
+
