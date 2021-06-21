@@ -1,8 +1,103 @@
 
 /*****************************************************************/
 /* Diffie-Hellman with small/bad subgroup attacks                */
+/* See Bhargavan, Blanchet and Kobeissi, 2017.                   */
+/*****************************************************************/
+  
+  // TODO
+  /* Diffie-Hellman exponentiation with weak groups and bad elements */
+  // functions: 
+  //   dhExp/3,   // Diffie-Hellman with weak groups/bad elements
+  //   WEAK/0, // Weak DH
+  //   STRONG/0, // Good DH
+  //   BAD/0   // Bad element
+
+  // equations:
+  //   dhExp(g, x, WEAK)   = BAD,
+  //   dhExp(g, BAD, GOOD) = BAD,
+  //   dhExp(g, x, GOOD)   = g^x
+
+
+/*****************************************************************/
+/* Hash functions, including functions with collisions.          */
+/*****************************************************************/
+  
+  functions: 
+    hash/2,      // Hash function with collosions
+    hashIdeal/1, // Perfect hash function
+    /* 
+     * NOTE: these are *not* defined as public constants because 
+     * Tamarin does *not* allow public constants in equations.
+     */
+    WEAK_HASH/0,
+    GOOD_HASH/0,
+    COLLISION/0
+
+  equations:
+    hash(x, WEAK_HASH) = COLLISION,   // Collision
+    hash(x, GOOD_HASH) = hashIdeal(x) // Perfect hash
+
+/*****************************************************************/
+/* Persistent knownledge (Tables in Proverif)                    */
 /*****************************************************************/
  
+  // TODO: additional information is needed to know how to 
+  // implement these tables
+
+  /* Store a private/public key pair of a server (accessible *only* by servers). */
+  // rule RegisterRSAServerKey:
+  //     [ Fr(~skey) ]
+  //   -->
+  //     [ 
+  //       !RSAServerPrivateKey($X, ~skey),
+  //       !RSAServerPublicKey($X, pk(~skey))
+  //     ]
+  
+  /* 
+   * Stores the public keys of servers along with their fingerprints.
+   * Clients may retrieve a specific public key given a key fingerprint.
+   */
+  // TODO
+  
+
+  /*
+   * Stores a negotiated authorization key between a client and a server
+   * for reuse by the same client in other protocols.
+   */
+  // TODO
+
+
+  /*
+   * Stores a negotiated authorization key between a client and a server
+   * for reuse by servers in other protocols.
+   */
+  // TODO
+
+  /*
+   * Stores the information a client knows in a secret chat's protocol.
+   */
+  // TODO
+
+  /*
+   * Stores the information a client knows after re-keying
+   */
+  // TODO
+  
+
+/*****************************************************************/
+/* Other convenience functions                                   */
+/*****************************************************************/
+ 
+  /* Checks that a principal X is one of Y or Z, fails otherwise */
+  restriction CheckChoosePrincipal:
+    "
+      ∀ X Y Z #i.
+        ChoosePrincipal(X, Y, Z) @i
+        ==>
+        X = Y ∨ X = Z
+    "
+  
+  /* Fails if X is not true */
   restriction CheckContinueIf:
     "∀ X #i. ContinueIf(X) @i ==> X = true"
 

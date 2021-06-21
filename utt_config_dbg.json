@@ -1,6 +1,7 @@
 {
     "lemma_allow_list": [
-        "TestContinueIf"
+        "LemmaCheckContinueIf",
+        "LemmaCheckChoosePrincipal"
     ],
     "lemma_deny_list": [],
     "global_annotations": {

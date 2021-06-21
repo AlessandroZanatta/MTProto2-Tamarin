@@ -1,1 +1,8 @@
+# Interactive Tamarin
 client_session_key.aes
+
+# Library output
+./mtproto2.spthy
+
+# Analysis output
+./out

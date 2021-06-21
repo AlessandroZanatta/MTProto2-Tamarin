@@ -1,8 +1,0 @@
-Tamarin Tests for file 'mtproto2.spthy':
-Timeout: 10 seconds per lemma
-
-TestContinueIf verified (0 seconds) (1/1)
-
-Summary: 
-verified: 1, false: 0, timeout: 0
-Overall duration: 0 seconds

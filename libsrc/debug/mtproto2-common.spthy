@@ -1,19 +1,31 @@
 
-  rule Test1:
-      []
-    --[ ContinueIf(true), End('TestTrue') ]->
+/*****************************************************************/
+/* DEBUG RULES AND LEMMAS                                        */
+/*****************************************************************/
+
+/*****************************************************************/
+/* Convenience functions tests                                   */
+/*****************************************************************/
+    
+  /* ChoosePrincipal tests */
+  rule RuleCheckChoosePrincipal1:
+      [ Fr(~X), Fr(~Y), Fr(~Z) ]
+    --[ ChoosePrincipal(~X, ~Y, ~Z), ChoosePrincipalTest('TestFalse') ]->
       []
 
-  rule Test2:
+  lemma LemmaCheckChoosePrincipal:
+    "
+      ¬(∃ #i. ChoosePrincipalTest('TestFalse') @i)
+    "
+
+  /* ContinueIf tests */
+  rule RuleCheckContinueIf2:
       [ Fr(~not_true) ]
-    --[ ContinueIf(~not_true), End('TestFalse') ]->
+    --[ ContinueIf(~not_true), ContinueIfTest('TestFalse') ]->
       []
   
-  lemma TestContinueIf:
+  lemma LemmaCheckContinueIf:
     "
-      ∀ #i.
-        End('TestTrue') @i
-        ==>
-        ¬(∃ #j. End('TestFalse') @j)
+      ¬(∃ #i. ContinueIfTest('TestFalse') @i)
     "
 
