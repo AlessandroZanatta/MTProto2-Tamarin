@@ -1,5 +1,0 @@
-theory mtproto2
-
-begin
-  builtins: signing, asymmetric-encryption, diffie-hellman
-

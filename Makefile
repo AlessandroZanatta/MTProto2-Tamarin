@@ -5,7 +5,7 @@ SHELL         = /bin/sh
 
 # Directories
 LIB           = ./mtproto2.spthy
-LIB_DIR       = ./libsrc
+LIB_DIR       = ./src
 LEMMAS_DIR    = ./lemmas
 ENC           = model2
 DEBUG_DIR     = debug
@@ -14,20 +14,26 @@ OUTPUT_DIR    = ./out
 # Sources
 LIB_SRC       = $(LIB_DIR)/preamble.spthy
 LIB_SRC      += $(LIB_DIR)/mtproto2-common.spthy
+LIB_SRC      += $(LIB_DIR)/mtproto2-encryption/$(ENC)/mtproto2-encryption-common.spthy
+LIB_SRC      += $(LIB_DIR)/mtproto2-encryption/$(ENC)/mtproto2-encryption-authorization.spthy
+LIB_SRC      += $(LIB_DIR)/mtproto2-authorization.spthy
 
 # Debug
 DEBUG_SRC     = $(LIB_DIR)/$(DEBUG_DIR)/mtproto2-common.spthy
+DEBUG_SRC    += $(LIB_DIR)/$(DEBUG_DIR)/mtproto2-authorization.spthy
 DEBUG_SRC    += $(LIB_DIR)/epilogue.spthy
+
 
 # Security properties
 # LEMMAS_SRC    = $(LEMMAS_DIR)
 LEMMAS_SRC   += $(LIB_DIR)/epilogue.spthy
 
+
 # Run
 UTT_EXEC     := uttamarin 
 UTT_CONF      = ./utt_config.json
 UTT_CONF_DBG  = ./utt_config_dbg.json 
-UTT_TIMEOUT   = 10
+UTT_TIMEOUT   = 60
 UTT_OUT       = $(OUTPUT_DIR)/utt_output.txt
 UTT_OUT_DBG   = $(OUTPUT_DIR)/utt_output_dbg.txt
 UTT_FLAGS     = -t $(UTT_TIMEOUT)
@@ -53,6 +59,7 @@ out:
 
 .PHONY: clean
 clean:
+	rm -f client_session_key.aes
 	rm -f $(LIB)
 	rm -f $(UTT_OUT)
 	rm -f $(UTT_OUT_DBG)

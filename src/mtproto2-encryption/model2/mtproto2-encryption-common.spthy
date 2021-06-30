@@ -1,0 +1,158 @@
+
+/*****************************************************************/
+/* MTProto 2.0's encryption schema: common definitions           */
+/*****************************************************************/
+
+/* 
+ * Constructor for an MTProto message 
+ * See: https://core.telegram.org/mtproto/description#encrypted-message
+ */
+  functions: 
+    /*
+     * Arguments: 
+     *  - an hash value
+     *  - a msg key (128-bit MACs computed from the message and the shared key)
+     *  - a ciphertext
+     * 
+     * Output: an MTProto message
+     */
+    MTPROTO/3
+
+/*
+ * In MTProto, this function computes the 64 lower-order bits of the
+ * SHA-1 hash of the input authorization key or session key.
+ */
+  functions: 
+    /*
+     * Arguments: 
+     *  - a shared key
+     *
+     * Output: an hash value
+     */
+    keyID/1
+
+/*
+ * In MTProto, the message key is computed as the middle 128 bits of the
+ * SHA-256 hash of the concatenation of a fragment of the authorization key
+ * and the plaintext, as follows:
+ *
+ *   msgKey(k,m) := SHA256( k[88+x,120+x) | m | random padding )[8,24)
+ *
+ * where x=0 for messages from client to server and x=8 for messages from
+ * server to client.
+ */
+  functions:
+    /*
+     * Arguments:
+     *  - a shared key
+     *  - a plaintext
+     *
+     * Output: a msg key (as defined above, 128-bit MACs)
+     */
+    msgKey/2
+
+
+/*
+ * An ephemeral key and an initialization vector are derived from the
+ * authorization key and the message key through a mix of SHA-256, 
+ * substring, and concatenation operations.
+ */
+  functions:
+    /* 
+     * Arguments:
+     *  - a shared key
+     *  - a msg key
+     *
+     * Output: a shared key
+     */
+    kdfKey/2,
+
+    /*
+     * Arguments:
+     *  - a shared key
+     *  - a msg key
+     *
+     * Output: a nonce
+     */
+    kdfIV/2
+
+
+/*****************************************************************/
+/* Asymmetric encryption                                         */
+/*****************************************************************/
+
+/* Deterministic encryption
+ *
+ * This is already defined by the builtin `asymmetric-encryption`
+ * It's defined here to make use of the same names that are
+ * used in Proverif's formal analysis.
+ */
+  functions:
+    /*
+     * Arguments:
+     *  - a plaintext
+     *  - an RSA public key
+     *
+     * Output: a ciphertext
+     */
+    RSA_enc/2,
+    /*
+     * Arguments:
+     *  - a ciphertext
+     *  - an RSA private key
+     *
+     * Output: a plaintext
+     */
+    RSA_dec/2,
+    /*
+     * Arguments:
+     *  - an RSA private key
+     * 
+     * Output: the corresponding public key
+     */
+    pk/1
+
+  equations: RSA_dec(RSA_enc(m, pk(k)), k) = m
+
+/* Probabilistic encryption */
+  // functions: RSA_enc/3
+  // equations: RSA_dec(internal_RSA_enc(plain, pk(k), r), k) = m
+
+    
+/*****************************************************************/
+/* Symmetric encryption                                          */
+/*****************************************************************/
+
+/*
+ * All symmetric encryption in MTProto 2.0 is performed using
+ * AES in IGE mode. IGE is described as follows:
+ *                  yᵢ = Fₖ(xᵢ ⊗ yᵢ₋₁) ⊗ xᵢ₋₁
+ * IGE requires a pair (x₀,y₀) for the first output block, which
+ * basically corresponds to the traditional IV.
+ *
+ * This implementation treats IGE as a perfect primitive, following
+ * the usual symbolic approach. A better description of IGE might be
+ * achieved (TODO).
+ */
+
+  functions:
+    /*
+     * Arguments:
+     *  - a plaintext
+     *  - a shared key
+     *  - a nonce (iv)
+     *
+     * Output: 
+     */
+    AES_IGE_enc/3,
+    /*
+     * Arguments:
+     */
+    AES_IGE_dec/3
+  
+  equations: AES_IGE_dec(AES_IGE_enc(m, k, iv), k, iv) = m
+
+/* 
+ * Malleability of the ciphertext is *not* modeled.
+ * TODO
+ */

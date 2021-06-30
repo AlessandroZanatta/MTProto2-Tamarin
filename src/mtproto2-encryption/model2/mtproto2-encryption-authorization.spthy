@@ -1,0 +1,96 @@
+
+  /* Compute the fingerprint of a server's public key */
+  functions:
+    /*
+     * Arguments:
+     *  - a (server's ) public key
+     *
+     * Output: it's fingerprint, which is considered a perfect hash
+     */
+    fpk/1
+  equations: 
+    fpk(pk) = hashIdeal(pk)
+
+
+  /* Ephemeral AES key and IV creation */
+  functions:
+    /*
+     * Arguments:
+     *  - a nonce
+     *  - another nonce
+     * 
+     * Output: a shared key
+     */
+    genKey/2,
+    /*
+     * Arguments:
+     *  - a nonce
+     *  - another nonce
+     *
+     * Output: yet another nonce
+     */
+    genIV/2
+  
+  /* Encrytion and decryption of DH paramters */
+  functions:
+    /*
+     * Arguments:
+     *  - a plaintext (DH param)
+     *  - a public key
+     *
+     * Outputs: resulting ciphertext
+     */
+    encodeRequestDHParams/2,
+    /*
+     * Arguments:
+     *  - a ciphertext
+     *  - a private key
+     *
+     * Outputs: corresponding plaintext
+     */
+    decodeRequestDHParams/2
+  equations: 
+    encodeRequestDHParams(m, pk) = RSA_enc(m, pk),
+    decodeRequestDHParams(c, sk) = RSA_dec(c, sk)
+
+  /* Encryption and decryption of authorization messages */
+  functions:
+    /*
+     * Arguments:
+     *  - a plaintext
+     *  - a nonce
+     *  - another nonce
+     * 
+     * Outputs: the AES-IGE encryption of the plaintext
+     */
+    encodeAuthorizationMsg/3,
+    /*
+     * Arguments:
+     *  - a ciphertext
+     *  - a nonce
+     *  - another nonce
+     * 
+     * Outputs: the AES-IGE decryption of the ciphertext
+     */    
+    decodeAuthorizationMsg/3
+
+  equations:
+    encodeAuthorizationMsg(m, ns, nk) =
+      AES_IGE_enc(m, genKey(ns, nk), genIV(ns, nk)),
+    decodeAuthorizationMsg(c, ns, nk) =
+      AES_IGE_dec(c, genKey(ns, nk), genIV(ns, nk))
+
+  /* TODO ??? */
+  functions:
+    /*
+     * Arguments:
+     *  - a nonce
+     *  - an authorization key
+     *
+     * Outputs: the hash of the nonce
+     */
+    hashNk/2
+  equations:
+    hashNk(ns, authkey) = hashIdeal(ns)
+    
+    

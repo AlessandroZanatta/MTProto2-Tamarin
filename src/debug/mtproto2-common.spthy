@@ -8,7 +8,7 @@
 /*****************************************************************/
     
   /* ChoosePrincipal tests */
-  rule RuleCheckChoosePrincipal1:
+  rule RuleCheckChoosePrincipal:
       [ Fr(~X), Fr(~Y), Fr(~Z) ]
     --[ ChoosePrincipal(~X, ~Y, ~Z), ChoosePrincipalTest('TestFalse') ]->
       []
@@ -19,7 +19,7 @@
     "
 
   /* ContinueIf tests */
-  rule RuleCheckContinueIf2:
+  rule RuleCheckContinueIf:
       [ Fr(~not_true) ]
     --[ ContinueIf(~not_true), ContinueIfTest('TestFalse') ]->
       []
@@ -28,4 +28,29 @@
     "
       ¬(∃ #i. ContinueIfTest('TestFalse') @i)
     "
+  
+  /* Eq tests */
+  rule RuleCheckEq:
+      [ Fr(~not_true) ]
+    --[ Eq(~not_true, true), EqTest('TestFalse') ]->
+      []
 
+  lemma LemmaCheckEq:
+    "¬(∃ #i. EqTest('TestFalse') @i)"
+
+
+  /* Weak DH tests */
+  rule RuleWeakDHAllowed:
+    let
+      p = WEAK_MODULO
+      g = GOOD_ELEMENT
+    in
+      [ Fr(~e) ]
+    --[ 
+        WeakDHAllowed(p, g, ~e, 'DISALLOW_WEAK_DH'), 
+        WeakDHAllowedTest('TestFalse') 
+      ]->
+      []
+
+  lemma LemmaCheckWeakDHAllowed:
+    "¬(∃ #i. WeakDHAllowedTest('TestFalse') @i)"

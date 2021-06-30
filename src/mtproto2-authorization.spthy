@@ -1,0 +1,774 @@
+/*
+ * MTProto 2.0: Creating an authorization key.
+ *
+ * Model for the protocol used to create long-term keys shared 
+ * between a client and Telegram's server.
+ *
+ * See: https://core.telegram.org/mtproto/auth_key
+ */
+
+/*****************************************************************/
+/* Decomposition into prime factors.                             */
+/*                                                               */
+/* This is used only for proof-of-work, a measure against DoS,   */
+/* which we do not include in our threat model.                  */
+/* This definition is reported here for the sake of              */
+/* completeness, but it is never used.                           */
+/*****************************************************************/
+
+  functions:
+    /*
+     * Arguments:
+     *  - a prime
+     *  - another prime
+     *
+     * Outputs: their multiplication
+     */
+    multiply/2,
+    /*
+     * Arguments:
+     *  - the multiplication of two primes
+     *
+     * Outputs: the two primes
+     */
+    factorise/1
+
+  equations:
+    factorise(multiply(x, y)) = <x, y>
+
+/*****************************************************************/
+/* Messages exchanged during the authorization protocol          */
+/*****************************************************************/
+
+/*
+ * Two public constants are used: 'FIXED_NS' and 'WEAK_NK'.
+ * 
+ * Both represents nonces. The first one represents a constant 
+ * nonce that may be used by the server, the second represents
+ * a weak (leakable) nonce which is supposed to be kept
+ * secret and its sent by the client to the server (encrypted).
+ */
+
+
+/*
+ * Constructors for the messages.
+ * Note that each constructor MUST have associated deconstructors
+ * otherwise the un-encrypted data will not be available
+ * to the attacker.
+ */
+
+//  /* Round 1 */
+//  functions:
+//    /*
+//     * Client -> Server
+//     *
+//     * Arguments:
+//     *  - a nonce
+//     */
+//    NC/1,
+//    NC_1/1,
+//    NC_2/1,
+//    NC_3/1,
+//    /* 
+//     * Server -> Client
+//     *
+//     * Arguments:
+//     *  - a nonce
+//     *  - another nonce
+//     *  - an hash value
+//     */
+//    NS/3,
+//    NS_1/1,
+//    NS_2/1,
+//    NS_3/1
+//  
+//  equations:
+//    NC_1(NC(a))       = a,
+//    NS_1(NS(a, b, c)) = a,
+//    NS_2(NC(a, b, c)) = b,
+//    NS_3(NC(a, b, c)) = c
+//
+//
+//
+//  /* Round 2 */
+//  functions:
+//    /*
+//     * Client -> Server
+//     *
+//     * Arguments:
+//     *  - A nonce
+//     *  - another nonce
+//     *  - a ciphertext
+//     */
+//    REQDH/3,
+//    REQDH_1/1,
+//    REQDH_2/1,
+//    REQDH_3/1,
+//    /*
+//     * Server -> Client 
+//     *
+//     * Arguments:
+//     *  - A nonce
+//     *  - another nonce
+//     *  - a ciphertext
+//     */
+//    DH/3,
+//    DH_1/1,
+//    DH_2/1,
+//    DH_3/1
+//
+//  equations:
+//    REQDH_1(REQDH(a, b, c)) = a,
+//    REQDH_2(REQDH(a, b, c)) = b,
+//    REQDH_3(REQDH(a, b, c)) = c,
+//    DH_1(DH(a, b, c))       = a,
+//    DH_2(DH(a, b, c))       = b,
+//    DH_3(DH(a, b, c))       = c
+//
+//  /* Round 3 */
+//  functions:
+//    /*
+//     * Client -> Server
+//     *
+//     * Arguments:
+//     *  - A nonce
+//     *  - another nonce
+//     *  - a ciphertext
+//     */
+//    ENDH/3,
+//    ENDH_1/1,
+//    ENDH_2/1,
+//    ENDH_3/1,
+//    /*
+//     * Server -> Client
+//     *
+//     * Arguments:
+//     *  - A nonce
+//     *  - another nonce
+//     *  - an hash value
+//     */
+//    ACK/3,
+//    ACK_1/1,
+//    ACK_2/1,
+//    ACK_3/1
+//
+//  equations:
+//    ENDH_1(ENDH(a, b, c)) = a,
+//    ENDH_2(ENDH(a, b, c)) = b,
+//    ENDH_3(ENDH(a, b, c)) = c,
+//    ACK_1(ACK(a, b, c))   = a,
+//    ACK_2(ACK(a, b, c))   = b,
+//    ACK_3(ACK(a, b, c))   = c
+  
+
+  /* Constructors for the encrypted portions of the messages.
+   *
+   * Note that every function has some associated ones that allow
+   * term extraction. Pattern matching for these equations was
+   * not working correctly due to rewritings, which caused
+   * symbols to appear only on RHS (which is not allowed by
+   * Tamarin, with the exception of public names).
+   */
+//  functions:
+//    /*
+//     * Arguments:
+//     *  - a nonce
+//     *  - another nonce
+//     *  - yet another nonce
+//     */
+//    D1/3,
+//    D1_1/1, // Gets 1st D1 element
+//    D1_2/1, // Gets 2nd D1 element
+//    D1_3/1, // Gets 3rd D1 element
+//    /*
+//     * Arguments:
+//     *  - a nonce
+//     *  - a nonce
+//     *  - a modulo (DH)
+//     *  - a group element (DH)
+//     *  - another group element (DH)
+//     */
+//    AN/5,
+//    AN_1/1, // Gets 1st AN element
+//    AN_2/1, // Gets 2nd AN element
+//    AN_3/1, // Gets 3rd AN element
+//    AN_4/1, // Gets 4th AN element
+//    AN_5/1, // Gets 5th AN element
+//    /*
+//     * Arguments:
+//     *  - a nonce
+//     *  - another nonce
+//     *  - a group element (DH)
+//     */
+//    D2/3,
+//    D2_1/1, // Gets 1st D2 element
+//    D2_2/1, // Gets 2nd D2 element
+//    D2_3/1  // Gets 3rd D2 element
+//
+//  /* Corresponding equations */
+//  equations:
+//    D1_1(D1(a, b, c)) = a,
+//    D1_2(D1(a, b, c)) = b,
+//    D1_3(D1(a, b, c)) = c,
+//    AN_1(AN(a, b, c, d, e)) = a,
+//    AN_2(AN(a, b, c, d, e)) = b,
+//    AN_3(AN(a, b, c, d, e)) = c,
+//    AN_4(AN(a, b, c, d, e)) = d,
+//    AN_5(AN(a, b, c, d, e)) = e,
+//    D2_1(D2(a, b, c)) = a,
+//    D2_2(D2(a, b, c)) = b,
+//    D2_3(D2(a, b, c)) = c
+
+/*****************************************************************/
+/* Private channels.                                             */
+/*                                                               */
+/* See paragraph "Secure Channel Rules" on the manual.           */
+/*****************************************************************/
+
+/* 
+ * Other properties (e.g. lack of authenticity or confidentiality) 
+ * can be modeled, if needed (see manual).
+ * TODO: make sure if other properties are needed
+ */
+
+  rule Out_NS:
+      [ Out_NS(x) ]
+    -->
+      [ Conf_NS(x) ]
+
+  rule In_NS:
+      [ Conf_NS(x) ]
+    -->
+      [ In_NS(x) ]
+
+
+  rule Out_NK:
+      [ Out_NK(x) ]
+    -->
+      [ Conf_NK(x) ]
+
+  rule In_NK:
+      [ Conf_NK(x) ]
+    -->
+      [ In_NK(x) ]
+
+/*****************************************************************/
+/* Protocol exchange definition                                  */
+/*****************************************************************/
+
+  /*
+   * NOTE: public constants and pairs are used here instead of 
+   * Proverif functions with the [data] annotation.
+   *
+   * This should basically serve the same purporse.
+   */
+
+  /* 
+   * 1. The client initiates a session to negotiate an 
+   * authorization key.
+   */
+  rule ClientAuth_1 [color=#5feb34]:
+      [
+        /* Get identity of the principal. */
+        In(X),
+        Fr(~nc)
+      ]
+    --[ 
+        /* Check that the identity is either Alice of Bob. */
+        ChoosePrincipal(X, $Alice, $Bob),
+
+        /* (Honest) client X (either A or B) starts a run of 
+         * the authorization protocol with server $Server 
+         * proposing a random nonce ~nc.
+         */
+        ClientStartsSession(X, $Server, ~nc)
+      ]->
+      [ 
+        Out(<'NC', ~nc>),
+        ClientAuthState(X, 'STEP_1', <$Server, ~nc>)
+      ]
+
+  /*
+   * 2. The server receives the client nonce and sends his nonce,
+   * together with the public key fingerprint.
+   */
+  rule ServerAuth_2 [color=#3440eb]:
+      [
+        /* 
+         * This fresh name is used only for the trace in order 
+         * to distinguish different copies of the same fact.
+         */
+        Fr(~pid),
+        !RSAServerKey($Server, skey, pkey),
+        !DiffieHellmanParameters(p, g), // TODO: model bad DH
+        In(<'NC', nc>),
+        In_NS(ns)
+      ]
+    --[
+        /*
+         * Server $Server has recevied a request to start a 
+         * run of the authorization protocol with 
+         * client nonce nc.
+         */
+        ServerReceivesRequest($Server, nc),
+
+        /*
+         * Captures information about the randomness of the 
+         * server nonce.
+         *
+         * Lemmas using this fact are supposed to check whetever
+         * the second term (actual nonce) is equal to 'FIXED_NS'
+         * or not.
+         */
+        ServerNonceRandomOrFixed(~pid, ns)
+      ]->
+      [
+        Out(<'NS', nc, ns, fpk(pkey)>),
+        ServerAuthState($Server, 'STEP_2', <nc, ns, p, g, skey, pkey>)
+      ]
+  
+  /*
+   * 3. Receive server nonce.
+   */
+  rule ClientAuth_3 [color=#5feb34]:
+      [
+        ClientAuthState(X, 'STEP_1', <server, nc>),
+        In(<'NS', nc, ns, fp>),
+        !RSAPublicKey(server, spkey, fp)
+      ]
+    --[ 
+        /*
+         * Client X has obtained public key spkey corresponding
+         * to the key fingerprint sent by server.
+         */
+        ClientGetsServerPublicKey(X, server, spkey)
+      ]->
+      [
+        ClientAuthState(X, 'STEP_3', <server, nc, ns, spkey>)
+      ]
+  
+  /*   
+   * 4. Start DH exchange.
+   */
+  rule ClientAuth_4 [color=#5feb34]:
+    let
+      encReqDHP = encodeRequestDHParams(<'D1', nc, ns, ~nk>, spkey)
+    in
+      [
+        ClientAuthState(X, 'STEP_3', <server, nc, ns, spkey>),
+        Fr(~nk)
+      ]
+    --[ 
+        /*
+         * Client X requests DH parameters to server by 
+         * sending a secret nonce nk in the session identified 
+         * by <nc, ns>.
+         */
+        ClientRequestsDHParameters(X, server, nc, ns, ~nk) 
+      ]->
+      [
+        Out(<'REQDH', nc, ns, encReqDHP>),
+        !SecretNonce(~nk),
+        ClientAuthState(X, 'STEP_4', <server, nc, ns, spkey, ~nk>)
+      ]
+  
+  /*
+   * 5. Answer to DH exchange.
+   */
+  rule ServerAuth_5 [color=#3440eb]:
+    let
+      decoded   = decodeRequestDHParams(encReqDHP, skey)
+      nk        = snd(snd(snd(decoded)))
+      g_a       = dhExp(p, g, ~a)
+      encAnswer = encodeAuthorizationMsg(<'AN', nc, ns, p, g, g_a>, ns, nk)
+    in
+      [
+        ServerAuthState(server, 'STEP_2', <nc, ns, p, g, skey, pkey>),
+        In(<'REQDH', nc, ns, encReqDHP>),
+        Fr(~a)
+      ]
+    --[
+        /* Check correctness of decryption. */
+        Eq(fst(decoded), 'D1'),
+        Eq(fst(snd(decoded)), nc),
+        Eq(fst(snd(snd(decoded))), ns),
+
+        /* 
+         * Server has accepted a request to generate an
+         * authorization key in session <nc, ns> for a client
+         * who has sent a secret nonce nk.
+         */
+        ServerAcceptsClient(server, nc, ns, nk),
+
+        /*
+         * Server sends DH parameters <p, g> and its half-key g_a
+         * to a client who has started session <nc, ns> and sent
+         * secret nonce nk.
+         */
+        ServerSendsDHParameters(server, nc, ns, nk, p, g, g_a)
+      ]->
+      [
+        Out(<'DH', nc, ns, encAnswer>),
+        ServerAuthState(server, 'STEP_5', <nc, ns, p, g, skey, pkey, nk, ~a, g_a>)
+      ]
+
+  /* 
+   * 6. Client receives server's half key.
+   */
+  rule ClientAuth_6 [color=#5feb34]:
+    let
+      decoded = decodeAuthorizationMsg(encAuthMsg, ns, nk)
+      p       = fst(snd(snd(snd(decoded))))
+      g       = fst(snd(snd(snd(snd(decoded)))))
+      g_a     = snd(snd(snd(snd(snd(decoded)))))
+    in
+      [
+        ClientAuthState(X, 'STEP_4', <server, nc, ns, spkey, nk>),
+        In(<'DH', nc, ns, encAuthMsg>)
+      ]
+    --[
+        /* Check correctness of decryption. */
+        Eq(fst(decoded), 'AN'),
+        Eq(fst(snd(decoded)), nc),
+        Eq(fst(snd(snd(decoded))), ns),
+        
+        /*
+         * Client X has recevied DH paramters <p, g> and the server's
+         * half key g_a from server in the session identified by <nc, ns>
+         * for which the client has generated secret nonce nk.
+         */
+        ClientReceivesDHParameters(X, server, nc, ns, nk, p, g, g_a),
+        
+        /* 
+         * Allow the process to continue only if the DH parameters 
+         * are good or we explicitly allow weak parameters.
+         */
+        WeakDHAllowed(p, g, g_a, 'ALLOW_WEAK_DH'),
+ 
+        /*
+         * Client does/does not validate the received DH parameters.
+         *
+         * A broken client might accept DH parameters unconditionally. 
+         * The following event allows us to test whether the client 
+         * is running the protocol with bad parameters (in which 
+         * case it is assumed that it has not checked them) or with 
+         * strong parameters (in which case it is assumed that it has 
+         * checked them).
+         *
+         * This fact is supposed to be checked using the 
+         * following expression (or an equivalent one):
+         * ClientChecksDHParameters(p, g, half)
+         * ==>
+         * (
+         *   ¬(p = WEAK_MODULO) ∧
+         *   ¬(g = BAD_ELEMENT) ∧
+         *   ¬(half = BAD_ELEMENT)
+         * )
+         */
+        ClientChecksDHParameters(p, g, g_a),
+
+        /*
+         * Client X has accepted the DH paramteres <p, g> received 
+         * from server in session <nc, ns> for which the client has
+         * generated secret nonce nk and received the server's half
+         * key g_a.
+         */
+        ClientAcceptsDHParameters(X, server, nc, ns, nk, p, g, g_a)
+      ]->
+      [ 
+        ClientAuthState(X, 'STEP_6', <server, nc, ns, spkey, nk, p, g, g_a>) 
+      ]
+
+  
+  /* 
+   * 7-8. Clients answers with his DH half key.
+   */
+  rule ClientAuth_7 [color=#5feb34]:
+    let
+      authKey    = dhExp(p, g_a, ~b)
+      g_b        = dhExp(p, g, ~b)
+      encAuthMsg = encodeAuthorizationMsg(<'D2', nc, ns, g_b>, ns, nk)
+    in
+      [
+        ClientAuthState(X, 'STEP_6', <server, nc, ns, spkey, nk, p, g, g_a>),
+        Fr(~b)
+      ]
+    --[
+        /*
+         * Client X completes the DH exchange with server in session 
+         * <nc, ns> for which X has generate the secret nonce nk and has 
+         * received DH parameters <p, g> and half key g_a by computing
+         * the authorization key authKey and by sending its half key
+         * g_b to the server.
+         */
+        ClientEndsDHExchange(X, server, nc, ns, nk, p, g, g_a, g_b, authKey),
+        /*
+         * Client X has negotiated the authorization key authKey with
+         * server in session <nc, ns>.
+         */
+        ClientAcceptsAuthKey(X, server, nc, ns, authKey)
+      ]->
+      [
+        Out(<'ENDH', nc, ns, encAuthMsg>),
+        ClientAuthState(X, 'STEP_7', <server, nc, ns, spkey, nk, p, g, g_a, ~b, authKey>)
+      ]
+    
+  rule ServerAuth_9 [color=#3440eb]:
+    let
+      decoded = decodeAuthorizationMsg(encAuthMsg, ns, nk)
+      g_b     = snd(snd(snd(decoded)))
+      authKey = dhExp(p, g_b, a)
+    in
+      [
+        ServerAuthState(server, 'STEP_5', <nc, ns, p, g, skey, pkey, nk, a, g_a>),
+        In(<'ENDH', nc, ns, encAuthMsg>)
+      ]
+    --[
+        /* Check correctness of decryption. */
+        Eq(fst(decoded), 'D2'),
+        Eq(fst(snd(decoded)), nc),
+        Eq(fst(snd(snd(decoded))), ns),
+          
+        /*
+         * Server completes the DH exchange with parameters <p, g>
+         * in session <nc, ns> for which a client has generated
+         * the secret nonce nk and the half key g_a by computing
+         * the authorization key authKey.
+         */
+        // TODO is it correct to have g_a here? Might be a typo!! CHECK
+        ServerEndsDHExchange(server, nc, ns, nk, p, g, g_a, authKey),
+
+        /*
+         * Server has negotiated the authorization key authKey with a 
+         * client in session <nc, ns>.
+         */
+        ServerAcceptsAuthKey(server, nc, ns, authKey),
+      
+        /*
+         * Server sends an acknowledgment to a client in session 
+         * <nc, ns> for which the client has generated secret nonce nk.
+         */
+        ServerSendsAck(server, nc, ns, nk)
+
+      ]->
+      [ 
+        Out(<'ACK', nc, ns, hashNk(nk, authKey)>),
+        ServerAuthState(server, 'STEP_9', <nc, ns, p, g, skey, pkey, nk, a, g_a, g_b, authKey>),
+        /* Protocol ends here. The following is for testing queries. */
+        !AuthKeyServer(keyID(authKey), authKey)
+      ]
+
+  /*
+   * 10. Client receives ACK from server.
+   */
+  rule ClientAuth_10 [color=#5feb34]:
+      [
+        ClientAuthState(X, 'STEP_7', <server, nc, ns, spkey, nk, p, g, g_a, b, authKey>),
+        In(<'ACK', nc, ns, hashNk(nk, authKey)>)
+      ]
+    --[
+        /*
+         * Client X has received an acknowledgment from the server for
+         * the authorization key negotiated in session <nc, ns>.
+         */
+        ClientReceivesAck(X, server, nc, ns)
+      ]->
+      [
+        /* Protocol ends here. The following is for testing queries. */
+        !AuthKeyClient(X, server, authKey)
+      ]
+
+
+/*****************************************************************/
+/* Auxiliary rules                                               */
+/*****************************************************************/
+
+  /* Generates a new private/public key pair for a server. */
+  rule RegisterRSAKey:
+      [ Fr(~sk) ]
+    --[ RegisterRSAKey(~sk) ]->
+      [
+        !SAAServerKey($X, ~sk, pk(~sk)),
+        !RSAPublicKey($X, pk(~sk), fpk(~sk)),
+        Out(pk(~sk)),
+        Out(pk($X))
+      ]
+
+
+  /* 
+   * Allows the attacker to impersonate the server by registering
+   * a private key associated to the server's identity. 
+   */
+  rule ForgeServerIdentity [color=#eb3434]:
+      [ In(<server, sk>) ]
+    --[ ForgedServerIdentity(server) ]->
+      [
+        !RSAServerKey(server, sk, pk(sk)),
+        !RSAPublicKey(server, pk(sk), fpk(sk))
+      ]
+ 
+
+  /* Leaks a server's private key. */
+  rule LeakRSAKey [color=#eb3434]:
+      [ !RSAServerKey(server, sk, pk) ]
+    --[ CompromisedRSAKey(sk) ]->
+      [ Out(sk) ]
+
+
+  /* 
+   * Reveals the private key of the server after the protocol
+   * has been run (at least once).
+   */
+  rule PostCompromiseRSAKey [color=#eb3434]:
+      [ !RSAServerKey(server, sk, pk) ]
+      
+      // Added server to allow modeling of the lemma below 
+    --[ PostCompromisedRSAKey(server, sk) ]->
+      [ Out(sk) ]
+
+  /* 
+   * Makes sure that the PostCompromiseRSAKey fact can ONLY
+   * occur after a protocol run has finished.
+   */
+  // TODO: may also need 'use_induction'
+  // TODO: does MAY NOT WORK 
+  lemma LemmaPostCompromiseRSAKey [reuse]:
+      "
+        ∀ server sk #i.
+          PostCompromisedRSAKey(server, sk) @i
+          ==>
+          (
+            ∃ client nc ns #j. 
+              ClientReceivesAck(client, server, nc, ns) @j
+              ∧ j < i
+          )
+      "
+
+
+  /* Privately receives a secret nonce from a client and leaks it. */
+  rule LeakNk [color=#eb3434]:
+      [ !SecretNonce(nk) ]
+    --[ CompromisedNonce(nk) ]->
+      [ Out(nk) ]
+
+
+  /*
+   * Reveals the secret nonce generated by the client after the 
+   * protocol has been run. 
+   */
+  rule PostCompromiseNk [color=#eb3434]:
+      [ !SecretNonce(nk) ]
+    --[ PostCompromisedNonce(nk) ]->
+      [ Out(nk) ]
+  
+  /* 
+   * Makes sure that the PostCompromiseNonce fact can ONLY
+   * occur after a protocol run has finished.
+   */
+  // TODO: may also need 'use_induction'
+  // TODO: this MAY NOT WORK
+  lemma LemmaPostCompromiseNonce [reuse]:
+      "
+        ∀ nk #i.
+          PostCompromisedNonce(nk) @i
+          ==>
+          (
+            ∃ client server nc ns #j #l.
+              ServerSendsAck(server, nc, ns, nk) @j ∧
+              ClientReceivesAck(client, server, nc, ns) @l ∧
+              j < i ∧
+              l < i
+          )
+      "
+
+
+  /* Reveals an authorization key after the protocol has been run. */
+  rule PostCompromiseAuthKey [color=#eb3434]:
+      [ !AuthKeyServer(fp, authkey) ]
+    --[ PostCompromisedAuthKey(authkey) ]->
+      [ Out(authkey) ]
+  
+  /* 
+   * Makes sure that the PostCompromiseAuthKey fact can ONLY
+   * occur after a protocol run has finished.
+   */
+  // TODO: may also need 'use_induction'
+  // TODO: this MAY NOT WORK 
+  lemma LemmaPostCompromiseAuthKey [reuse]:
+      "
+        ∀ authKey #i.
+          PostCompromisedAuthKey(authKey) @i
+          ==>
+          (
+            ∃ client server nc ns #j #l. 
+              ClientAcceptsAuthKey(client, server, nc, ns, authKey) @j ∧
+              ServerAcceptsAuthKey(server, nc, ns, authKey) @l ∧
+              j < i ∧
+              l < i
+          )
+      "
+
+  
+  // TODO: private channel NS might *not* allow the attacker 
+  // to intercept messages and change a good nonce to a bad one.
+ 
+  /*
+   * These four rules are defined this way, instead of simply letting the 
+   * attacker send the nonce to the server, because this allows to test
+   * queries in scenarios where only random nonces are used, only the same 
+   * fixed value is used, or both.
+   *
+   * The trace facts were added to allow keeping track of the type of
+   * generated nonce in future lemmas (and allow the behaviour described
+   * above).
+   */
+  rule GenRandomServerNonce [color=#c334eb]:
+      [ Fr(~ns) ]
+    --[ GenRandomServerNonce(~ns) ]->
+      [ Out_NS(~ns) ]
+
+  rule GenFixedServerNonce [color=#c334eb]:
+      []
+    --[ GenFixedServerNonce() ]->
+      [ Out_NS('FIXED_NS') ]
+
+  /* Generate good/bad DH parameters and save them. */
+  rule GenGoodDHParameters [color=#c334eb]:
+      []
+    --[ GenGoodDHParameters() ]->
+      [ !DiffieHellmanParameters(STRONG_MODULO, GOOD_ELEMENT) ]
+
+  rule GenBadDHParameters [color=#c334eb]:
+      [ Fr(~g) ]
+    --[ GenBadDHParameters(~g) ]->
+      [ 
+        !DiffieHellmanParameters(WEAK_MODULO, ~g),
+        !DiffieHellmanParameters(STRONG_MODULO, BAD_ELEMENT)
+      ]
+  
+  /* 
+   * These two rules are currently not used. The rule LeakNk provides
+   * the attacker with essentially the same knowledge of GenPredictableNk
+   * (the client's secret nonce).
+   */
+  rule GenRandomNk [color=#c334eb]:
+      [ Fr(~nk) ]
+    --[ GenRandomNk(~nk) ]->
+      [ Out_NK(~nk) ]
+
+  rule GenPredictableNk [color=#c334eb]:
+      []
+    --[ GenPredictableNk() ]->
+      [ Out_NK('WEAK_NK') ]
+
+  /* 
+   * Allows the attacker to register an authorization key for 
+   * itself with a server.
+   */
+  rule RegisterAuthKey [color=#eb3434]:
+      [ In(<X, authKey>) ]
+    --[ 
+        NotChoosePrincipal(X, $Alice, $Bob), 
+        RegisterAuthKey(keyID(authKey), authKey) 
+      ]->
+      [ !AuthKeyServer(keyID(authKey), authKey) ]

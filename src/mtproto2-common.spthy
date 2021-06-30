@@ -1,0 +1,149 @@
+
+/*****************************************************************/
+/* Boolean types                                                 */
+/*****************************************************************/
+
+  functions:
+    true/0,
+    false/0
+
+
+/*****************************************************************/
+/* Diffie-Hellman with small/bad subgroup attacks.               */
+/* See Bhargavan, Blanchet and Kobeissi, 2017.                   */
+/*                                                               */
+/* WEAK, STRONG and BAD are defined as functions because Tamarin */
+/* does not allow the usage of public contants in equations.     */
+/*****************************************************************/
+ 
+  /* Diffie-Hellman exponentiation with weak groups and bad elements */
+  functions: 
+    dhExp/3,         // Diffie-Hellman with weak groups/bad elements
+    dhExpIdeal/2,    // Ideal DH
+    WEAK_MODULO/0,   // Weak modulo
+    STRONG_MODULO/0, // Strong modulo
+    BAD_ELEMENT/0,   // Bad group element
+    GOOD_ELEMENT/0   // Good group element
+
+  equations:
+    dhExp(WEAK_MODULO,   g,            e) = BAD_ELEMENT,
+    dhExp(STRONG_MODULO, BAD_ELEMENT,  e) = BAD_ELEMENT,
+
+    // g^e // TODO: In Tamarin you cannot use builtins into user-defined equations!
+    // It would be better to have g^e instead of GOOD_ELEMENT to preserve DH properties
+    // as defined in Tamarin builtin theory.
+    dhExp(STRONG_MODULO, g,            e) = dhExpIdeal(g, e)
+    // dhExpIdeal(dhExpIdeal(GOOD_ELEMENT, x), y) = dhExpIdeal(dhExpIdeal(GOOD_ELEMENT, y), x)
+    
+  /* 
+   * Public constants:
+   *  - ALLOW_WEAK_DH
+   *  - DISALLOW_WEAK_DH
+   */
+
+/*****************************************************************/
+/* Hash functions, including functions with collisions.          */
+/*                                                               */
+/* WEAK_HASH, COLLISION and GOOD_HASH are defined as functions   */
+/* because Tamarin does not allow the usage of public contants   */
+/* in equations.                                                 */
+/*****************************************************************/
+  
+  functions: 
+    hash/2,      // Hash function with collosions
+    hashIdeal/1, // Perfect hash function
+    WEAK_HASH/0,
+    COLLISION/0,
+    GOOD_HASH/0
+  
+  equations:
+    hash(WEAK_HASH, x) = COLLISION,   // Collision
+    hash(GOOD_HASH, x) = hashIdeal(x) // Perfect hash
+
+/*****************************************************************/
+/* Persistent knownledge (Tables in Proverif)                    */
+/*****************************************************************/
+ 
+  // TODO: additional information is needed to know how to 
+  // implement these tables
+
+  /* 
+   * Store a private/public key pair of a server (accessible only 
+   * by servers). 
+   */
+  
+  /* 
+   * Stores the public keys of servers along with their fingerprints.
+   * Clients may retrieve a specific public key given a key fingerprint.
+   */
+  // TODO
+  
+
+  /*
+   * Stores a negotiated authorization key between a client and a server
+   * for reuse by the same client in other protocols.
+   */
+  // TODO
+
+
+  /*
+   * Stores a negotiated authorization key between a client and a server
+   * for reuse by servers in other protocols.
+   */
+  // TODO
+
+  /*
+   * Stores the information a client knows in a secret chat's protocol.
+   */
+  // TODO
+
+  /*
+   * Stores the information a client knows after re-keying
+   */
+  // TODO
+  
+
+/*****************************************************************/
+/* Other convenience functions                                   */
+/*****************************************************************/
+ 
+  /* Checks that a principal X is one of Y or Z, fails otherwise */
+  restriction CheckChoosePrincipal:
+    "
+      ∀ X Y Z #i.
+        ChoosePrincipal(X, Y, Z) @i
+        ==>
+        X = Y ∨ X = Z
+    "
+  
+  /* Checks that a principal X is NOT one of Y or Z, fails otherwise */
+  restriction CheckNotChoosePrincipal:
+    "
+      ∀ X Y Z #i.
+        NotChoosePrincipal(X, Y, Z) @i
+        ==>
+        ¬(X = Y) ∧ ¬(X = Z)
+    "
+
+  /* Fails if X is not true */
+  /* Currently NOT used */
+  restriction CheckContinueIf:
+    "∀ X #i. ContinueIf(X) @i ==> X = true"
+ 
+
+  /* Checks that two elements are actually the same one */
+  restriction CheckEq:
+    "∀ x y #i. Eq(x, y) @i ==> x = y"
+
+
+  /* Checks if weak DH is allowed or DH parameters are not weak */
+  restriction CheckWeakDHAllowed:
+    "
+      ∀ p g half allowed #i.
+        WeakDHAllowed(p, g, half, allowed) @i
+        ==>
+        (
+          allowed = 'ALLOW_WEAK_DH' ∨
+          (¬(p = WEAK_MODULO) ∧ ¬(g = BAD_ELEMENT) ∧ ¬(half = BAD_ELEMENT))
+        )
+    "
