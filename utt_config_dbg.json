@@ -9,7 +9,7 @@
         "LemmaAuthClientRequestsDHParameters",
         "LemmaAuthClientReceivesDHParameters",
         "LemmaAuthClientChecksDHParametersTrue",
-        "LemmaAuthClientChecksDHParametersFale",
+        "LemmaAuthClientChecksDHParametersFalse",
         "LemmaAuthClientEndsDHExchange",
         "LemmaAuthClientAcceptsAuthKey",
         "LemmaAuthServerReceivesRequest",
