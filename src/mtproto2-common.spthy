@@ -28,11 +28,9 @@
   equations:
     dhExp(WEAK_MODULO,   g,            e) = BAD_ELEMENT,
     dhExp(STRONG_MODULO, BAD_ELEMENT,  e) = BAD_ELEMENT,
-
-    // g^e // TODO: In Tamarin you cannot use builtins into user-defined equations!
-    // It would be better to have g^e instead of GOOD_ELEMENT to preserve DH properties
-    // as defined in Tamarin builtin theory.
     dhExp(STRONG_MODULO, g,            e) = dhExpIdeal(g, e)
+
+    // This rule seems to break Tamarin
     // dhExpIdeal(dhExpIdeal(GOOD_ELEMENT, x), y) = dhExpIdeal(dhExpIdeal(GOOD_ELEMENT, y), x)
     
   /* 
