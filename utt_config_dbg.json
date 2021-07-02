@@ -27,7 +27,16 @@
         "LemmaAuthPostCompromisedNonce",
         "LemmaAuthPostCompromisedAuthKey",
         "LemmaAuthFixedNonceCanBeReUsed",
-        "LemmaAuthPostCompromiseNkImpliesOthersCompromised"
+        "LemmaAuthPostCompromiseNkImpliesOthersCompromised",
+        "LemmaCloudChatClientSendsCloudMessage",
+        "LemmaCloudChatClientReceivesCloudMessage",
+        "LemmaCloudChatClientSendsCloudMessageAfterCompromisedNonce",
+        "LemmaCloudChatServerReceivesCloudMessage",
+        "LemmaCloudChatServerSendsCloudMessage",
+        "LemmaCloudChatServerReceivesCloudMessageAfterCompromisedNonce",
+        "LemmaCloudChatSecrecySecretAuthMsg1",
+        "LemmaCloudChatSecrecySecretAuthMsg2",
+        "LemmaCloudChatSecrecySecretAuthMsg3"
     ],
     "lemma_deny_list": [],
     "global_annotations": {

@@ -16,11 +16,14 @@ LIB_SRC       = $(LIB_DIR)/preamble.spthy
 LIB_SRC      += $(LIB_DIR)/mtproto2-common.spthy
 LIB_SRC      += $(LIB_DIR)/mtproto2-encryption/$(ENC)/mtproto2-encryption-common.spthy
 LIB_SRC      += $(LIB_DIR)/mtproto2-encryption/$(ENC)/mtproto2-encryption-authorization.spthy
+LIB_SRC      += $(LIB_DIR)/mtproto2-encryption/$(ENC)/mtproto2-encryption-part-i.spthy
 LIB_SRC      += $(LIB_DIR)/mtproto2-authorization.spthy
+LIB_SRC      += $(LIB_DIR)/mtproto2-cloud-chat.spthy
 
 # Debug
 DEBUG_SRC     = $(LIB_DIR)/$(DEBUG_DIR)/mtproto2-common.spthy
 DEBUG_SRC    += $(LIB_DIR)/$(DEBUG_DIR)/mtproto2-authorization.spthy
+DEBUG_SRC    += $(LIB_DIR)/$(DEBUG_DIR)/mtproto2-cloud-chat.spthy
 DEBUG_SRC    += $(LIB_DIR)/epilogue.spthy
 
 

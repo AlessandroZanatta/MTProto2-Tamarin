@@ -1,0 +1,69 @@
+
+
+  rule DEBUG_CreateSharedKey:
+      [ 
+        In(X), 
+        Fr(~authKey)
+      ]
+    --[ ChoosePrincipal(X, $Alice, $Bob) ]->
+      [
+        !AuthKeyClient(X, $Server, ~authKey),
+        !AuthKeyServer(keyID(~authKey), ~authKey)
+      ]
+
+
+  lemma LemmaCloudChatClientSendsCloudMessage:
+    exists-trace
+      "
+        ∃ server sid m authKey #i.
+          ClientSendsCloudMessage(server, sid, m, authKey) @i
+      "
+
+  lemma LemmaCloudChatClientReceivesCloudMessage:
+    exists-trace
+      "
+        ∃ server sid m authKey #i.
+          ClientReceivesCloudMessage(server, sid, m, authKey) @i
+      "
+
+  lemma LemmaCloudChatClientSendsCloudMessageAfterCompromisedNonce:
+    exists-trace
+      "
+        ∃ server sid m authKey #i.
+          ClientSendsCloudMessageAfterCompromisedNonce(server, sid, m, authKey) @i
+      "
+
+  lemma LemmaCloudChatServerReceivesCloudMessage:
+    exists-trace
+      "
+        ∃ server sid m authKey #i.
+          ServerReceivesCloudMessage(server, sid, m, authKey) @i
+      "
+  lemma LemmaCloudChatServerSendsCloudMessage:
+    exists-trace
+      "
+        ∃ server sid m authKey #i.
+          ServerSendsCloudMessage(server, sid, m, authKey) @i
+      "
+  lemma LemmaCloudChatServerReceivesCloudMessageAfterCompromisedNonce:
+    exists-trace
+      "
+        ∃ server sid m authKey #i.
+          ServerReceivesCloudMessageAfterCompromisedNonce(server, sid, m, authKey) @i
+      "
+
+  lemma LemmaCloudChatSecrecySecretAuthMsg1:
+    exists-trace
+      "
+        ∃ #i. K(secretAuthMsg1) @i
+      " 
+  lemma LemmaCloudChatSecrecySecretAuthMsg2:
+    exists-trace
+      "
+        ∃ #i. K(secretAuthMsg2) @i
+      "
+  lemma LemmaCloudChatSecrecySecretAuthMsg3:
+    exists-trace
+      "
+        ∃ #i. K(secretAuthMsg3) @i
+      "
