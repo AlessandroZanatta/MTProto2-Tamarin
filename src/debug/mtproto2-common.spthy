@@ -39,18 +39,18 @@
     "¬(∃ #i. EqTest('TestFalse') @i)"
 
 
-  /* Weak DH tests */
-  rule RuleWeakDHAllowed:
-    let
-      p = WEAK_MODULO
-      g = GOOD_ELEMENT
-    in
-      [ Fr(~e) ]
-    --[ 
-        WeakDHAllowed(p, g, ~e, 'DISALLOW_WEAK_DH'), 
-        WeakDHAllowedTest('TestFalse') 
-      ]->
-      []
-
-  lemma LemmaCheckWeakDHAllowed:
-    "¬(∃ #i. WeakDHAllowedTest('TestFalse') @i)"
+//  /* Weak DH tests */
+//  rule RuleWeakDHAllowed:
+//    let
+//      p = WEAK_MODULO
+//      g = GOOD_ELEMENT
+//    in
+//      [ Fr(~e) ]
+//    --[ 
+//        WeakDHAllowed(p, g, ~e, 'DISALLOW_WEAK_DH'), 
+//        WeakDHAllowedTest('TestFalse') 
+//      ]->
+//      []
+//
+//  lemma LemmaCheckWeakDHAllowed:
+//    "¬(∃ #i. WeakDHAllowedTest('TestFalse') @i)"

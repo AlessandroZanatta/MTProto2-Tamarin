@@ -16,23 +16,6 @@
 /* does not allow the usage of public contants in equations.     */
 /*****************************************************************/
  
-  /* Diffie-Hellman exponentiation with weak groups and bad elements */
-  functions: 
-    dhExp/3,         // Diffie-Hellman with weak groups/bad elements
-    dhExpIdeal/2,    // Ideal DH
-    WEAK_MODULO/0,   // Weak modulo
-    STRONG_MODULO/0, // Strong modulo
-    BAD_ELEMENT/0,   // Bad group element
-    GOOD_ELEMENT/0   // Good group element
-
-  equations:
-    dhExp(WEAK_MODULO,   g,            e) = BAD_ELEMENT,
-    dhExp(STRONG_MODULO, BAD_ELEMENT,  e) = BAD_ELEMENT,
-    dhExp(STRONG_MODULO, g,            e) = dhExpIdeal(g, e)
-
-    // This rule seems to break Tamarin
-    // dhExpIdeal(dhExpIdeal(GOOD_ELEMENT, x), y) = dhExpIdeal(dhExpIdeal(GOOD_ELEMENT, y), x)
-    
   /* 
    * Public constants:
    *  - ALLOW_WEAK_DH
@@ -134,14 +117,14 @@
     "∀ x y #i. Eq(x, y) @i ==> x = y"
 
 
-  /* Checks if weak DH is allowed or DH parameters are not weak */
-  restriction CheckWeakDHAllowed:
-    "
-      ∀ p g half allowed #i.
-        WeakDHAllowed(p, g, half, allowed) @i
-        ==>
-        (
-          allowed = 'ALLOW_WEAK_DH' ∨
-          (¬(p = WEAK_MODULO) ∧ ¬(g = BAD_ELEMENT) ∧ ¬(half = BAD_ELEMENT))
-        )
-    "
+//  /* Checks if weak DH is allowed or DH parameters are not weak */
+//  restriction CheckWeakDHAllowed:
+//    "
+//      ∀ p g half allowed #i.
+//        WeakDHAllowed(p, g, half, allowed) @i
+//        ==>
+//        (
+//          allowed = 'ALLOW_WEAK_DH' ∨
+//          (¬(p = WEAK_MODULO) ∧ ¬(g = BAD_ELEMENT) ∧ ¬(half = BAD_ELEMENT))
+//        )
+//    "

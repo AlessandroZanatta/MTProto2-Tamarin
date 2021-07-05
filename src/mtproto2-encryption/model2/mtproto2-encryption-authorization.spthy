@@ -91,6 +91,6 @@
      */
     hashNk/2
   equations:
-    hashNk(ns, authkey) = hashIdeal(ns)
+    hashNk(ns, authKey) = hashIdeal(<ns, authKey>)
     
     
