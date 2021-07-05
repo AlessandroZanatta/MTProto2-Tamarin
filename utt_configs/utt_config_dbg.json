@@ -20,14 +20,11 @@
         "LemmaAuthServerEndsDHExchange",
         "LemmaAuthServerAcceptsAuthKey",
         "LemmaAuthServerSendsAck",
-        "LemmaAuthForgedServerIdentity",
-        "LemmaAuthCompromisedRSAKey",
-        "LemmaAuthCompromisedNonce",
+        "LemmaAuthRevealedRSAKey",
+        "LemmaAuthRevealedNk",
         "LemmaAuthPostCompromisedRSAKey",
         "LemmaAuthPostCompromisedNonce",
-        "LemmaAuthPostCompromisedAuthKey",
-        "LemmaAuthFixedNonceCanBeReUsed",
-        "LemmaAuthPostCompromiseNkImpliesOthersCompromised"
+        "LemmaAuthFixedNonceCanBeReUsed"
     ],
     "lemma_deny_list": [],
     "global_annotations": {

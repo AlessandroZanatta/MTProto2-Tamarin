@@ -146,46 +146,44 @@
         ServerSendsAck(nc, ns, nk) @i
     "
 
-//  /* Expected result: true */
-//  lemma LemmaAuthForgedServerIdentity:
+  /* Expected result: true */
+  lemma LemmaAuthRevealedRSAKey:
+    exists-trace
+    "
+      ∃ k #i.
+        RevealedRSAKey(k) @i
+    "
+
+  /* Expected result: true */
+  lemma LemmaAuthRevealedNk:
+    exists-trace
+    "
+      ∃ nk #i.
+        RevealedNk(nk) @i
+    "
+
+  /* Expected result: true */
+  lemma LemmaAuthPostCompromisedRSAKey:
+    exists-trace
+    "
+      ∃ k #i.
+        PostCompromisedRSAKey(k) @i
+    "
+
+  /* Expected result: true */
+  lemma LemmaAuthPostCompromisedNonce:
+    exists-trace
+    "
+      ∃ nk #i. 
+        PostCompromisedNonce(nk) @i
+    "
+//  lemma LemmaAuthRevealedAuthKey:
 //    exists-trace
-//    "
-//      ∃ X #i.
-//        ForgedServerIdentity(X) @i
-//    "
-//
-//  /* Expected result: true */
-//  lemma LemmaAuthCompromisedRSAKey:
-//    exists-trace
-//    "
-//      ∃ k #i.
-//        CompromisedRSAKey(k) @i
-//    "
-//
-//  /* Expected result: true */
-//  lemma LemmaAuthCompromisedNonce:
-//    exists-trace
-//    "
-//      ∃ nk #i.
-//        CompromisedNonce(nk) @i
-//    "
-//
-//  /* Expected result: true */
-//  lemma LemmaAuthPostCompromisedRSAKey:
-//    exists-trace
-//    "
-//      ∃ s k #i.
-//        PostCompromisedRSAKey(s, k) @i
-//    "
-//
-//  /* Expected result: true */
-//  lemma LemmaAuthPostCompromisedNonce:
-//    exists-trace
-//    "
-//      ∃ nk #i. 
-//        PostCompromisedNonce(nk) @i
-//    " 
-//
+//      "
+//        ∃ authKey #i.
+//          RevealedAuthKey(authKey) @i
+//      "
+
 //  /* Expected result: true */
 //  lemma LemmaAuthPostCompromisedAuthKey:
 //    exists-trace
@@ -193,30 +191,32 @@
 //      ∃ authKey #i.
 //        PostCompromisedAuthKey(authKey) @i
 //    " 
-//
-//  /* Expected result: true */
-//  lemma LemmaAuthFixedNonceCanBeReUsed:
-//    "
-//      ∀ p1 p2 n #i #j.
-//        ServerNonceRandomOrFixed(p1, n) @i ∧ 
-//        ServerNonceRandomOrFixed(p2, n) @j ∧
-//        (n = 'FIXED_NS') ∧
-//        (n = 'FIXED_NS')
-//        ==>
-//        (p1 = p2)
-//    "
-//
-//  /* Expected result: true */
-//  lemma LemmaAuthPostCompromiseNkImpliesOthersCompromised:
-//    "
-//      ¬( 
-//        ∀ nk #i.
-//          PostCompromisedNonce(nk) @i
-//          ==>
-//          ( 
-//            (∃ #j. CompromisedNonce(nk) @j) ∨
-//            (∃ sk #k. CompromisedRSAKey(sk) @k) ∨
-//            (∃ authKey #l. PostCompromisedAuthKey(authKey) @l)
-//          )
-//      )
-//    "
+
+  /* Expected result: true */
+  lemma LemmaAuthFixedNonceCanBeReUsed:
+    "
+      ¬(
+        ∀ p1 p2 n #i #j.
+        ServerNonceRandomOrFixed(p1, n) @i ∧ 
+        ServerNonceRandomOrFixed(p2, n) @j ∧
+        (n = 'FIXED_NS') ∧
+        (n = 'FIXED_NS')
+        ==>
+        (p1 = p2)
+      )
+    "
+
+  /* Expected result: true */
+  lemma LemmaAuthPostCompromiseNkImpliesOthersCompromised:
+    "
+      ¬( 
+        ∀ nk #i.
+          PostCompromisedNonce(nk) @i
+          ==>
+          ( 
+            (∃ #j. RevealedNk(nk) @j) ∨
+            (∃ sk #k. RevealedRSAKey(sk) @k) 
+            // ∨ (∃ authKey #l. (authKey) @l)
+          )
+      )
+    "

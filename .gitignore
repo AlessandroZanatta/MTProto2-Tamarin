@@ -6,3 +6,6 @@ mtproto2.spthy
 
 # Analysis output
 out
+
+# patched tamarin
+tamarin-prover

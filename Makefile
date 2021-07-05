@@ -1,7 +1,8 @@
 .POSIX:
 .SUFFIXES:
 
-SHELL         = /bin/sh
+SHELL        := env PATH=$(TAMARIN_DIR):$(PATH) /bin/sh
+TAMARIN_DIR   = ./
 
 # Directories
 LIB           = ./mtproto2.spthy
@@ -10,6 +11,7 @@ LEMMAS_DIR    = ./lemmas
 ENC           = model2
 DEBUG_DIR     = debug
 OUTPUT_DIR    = ./out
+UTT_DIR       = ./utt_configs
 
 # Sources
 LIB_SRC       = $(LIB_DIR)/preamble.spthy
@@ -31,31 +33,36 @@ LEMMAS_SRC   += $(LIB_DIR)/epilogue.spthy
 
 # Run
 UTT_EXEC     := uttamarin 
-UTT_CONF      = ./utt_config.json
-UTT_CONF_DBG  = ./utt_config_dbg.json 
+UTT_CONF      = $(UTT_DIR)/utt_config.json
+UTT_CONF_DBG  = $(UTT_DIR)/utt_config_dbg.json 
 UTT_TIMEOUT   = 60
 UTT_OUT       = $(OUTPUT_DIR)/utt_output.txt
 UTT_OUT_DBG   = $(OUTPUT_DIR)/utt_output_dbg.txt
 UTT_FLAGS     = -t $(UTT_TIMEOUT)
 
 
+# Make rules
 .PHONY: run
 run: 	$(LIB) out
 	cat $(LEMMAS_SRC) >> $(LIB)
 	$(UTT_EXEC) $(UTT_FLAGS) -c $(UTT_CONF) -o $(UTT_OUT) $(LIB)
+
 
 .PHONY: debug
 debug: 	$(LIB) out
 	cat $(DEBUG_SRC) >> $(LIB)
 	$(UTT_EXEC) $(UTT_FLAGS) -c $(UTT_CONF_DBG) -o $(UTT_OUT_DBG) $(LIB)
 
+
 .PHONY: $(LIB)
 $(LIB):
 	cat $(LIB_SRC) > $(LIB)
 
+
 .PHONY: out
 out:
 	mkdir -p $(OUTPUT_DIR)
+
 
 .PHONY: clean
 clean:
