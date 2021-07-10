@@ -1,0 +1,41 @@
+
+  /*
+   * Key agreement: if client and server end up negotiating an authorization
+   * key in a session executed correctly, then the key is the same.
+   *
+   * In this session the server's private key is revealed. In this case
+   * there is no guarantee (everything can be learned by the attacker).
+   *
+   * Expected result: False
+   * Estimated time: ∞ 
+   */
+  lemma LemmaAuthProtBrokenAgreement_1:
+    "
+      /* Whenever a client and a server */
+      ∀ nc ns nk1 nk2 authKey1 authKey2 #i #j.
+        ServerAcceptsAuthKey(nc, ns, nk1, authKey1) @i ∧
+        ClientAcceptsAuthKey(nc, ns, nk2, authKey2) @j ∧
+        
+        /* and no secret was leaked */
+        // ¬(∃ skey #r. RevealedRSAKey(skey) @r) ∧
+        ¬(∃ #r. RevealedNk(nk1) @r) ∧
+        ¬(∃ #r. RevealedNk(nk2) @r) ∧
+        ¬(∃ b #r. RevealedAuthProtClientExponent(b) @r) ∧
+        ¬(∃ a #r. RevealedAuthProtServerExponent(a) @r) ∧
+        ¬(∃ b #r. RevealedAuthProtClientEphemeralSecrets(nk1, b) @r) ∧
+        ¬(∃ b #r. RevealedAuthProtClientEphemeralSecrets(nk2, b) @r)
+        ==>
+        (
+          
+          (authKey1 = authKey2) ∨
+          
+          (
+            ∃ #k1 #k2.
+              ServerGeneratesNonce(ns) @k1 ∧
+              ServerGeneratesNonce(ns) @k2 ∧
+              ¬(#k1 = #k2)
+          ) 
+
+          ∨ (∃ skey #r. RevealedRSAKey(skey) @r)
+        )
+    "

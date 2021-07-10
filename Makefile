@@ -6,29 +6,32 @@ TAMARIN_DIR   = ./
 
 # Directories
 LIB           = ./mtproto2.spthy
-LIB_DIR       = ./src
-LEMMAS_DIR    = ./lemmas
+SRC_DIR       = ./src
+LEMMAS_DIR    = lemmas
 ENC           = model2
 DEBUG_DIR     = debug
 OUTPUT_DIR    = ./out
 UTT_DIR       = ./utt_configs
 
 # Sources
-LIB_SRC       = $(LIB_DIR)/preamble.spthy
-LIB_SRC      += $(LIB_DIR)/mtproto2-common.spthy
-LIB_SRC      += $(LIB_DIR)/mtproto2-encryption/$(ENC)/mtproto2-encryption-common.spthy
-LIB_SRC      += $(LIB_DIR)/mtproto2-encryption/$(ENC)/mtproto2-encryption-authorization.spthy
-LIB_SRC      += $(LIB_DIR)/mtproto2-authorization.spthy
+LIB_SRC       = $(SRC_DIR)/preamble.spthy
+LIB_SRC      += $(SRC_DIR)/mtproto2-common.spthy
+LIB_SRC      += $(SRC_DIR)/mtproto2-encryption/$(ENC)/mtproto2-encryption-common.spthy
+LIB_SRC      += $(SRC_DIR)/mtproto2-encryption/$(ENC)/mtproto2-encryption-authorization.spthy
+LIB_SRC      += $(SRC_DIR)/mtproto2-authorization.spthy
 
 # Debug
-DEBUG_SRC     = $(LIB_DIR)/$(DEBUG_DIR)/mtproto2-common.spthy
-DEBUG_SRC    += $(LIB_DIR)/$(DEBUG_DIR)/mtproto2-authorization.spthy
-DEBUG_SRC    += $(LIB_DIR)/epilogue.spthy
+DEBUG_SRC     = $(SRC_DIR)/$(DEBUG_DIR)/mtproto2-common.spthy
+DEBUG_SRC    += $(SRC_DIR)/$(DEBUG_DIR)/mtproto2-authorization.spthy
+DEBUG_SRC    += $(SRC_DIR)/epilogue.spthy
 
 
 # Security properties
-# LEMMAS_SRC    = $(LEMMAS_DIR)
-LEMMAS_SRC   += $(LIB_DIR)/epilogue.spthy
+LEMMAS_SRC    = $(SRC_DIR)/$(LEMMAS_DIR)/mtproto2-query-auth-prot-agreement.spthy
+LEMMAS_SRC   += $(SRC_DIR)/$(LEMMAS_DIR)/mtproto2-query-auth-prot-authentication-client-to-server.spthy
+LEMMAS_SRC   += $(SRC_DIR)/$(LEMMAS_DIR)/mtproto2-query-auth-prot-authentication-server-to-client.spthy
+LEMMAS_SRC   += $(SRC_DIR)/$(LEMMAS_DIR)/mtproto2-query-auth-prot-auth-broken-agreement.spthy
+LEMMAS_SRC   += $(SRC_DIR)/epilogue.spthy
 
 
 # Run

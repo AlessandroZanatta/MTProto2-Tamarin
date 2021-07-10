@@ -1,0 +1,45 @@
+
+  /*
+   * Key agreement: if client and server end up negotiating an authorization
+   * key in a session executed correctly (and without revealing any secret),
+   * then the key is the same.
+   *
+   * Note: here we're assuming that no secret (ephemeral or long-term) is
+   * revealed. This assumption is captured by the last part of the formula.
+   *
+   * Expected result: True
+   * Estimated time: ∞ 
+   */
+  lemma LemmaAuthProtAgreement:
+    "
+      /* Whenever a client and a server negotiate an authorization key */
+      ∀ nc ns nk authKey1 authKey2 #i #j.
+        (
+          ServerAcceptsAuthKey(nc, ns, nk, authKey1) @i ∧
+          ClientAcceptsAuthKey(nc, ns, nk, authKey2) @j ∧
+
+          /* and no secret was leaked */
+          ¬(∃ skey #r. RevealedRSAKey(skey) @r) ∧
+          ¬(∃ #r. RevealedNk(nk) @r) ∧
+          ¬(∃ b #r. RevealedAuthProtClientExponent(b) @r) ∧
+          ¬(∃ b #r. RevealedAuthProtClientEphemeralSecrets(nk, b) @r) ∧
+          ¬(∃ a #r. RevealedAuthProtServerExponent(a) @r)
+          // TODO: add post-compromise
+        )
+        ==>
+        (
+          /* then the authorization key (and the client nonce) is the same */
+          ( authKey1 = authKey2 ) ∨
+          
+          /* 
+           * or the server is actually running two different instances
+           * of the protocol with the client
+           */
+          (
+            ∃ #n1 #n2.
+              ServerGeneratesNonce(ns) @n1 ∧
+              ServerGeneratesNonce(ns) @n2 ∧
+              ¬(#n1 = #n2)
+          )
+        )
+    "

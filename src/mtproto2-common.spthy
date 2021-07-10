@@ -42,80 +42,8 @@
     hash(GOOD_HASH, x) = hashIdeal(x) // Perfect hash
 
 /*****************************************************************/
-/* Persistent knownledge (Tables in Proverif)                    */
-/*****************************************************************/
- 
-  // TODO: additional information is needed to know how to 
-  // implement these tables
-
-  /* 
-   * Store a private/public key pair of a server (accessible only 
-   * by servers). 
-   */
-  
-  /* 
-   * Stores the public keys of servers along with their fingerprints.
-   * Clients may retrieve a specific public key given a key fingerprint.
-   */
-  // TODO
-  
-
-  /*
-   * Stores a negotiated authorization key between a client and a server
-   * for reuse by the same client in other protocols.
-   */
-  // TODO
-
-
-  /*
-   * Stores a negotiated authorization key between a client and a server
-   * for reuse by servers in other protocols.
-   */
-  // TODO
-
-  /*
-   * Stores the information a client knows in a secret chat's protocol.
-   */
-  // TODO
-
-  /*
-   * Stores the information a client knows after re-keying
-   */
-  // TODO
-  
-
-/*****************************************************************/
 /* Other convenience functions                                   */
 /*****************************************************************/
- 
-  /* Checks that a principal X is one of Y or Z, fails otherwise */
-  restriction CheckChoosePrincipal:
-    "
-      ∀ X Y Z #i.
-        ChoosePrincipal(X, Y, Z) @i
-        ==>
-        X = Y ∨ X = Z
-    "
-  
-  /* Checks that a principal X is NOT one of Y or Z, fails otherwise */
-  restriction CheckNotChoosePrincipal:
-    "
-      ∀ X Y Z #i.
-        NotChoosePrincipal(X, Y, Z) @i
-        ==>
-        ¬(X = Y) ∧ ¬(X = Z)
-    "
-
-  /* Fails if X is not true */
-  /* Currently NOT used */
-  restriction CheckContinueIf:
-    "∀ X #i. ContinueIf(X) @i ==> X = true"
- 
-
-  /* Checks that two elements are actually the same one */
-  restriction CheckEq:
-    "∀ x y #i. Eq(x, y) @i ==> x = y"
-
 
 //  /* Checks if weak DH is allowed or DH parameters are not weak */
 //  restriction CheckWeakDHAllowed:

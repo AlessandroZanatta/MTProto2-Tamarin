@@ -1,5 +1,8 @@
 {
-    "lemma_allow_list": [],
+    "lemma_allow_list": [
+        "NO_TERMINATION_LemmaAuthProtAgreement",
+        "LemmaAuthProtAuthClientToServer"
+    ],
     "lemma_deny_list": [],
     "global_annotations": {
         "important_facts": [],

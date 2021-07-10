@@ -1,0 +1,89 @@
+
+/*
+ * There is no authentication of the client to the server. This is 
+ * to be expected as the server is willing to run an instance of the 
+ * protocol with anyone, including the attacker.
+ *
+ * Expected result: False
+ * Estimated time: ~15 seconds
+ */
+  lemma LemmaAuthProtAuthClientToServer:
+    "
+      ∀ nc ns nk authKey #i #j.
+        /* Whenever a client has started a session with nonce nc */
+        ClientStartsSession(nc) @i ∧
+
+        /* and the server has sent an ACK for the session <nc, ns> */
+        ServerSendsAck(nc, ns, nk, authKey) @j ∧
+
+        /* and no secret was leaked */
+        ¬(∃ skey #r. RevealedRSAKey(skey) @r) ∧
+        ¬(∃ #r. RevealedNk(nk) @r) ∧
+        ¬(∃ b #r. RevealedAuthProtClientExponent(b) @r) ∧
+        ¬(∃ a #r. RevealedAuthProtServerExponent(a) @r) ∧
+        ¬(∃ b #r. RevealedAuthProtClientEphemeralSecrets(nk, b) @r)
+        // TODO: Add post-compromises
+        ==>
+        (
+          /* then a client has shared an authKey with the server */
+          (
+            ∃ #k.
+            ClientAcceptsAuthKey(nc, ns, nk, authKey) @k
+          ) ∨
+
+          /* 
+           * or the server is actually running two different instances
+           * of the protocol with the client
+           */
+          (
+            ∃ #k #l.
+              ServerGeneratesNonce(ns) @k ∧
+              ServerGeneratesNonce(ns) @l ∧
+              ¬(#k = #l)
+          )
+        )
+    "
+
+  /*
+   * However, at the end of the authorization protocol the server knows
+   * for sure that the client that has negotiated the authorization key authKey
+   * is the client who sent the third message of the protocol.
+   *
+   * Expected result: True
+   * Estimated time: ∞ 
+   */
+  lemma LemmaAuthProtAuthClientSentThirdMessage:
+    "
+      ∀ nc ns nk authKey #i #j.
+        /* Whenever a client requested DH parameters in session <nc, ns> */
+        ClientRequestsDHParameters(nc, ns, nk) @i ∧
+
+        /* and the server ended the protocol correctly */
+        ServerSendsAck(nc, ns, nk, authKey) @j ∧
+        
+        /* and no secret was leaked */
+        ¬(∃ skey #r. RevealedRSAKey(skey) @r) ∧
+        ¬(∃ #r. RevealedNk(nk) @r) ∧
+        ¬(∃ b #r. RevealedAuthProtClientExponent(b) @r) ∧
+        ¬(∃ a #r. RevealedAuthProtServerExponent(a) @r) ∧
+        ¬(∃ b #r. RevealedAuthProtClientEphemeralSecrets(nk, b) @r)
+        ==>
+        (
+          /* then the client has succesfully shared */
+          (
+            ∃ #k.
+            ClientAcceptsAuthKey(nc, ns, nk, authKey) @k
+          ) ∨
+
+          /* 
+           * or the server is actually running two different instances
+           * of the protocol with the client
+           */
+          (
+            ∃ #k #l.
+              ServerGeneratesNonce(ns) @k ∧
+              ServerGeneratesNonce(ns) @l ∧
+              ¬(#k = #l)
+          )
+        )
+    "
