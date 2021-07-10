@@ -7,35 +7,125 @@
    * there is no guarantee (everything can be learned by the attacker).
    *
    * Expected result: False
-   * Estimated time: ∞ 
+   * Estimated time: ~10 seconds
    */
   lemma LemmaAuthProtBrokenAgreement_1:
     "
-      /* Whenever a client and a server */
+
       ∀ nc ns nk1 nk2 authKey1 authKey2 #i #j.
+        /* 
+         * Whenever a client and a server have accepted an authKey 
+         * in session <nc, ns>
+         */
         ServerAcceptsAuthKey(nc, ns, nk1, authKey1) @i ∧
         ClientAcceptsAuthKey(nc, ns, nk2, authKey2) @j ∧
         
-        /* and no secret was leaked */
+        /* and no secret was leaked but the secret key of the server */
         // ¬(∃ skey #r. RevealedRSAKey(skey) @r) ∧
-        ¬(∃ #r. RevealedNk(nk1) @r) ∧
-        ¬(∃ #r. RevealedNk(nk2) @r) ∧
+        ¬(∃ nk #r. RevealedNk(nk) @r) ∧
         ¬(∃ b #r. RevealedAuthProtClientExponent(b) @r) ∧
         ¬(∃ a #r. RevealedAuthProtServerExponent(a) @r) ∧
-        ¬(∃ b #r. RevealedAuthProtClientEphemeralSecrets(nk1, b) @r) ∧
-        ¬(∃ b #r. RevealedAuthProtClientEphemeralSecrets(nk2, b) @r)
+        ¬(∃ nk b #r. RevealedAuthProtClientEphemeralSecrets(nk, b) @r)
         ==>
         (
-          
+          /* then client and server have computed the same authKey */
           (authKey1 = authKey2) ∨
-          
+         
+          /* or the server re-used the server nonce */
           (
             ∃ #k1 #k2.
               ServerGeneratesNonce(ns) @k1 ∧
               ServerGeneratesNonce(ns) @k2 ∧
               ¬(#k1 = #k2)
-          ) 
+          )
+        )
+    "
 
-          ∨ (∃ skey #r. RevealedRSAKey(skey) @r)
+  /*
+   * Key agreement: If client and server end up negotiating an authorization
+   * key in a session executed correctly, then the key is the same.
+   *
+   * If the secret nonce nk is leaked, then the attacker can act as a MITM
+   * on the DH exchange.
+
+   * Expected result: False
+   * Estimated time: ~15 seconds
+   */
+  lemma LemmaAuthProtBrokenAgreement_2:
+    "
+
+      ∀ nc ns nk1 nk2 authKey1 authKey2 #i #j.
+        /* 
+         * Whenever a client and a server have accepted an authKey 
+         * in session <nc, ns>
+         */
+        ServerAcceptsAuthKey(nc, ns, nk1, authKey1) @i ∧
+        ClientAcceptsAuthKey(nc, ns, nk2, authKey2) @j ∧
+        
+        /* and no secret was leaked but the secret nonce of the client */
+        ¬(∃ skey #r. RevealedRSAKey(skey) @r) ∧
+        // ¬(∃ nk #r. RevealedNk(nk) @r) ∧
+        ¬(∃ b #r. RevealedAuthProtClientExponent(b) @r) ∧
+        ¬(∃ a #r. RevealedAuthProtServerExponent(a) @r) ∧
+        ¬(∃ nk b #r. RevealedAuthProtClientEphemeralSecrets(nk, b) @r)
+        ==>
+        (
+          /* then client and server have computed the same authKey */
+          (authKey1 = authKey2) ∨
+         
+          /* or the server re-used the server nonce */
+          (
+            ∃ #k1 #k2.
+              ServerGeneratesNonce(ns) @k1 ∧
+              ServerGeneratesNonce(ns) @k2 ∧
+              ¬(#k1 = #k2)
+          )
+        )
+    "
+
+  /*
+   * Key agreement: If client and server end up negotiating an authorization
+   * key in a session executed correctly, then the key is the same.
+   *
+   * If the DH exponents are revealed, the attacker can of course compute
+   * the authorization key, but he cannot force the client and the server
+   * to compute two different keys, nor he can act as a MITM.
+   *
+   * Expected result: True
+   * Estimated time: ~10 seconds
+   */
+  lemma LemmaAuthProtBrokenAgreement_3:
+    "
+      ∀ nc ns nk1 nk2 authKey1 authKey2 #i #j.
+        /* 
+         * Whenever a client and a server have accepted an authKey 
+         * in session <nc, ns>
+         */
+        ServerAcceptsAuthKey(nc, ns, nk1, authKey1) @i ∧
+        ClientAcceptsAuthKey(nc, ns, nk2, authKey2) @j ∧
+        
+        /* and no secret was leaked but the secret DH exponents */
+        ¬(∃ skey #r. RevealedRSAKey(skey) @r) ∧
+        ¬(∃ nk #r. RevealedNk(nk) @r) ∧
+        // ¬(∃ b #r. RevealedAuthProtClientExponent(b) @r) ∧
+        // ¬(∃ a #r. RevealedAuthProtServerExponent(a) @r) ∧
+        ¬(∃ nk b #r. RevealedAuthProtClientEphemeralSecrets(nk, b) @r)
+        ==>
+        /* then the attacker has also computed the shared authKey */
+        (∃ #r. K(authKey1) @r) ∧
+        (∃ #r. K(authKey2) @r) ∧
+        (
+          /* 
+           * then client and server have computed the same authKey
+           */
+          (authKey1 = authKey2) ∨
+         
+          /* or the server re-used the server nonce. */
+          (
+            ∃ #k1 #k2.
+              ServerGeneratesNonce(ns) @k1 ∧
+              ServerGeneratesNonce(ns) @k2 ∧
+              ¬(#k1 = #k2)
+          )
         )
     "

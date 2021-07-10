@@ -1,7 +1,12 @@
 {
     "lemma_allow_list": [
-        "NO_TERMINATION_LemmaAuthProtAgreement",
-        "LemmaAuthProtAuthClientToServer"
+        "LemmaAuthProtAgreement",
+        "LemmaAuthProtAuthClientToServer",
+        "LemmaAuthProtAuthClientSentThirdMessage",
+        "LemmaAuthProtAuthServerToClient",
+        "LemmaAuthProtBrokenAgreement_1",
+        "LemmaAuthProtBrokenAgreement_2",
+        "LemmaAuthProtBrokenAgreement_3"
     ],
     "lemma_deny_list": [],
     "global_annotations": {

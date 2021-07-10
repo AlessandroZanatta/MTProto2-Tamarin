@@ -50,7 +50,7 @@
    * is the client who sent the third message of the protocol.
    *
    * Expected result: True
-   * Estimated time: ∞ 
+   * Estimated time: ~10 seconds
    */
   lemma LemmaAuthProtAuthClientSentThirdMessage:
     "

@@ -163,7 +163,7 @@
       g_a       = 'g' ^ ~a
       key       = genKey(ns, nk)
       iv        = genIV(ns, nk)
-      encAnswer = AES_IGE_enc(<nc, ns, g_a>, key, iv)
+      encAnswer = AES_IGE_enc(<'StoC', nc, ns, g_a>, key, iv)
     in
       [
         ServerAuthState_2(nc, ns, skey, pkey),
@@ -282,7 +282,7 @@
       iv         = genIV(ns, nk)
       // TODO: this g_b might not come from the client but from the earlier server message
       // that the server itself sent (reflection attack maybe possible ??)
-      encAuthMsg = AES_IGE_enc(<nc, ns, g_b>, genKey, genIV)
+      encAuthMsg = AES_IGE_enc(<nc, ns, g_b>, key, iv)
       authKey    = g_b ^ a 
     in
       [
@@ -405,14 +405,13 @@
 //  /* Reveals session key shared between client and server. */
 //  rule RevealAuthKey [color=#eb3434]:
 //      [ 
-//        In(~g),
 //        !AuthProtClientEphemeralSecrets(nk, ~b),
 //        !AuthProtServerEphemeralSecrets(~a),
 //        !AuthKeyServer(fp, authKey), 
 //        !AuthKeyClient($Server, authKey)
 //      ]
 //    --[ 
-//        Eq(~g^~a^~b, authKey),
+//        Eq('g'^~a^~b, authKey),
 //        RevealedAuthKey(authKey)
 //      ]->
 //      [ Out(authKey) ]
@@ -448,15 +447,15 @@
 /*****************************************************************/
 
 // TODO: post-revealing rules cause partial deconstructions/non-termination
-
+//
 //  /* 
 //   * Reveals the private key of the server after the protocol
 //   * has been run (at least once).
 //   */
 //  rule PostCompromiseRSAKey [color=#eb3434]:
 //      [
-//        !ClientEndsProtocol(nc, ns, nk, pk, p, g, b, g_a, authKey),
-//        !ServerEndsProtocol(nc, ns, nk, pk, p, g, a, g_b, authKey),
+//        !ClientEndsProtocol(nc, ns, nk, pk, b, g_a, authKey),
+//        !ServerEndsProtocol(nc, ns, nk, pk, a, g_b, authKey),
 //        !RSAServerKey($Server, sk, pk)
 //      ]
 //    --[ PostCompromisedRSAKey(sk) ]->
@@ -474,7 +473,7 @@
 //      ]
 //    --[ PostCompromisedNonce(nk) ]->
 //      [ Out(nk) ]
-
+//
 //  /* Reveals an authorization key after the protocol has been run. */
 //  rule PostCompromiseAuthKey [color=#eb3434]:
 //      [ 
@@ -483,17 +482,3 @@
 //      ]
 //    --[ PostCompromisedAuthKey(authKey) ]->
 //      [ Out(authKey) ]
-
-
-//  lemma types [sources]:
-//    "
-//      ∀ nc ns nk p g g_a #i #j.
-//        ServerSendsDHParameters(nc, ns, nk, p, g, g_a) @j ∧
-//        ClientAcceptsDHParameters(nc, ns, nk, p, g, g_a) @i
-//        ==>
-//        (
-//          (∃ #r. GoodDHParameterGenerated(g) @r ∧ #r < #i) ∨
-//          (∃ identity #r. BadDHParameterGenerated(identity) @r ∧ g = identity ∧ #r < #i) ∨
-//          (∃ skey #r. RevealedRSAKey(skey) @r ∧ #r < #i)
-//        )
-//    "
