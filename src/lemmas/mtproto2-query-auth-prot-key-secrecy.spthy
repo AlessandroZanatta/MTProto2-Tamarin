@@ -1,0 +1,28 @@
+
+  /*
+   * Secrecy of the key: if client and server end up negotiating the same key
+   * but the attacker knows it, then some secret from that session was leaked.
+   */
+  lemma LemmaAuthProtKeySecrecy:
+    "
+      /* Whenever client and server shared a key and the attacker knows it */
+      ∀ nc ns nk authKey #i #j #k.
+        ClientAcceptsAuthKey(nc, ns, nk, authKey) @i ∧
+        ServerAcceptsAuthKey(nc, nk, nk, authKey) @j ∧
+        K(authKey) @k
+        ==>
+        /* then some secrects were leaked */
+        (
+          (∃ skey #r. RevealedRSAKey(skey) @r) ∨
+          (∃ #r. RevealedNk(nk) @r) ∨
+          (
+            ∃ a b #r1 #r2. 
+              RevealedAuthProtClientExponent(b) @r1 ∧
+              RevealedAuthProtServerExponent(a) @r2
+          ) ∨
+          (∃ b #r. RevealedAuthProtClientEphemeralSecrets(nk, b) @r)
+
+          // TODO: add post-compromises
+        )
+
+    "

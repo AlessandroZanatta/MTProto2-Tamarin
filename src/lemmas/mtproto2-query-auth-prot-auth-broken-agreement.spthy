@@ -89,7 +89,8 @@
    *
    * If the DH exponents are revealed, the attacker can of course compute
    * the authorization key, but he cannot force the client and the server
-   * to compute two different keys, nor he can act as a MITM.
+   * to compute two different keys, nor he can act as a MITM. This means
+   * that the key agreement actually holds (while secrecy will most probably not).
    *
    * Expected result: True
    * Estimated time: ~10 seconds
@@ -111,9 +112,6 @@
         // ¬(∃ a #r. RevealedAuthProtServerExponent(a) @r) ∧
         ¬(∃ nk b #r. RevealedAuthProtClientEphemeralSecrets(nk, b) @r)
         ==>
-        /* then the attacker has also computed the shared authKey */
-        (∃ #r. K(authKey1) @r) ∧
-        (∃ #r. K(authKey2) @r) ∧
         (
           /* 
            * then client and server have computed the same authKey

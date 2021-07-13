@@ -1,0 +1,23 @@
+
+  /*
+   * If client and server end up accepting the same key, then 
+   * they do so in the same session, unless something bad happens.
+   *
+   * Expected result: True
+   * Estimated time: ~10 seconds
+   */
+  lemma LemmaAuthProtSession:
+    "
+      ∀ nc1 nc2 ns1 ns2 nk1 nk2 authKey #i #j.
+        ClientAcceptsAuthKey(nc1, ns1, nk1, authKey) @i ∧
+        ServerAcceptsAuthKey(nc2, ns2, nk2, authKey) @j
+        ==>
+        (
+          (nc1 = nc2 ∧ ns1 = ns2 ∧ nk1 = nk2) ∨
+          (∃ skey #r. RevealedRSAKey(skey) @r) ∨
+          (∃ #r. RevealedNk(nk1) @r) ∨
+          (∃ #r. RevealedNk(nk2) @r) ∨
+          (∃ b #r. RevealedAuthProtClientEphemeralSecrets(nk1, b) @r) ∨
+          (∃ b #r. RevealedAuthProtClientEphemeralSecrets(nk2, b) @r)
+        )
+    "
