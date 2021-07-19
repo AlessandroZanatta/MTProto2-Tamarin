@@ -3,28 +3,28 @@
 /* MTProto 2.0's encryption schema: common definitions           */
 /*****************************************************************/
 
-/* 
- * Constructor for an MTProto message 
- * See: https://core.telegram.org/mtproto/description#encrypted-message
- */
-  functions: 
-    /*
-     * Arguments: 
-     *  - an hash value
-     *  - a msg key (128-bit MACs computed from the message and the shared key)
-     *  - a ciphertext
-     * 
-     * Output: an MTProto message
-     */
-    MTPROTO/3,
-    MTPROTO_1/1,
-    MTPROTO_3/1,
-    MTPROTO_2/1
-
-  equations:
-    MTPROTO_1(MTPROTO(a, b, c)) = a,
-    MTPROTO_2(MTPROTO(a, b, c)) = b,
-    MTPROTO_3(MTPROTO(a, b, c)) = c
+///* 
+// * Constructor for an MTProto message 
+// * See: https://core.telegram.org/mtproto/description#encrypted-message
+// */
+//  functions: 
+//    /*
+//     * Arguments: 
+//     *  - an hash value
+//     *  - a msg key (128-bit MACs computed from the message and the shared key)
+//     *  - a ciphertext
+//     * 
+//     * Output: an MTProto message
+//     */
+//    MTPROTO/3,
+//    MTPROTO_1/1,
+//    MTPROTO_3/1,
+//    MTPROTO_2/1
+//
+//  equations:
+//    MTPROTO_1(MTPROTO(a, b, c)) = a,
+//    MTPROTO_2(MTPROTO(a, b, c)) = b,
+//    MTPROTO_3(MTPROTO(a, b, c)) = c
 
 /*
  * In MTProto, this function computes the 64 lower-order bits of the

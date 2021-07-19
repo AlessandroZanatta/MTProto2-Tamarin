@@ -17,18 +17,18 @@ OUTPUT_DIR    = ./out
 UTT_DIR       = ./utt_configs
 
 # Sources
-<<<<<<< HEAD
 LIB_SRC       = $(SRC_DIR)/preamble.spthy
 LIB_SRC      += $(SRC_DIR)/mtproto2-common.spthy
 LIB_SRC      += $(SRC_DIR)/mtproto2-encryption/$(ENC)/mtproto2-encryption-common.spthy
 LIB_SRC      += $(SRC_DIR)/mtproto2-encryption/$(ENC)/mtproto2-encryption-authorization.spthy
+# LIB_SRC      += $(SRC_DIR)/mtproto2-encryption/$(ENC)/mtproto2-encryption-part-i.spthy
 LIB_SRC      += $(SRC_DIR)/mtproto2-authorization.spthy
-LIB_SRC      += $(LIB_DIR)/mtproto2-cloud-chat.spthy
+# LIB_SRC      += $(SRC_DIR)/mtproto2-cloud-chat.spthy
 
 
 # Debug
 DEBUG_SRC     = $(SRC_DIR)/$(DEBUG_DIR)/mtproto2-authorization.spthy
-DEBUG_SRC    += $(LIB_DIR)/$(DEBUG_DIR)/mtproto2-cloud-chat.spthy
+# DEBUG_SRC    += $(SRC_DIR)/$(DEBUG_DIR)/mtproto2-cloud-chat.spthy
 DEBUG_SRC    += $(SRC_DIR)/epilogue.spthy
 
 

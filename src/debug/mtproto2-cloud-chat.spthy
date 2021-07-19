@@ -1,69 +1,79 @@
 
 
   rule DEBUG_CreateSharedKey:
-      [ 
-        In(X), 
-        Fr(~authKey)
-      ]
-    --[ ChoosePrincipal(X, $Alice, $Bob) ]->
+    let
+      authKey = 'g' ^ ~a ^ ~b
+    in
+      [ Fr(~a), Fr(~b) ]
+    -->
       [
-        !AuthKeyClient(X, $Server, ~authKey),
-        !AuthKeyServer(keyID(~authKey), ~authKey)
+        !AuthKeyClient($Server, authKey),
+        !AuthKeyServer(keyID(authKey), authKey)
       ]
 
 
   lemma LemmaCloudChatClientSendsCloudMessage:
     exists-trace
       "
-        ∃ server sid m authKey #i.
-          ClientSendsCloudMessage(server, sid, m, authKey) @i
+        ∃ sid m authKey #i.
+          ClientSendsCloudMessage(sid, m, authKey) @i
       "
 
   lemma LemmaCloudChatClientReceivesCloudMessage:
     exists-trace
       "
-        ∃ server sid m authKey #i.
-          ClientReceivesCloudMessage(server, sid, m, authKey) @i
+        ∃ sid m authKey #i.
+          ClientReceivesCloudMessage(sid, m, authKey) @i
       "
 
-  lemma LemmaCloudChatClientSendsCloudMessageAfterCompromisedNonce:
-    exists-trace
-      "
-        ∃ server sid m authKey #i.
-          ClientSendsCloudMessageAfterCompromisedNonce(server, sid, m, authKey) @i
-      "
+//  lemma LemmaCloudChatClientSendsCloudMessageAfterCompromisedNonce:
+//    exists-trace
+//      "
+//        ∃ server sid m authKey #i.
+//          ClientSendsCloudMessageAfterCompromisedNonce(server, sid, m, authKey) @i
+//      "
 
   lemma LemmaCloudChatServerReceivesCloudMessage:
     exists-trace
       "
-        ∃ server sid m authKey #i.
-          ServerReceivesCloudMessage(server, sid, m, authKey) @i
+        ∃ sid m authKey #i.
+          ServerReceivesCloudMessage(sid, m, authKey) @i
       "
+
   lemma LemmaCloudChatServerSendsCloudMessage:
     exists-trace
       "
-        ∃ server sid m authKey #i.
-          ServerSendsCloudMessage(server, sid, m, authKey) @i
+        ∃ sid m authKey #i.
+          ServerSendsCloudMessage(sid, m, authKey) @i
       "
-  lemma LemmaCloudChatServerReceivesCloudMessageAfterCompromisedNonce:
-    exists-trace
-      "
-        ∃ server sid m authKey #i.
-          ServerReceivesCloudMessageAfterCompromisedNonce(server, sid, m, authKey) @i
-      "
+
+//  lemma LemmaCloudChatServerReceivesCloudMessageAfterCompromisedNonce:
+//    exists-trace
+//      "
+//        ∃ server sid m authKey #i.
+//          ServerReceivesCloudMessageAfterCompromisedNonce(server, sid, m, authKey) @i
+//      "
 
   lemma LemmaCloudChatSecrecySecretAuthMsg1:
     exists-trace
       "
-        ∃ #i. K(secretAuthMsg1) @i
-      " 
+        ∃ sid m1 authKey #i #j.
+          ClientSendsCloudMessage(sid, m1, authKey) @i ∧ 
+          K(m1) @j
+      "
+
   lemma LemmaCloudChatSecrecySecretAuthMsg2:
     exists-trace
       "
-        ∃ #i. K(secretAuthMsg2) @i
+        ∃ sid m2 authKey #i #j.
+          ServerSendsCloudMessage(sid, m2, authKey) @i ∧ 
+          K(m2) @j
       "
-  lemma LemmaCloudChatSecrecySecretAuthMsg3:
-    exists-trace
-      "
-        ∃ #i. K(secretAuthMsg3) @i
-      "
+
+//  lemma LemmaCloudChatSecrecySecretAuthMsg1:
+//    exists-trace
+//      "
+//        ∃ sid m1 authKey #i #j.
+//          ClientSendsCloudMessage(sid, m1, authKey) @i ∧ 
+//          K(m1) @j
+//      "
