@@ -27,18 +27,21 @@
         ==>
         (
           /* 
-           * then there is exactly one session on the server matching 
-           * the client's one (injectivity) 
+           * then there is a session matching it on the server
+           *
+           * Note: Trying to prove injectivity seems to make Tamarin use huge
+           * amounts of RAM (~12-16 GB) in a very short period of time (~30/40 seconds).
+           * Be careful if you uncomment the injectivity check.
            */
           ( 
             ∃ #j1.
             ServerAcceptsAuthKey(nc, ns, nk, authKey) @j1 
-           // ∧
-           // ¬(
-           //   ∃ #j2.
-           //     ServerAcceptsAuthKey(nc, ns, nk, p, g, a, g_b, authKey) @j2 ∧
-           //     ¬(#j1 = #j2)
-           // )
+            // ∧
+            // ¬(
+            //   ∃ #j2.
+            //     ServerAcceptsAuthKey(nc, ns, nk, authKey) @j2 ∧
+            //     ¬(#j1 = #j2)
+            // )
           ) ∨
 
           /* or the server has reused the same nonce */

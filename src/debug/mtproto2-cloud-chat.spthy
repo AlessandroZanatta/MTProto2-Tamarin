@@ -1,17 +1,4 @@
 
-
-  rule DEBUG_CreateAuthKey:
-    let
-      authKey = 'g' ^ ~a ^ ~b
-    in
-      [ Fr(~a), Fr(~b) ]
-    -->
-      [
-        !AuthKeyClient($Server, authKey),
-        !AuthKeyServer(keyID(authKey), authKey)
-      ]
-
-
   lemma LemmaCloudChatClientSendsCloudMessage:
     exists-trace
       "
@@ -50,30 +37,7 @@
 //  lemma LemmaCloudChatServerReceivesCloudMessageAfterCompromisedNonce:
 //    exists-trace
 //      "
-//        ∃ server sid m authKey #i.
-//          ServerReceivesCloudMessageAfterCompromisedNonce(server, sid, m, authKey) @i
+//        ∃ sid m authKey #i.
+//          ServerReceivesCloudMessageAfterCompromisedNonce(sid, m, authKey) @i
 //      "
 
-  lemma LemmaCloudChatSecrecySecretAuthMsg1:
-    exists-trace
-      "
-        ∃ sid m1 authKey #i #j.
-          ClientSendsCloudMessage(sid, m1, authKey) @i ∧ 
-          K(m1) @j
-      "
-
-  lemma LemmaCloudChatSecrecySecretAuthMsg2:
-    exists-trace
-      "
-        ∃ sid m2 authKey #i #j.
-          ServerSendsCloudMessage(sid, m2, authKey) @i ∧ 
-          K(m2) @j
-      "
-
-//  lemma LemmaCloudChatSecrecySecretAuthMsg1:
-//    exists-trace
-//      "
-//        ∃ sid m1 authKey #i #j.
-//          ClientSendsCloudMessage(sid, m1, authKey) @i ∧ 
-//          K(m1) @j
-//      "

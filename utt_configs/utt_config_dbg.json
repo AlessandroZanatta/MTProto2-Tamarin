@@ -28,7 +28,12 @@
         "LemmaAuthPostCompromisedPrivateKey",
         "LemmaAuthPostCompromisedNonce",
         "LemmaAuthPostCompromisedClientExponent",
-        "LemmaAuthPostCompromisedServerExponent"
+        "LemmaAuthPostCompromisedServerExponent",
+
+        "LemmaCloudChatClientSendsCloudMessage",
+        "LemmaCloudChatClientReceivesCloudMessage",
+        "LemmaCloudChatServerReceivesCloudMessage",
+        "LemmaCloudChatServerSendsCloudMessage"
     ],
     "lemma_deny_list": [],
     "global_annotations": {

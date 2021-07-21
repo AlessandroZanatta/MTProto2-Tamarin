@@ -24,33 +24,6 @@
         !AuthKeyServer(keyID(authKey), authKey)
       ]
 
-  lemma AuthKey_origin [sources]:
-    "
-      (
-        ∀ sid msg authKey #i.
-          ClientSendsCloudMessage(sid, msg, authKey) @i
-          ==>
-          (∃ #j. FakeSharedAuthKey(authKey) @j)
-      ) ∧
-      (
-        ∀ sid msg authKey #i.
-          ServerSendsCloudMessage(sid, msg, authKey) @i
-          ==>
-          (∃ #j. FakeSharedAuthKey(authKey) @j)
-      ) ∧
-      (
-        ∀ sid msg authKey #i.
-          ServerReceivesCloudMessage(sid, msg, authKey) @i
-          ==>
-          (∃ #j. FakeSharedAuthKey(authKey) @j)
-      ) ∧
-      (
-        ∀ sid msg authKey #i.
-          ClientReceivesCloudMessage(sid, msg, authKey) @i
-          ==>
-          (∃ #j. FakeSharedAuthKey(authKey) @j)
-      )
-    "
 /*****************************************************************/
 /* Protocol rules                                                */
 /*****************************************************************/
@@ -58,10 +31,9 @@
 
   rule ClientCloudChat_1:
     let
-      msg1      = <'CLIENT', ~sessionID, ~m1>
-      mk        = msgKey(authKey, msg1)
-      encrypted = AES_IGE_enc(msg1, kdfKey(authKey, mk), kdfIV(authKey, mk))
-      final_msg = <keyID(authKey), mk, encrypted>
+      msg1 = <'CLIENT', ~sessionID, ~m1>
+      mk1  = msgKey(authKey, msg1)
+      c1   = senc(msg1, kdfKey(authKey, mk1), kdfIV(authKey, mk1))
     in
       [ 
         /* 
@@ -79,110 +51,104 @@
         /* Message from the client. This is supposed to be secret. */
         Fr(~m1)
       ]
-    --[ ClientSendsCloudMessage(~sessionID, msg1, authKey) ]->
+    --[ ClientSendsCloudMessage(~sessionID, ~m1, authKey) ]->
       [ 
         ClientCloudChatState_1(<~sessionID, authKey, ~m1>),
-        Out(final_msg) 
+        Out(<keyID(authKey), mk1, c1>)
       ]
   
   rule ServerCloudChat_2:
-      [ 
-        In(msg),
-        Fr(~msgID)
-      ]
-    -->
-      [ 
-        RequestServerDecodeCloudChatMsg(~msgID, msg),
-        ServerCloudChatState_2('EMPTY_STATE', ~msgID)
-      ]
-
-  rule ServerCloudChat_2_1:
     let
-      msg1      = <'CLIENT', sessionID, m1>
-      msg2      = <'SERVER', sessionID, ~m2>
-      mk        = msgKey(authKey, msg2)
-      encrypted = AES_IGE_enc(msg2, kdfKey(authKey, mk), kdfIV(authKey, mk))
-      final_msg = <keyID(authKey), mk, encrypted>
+      /* Pattern matching for the incoming message */
+      mk1  = msgKey(authKey, msg1)
+      msg1 = <'CLIENT', sessionID, m1>
+      c1   = senc(msg1, kdfKey(authKey, mk1), kdfIV(authKey, mk1))
+
+      /* Outgoing message creation */
+      msg2 = <'SERVER', sessionID, ~m2>
+      mk2  = msgKey(authKey, msg2)
+      c2   = senc(msg2, kdfKey(authKey, mk2), kdfIV(authKey, mk2))
     in
       [ 
-        ServerCloudChatState_2('EMPTY_STATE', msgID),
-        ServerDecodedCloudChatMsg(msgID, msg1, authKey),
+        In(<kID, mk1, c1>),
+        !AuthKeyServer(kID, authKey),
         Fr(~m2)
       ]
-    --[ 
+    --[
         ServerReceivesCloudMessage(sessionID, m1, authKey),
         ServerSendsCloudMessage(sessionID, ~m2, authKey)
       ]->
-      [
-        ServerCloudChatState_2_1(<sessionID, authKey, m1, ~m2>),
-        Out(final_msg)
-      ]
-
-  rule ClientCloudChat_3:
       [ 
-        ClientCloudChatState_1_1(<sessionID, authKey, m1>, msgID),
-        In(encoded_msg),
-        Fr(~newMsgID)
-      ]
-    -->
-      [ 
-        RequestClientDecodeCloudChatMsg(~newMsgID, encoded_msg, authKey),
-        ClientCloudChatState_3(<sessionID, authKey, m1>, ~newMsgID)
+        ServerCloudChatState_2(<sessionID, authKey, m1, ~m2>),
+        Out(<keyID(authKey), mk2, c2>)
       ]
 
-  rule ClientCloudChat_3_1:
-    let
-      msg2      = <'SERVER', sessionID, m2>
-      msg3      = <'CLIENT', sessionID, ~m3>
-      mk        = msgKey(authKey, msg3)
-      encrypted = AES_IGE_enc(msg3, kdfKey(authKey, mk), kdfIV(authKey, mk))
-      final_msg = <keyID(authKey), mk, encrypted>
-    in
-      [
-        ClientCloudChatState_3(<sessionID, authKey, m1>, msgID),
-        ClientDecodedCloudChatMsg(msgID, m2),
-        Fr(~m3)
-      ]
-    --[ ClientReceivesCloudMessage(sessionID, m2, authKey) ]->
-      [
-        ClientCloudChatState_3_1(<sessionID, authKey, m1, m2, ~m3>),
-        
-        // TODO: this request should be executed in phase 1! Look at proverif source.
-        Out(final_msg)
-      ]
-
-// TODO
-/*
-  rule ClientCloudChat_3_2:
-      [
-        // TODO: switch to phase 1 here
-        ClientCloudChatState_3_2(X, 'STEP_3_2', <server, sessionID, authKey>, msgID),
-        EncodedCloudChatMsg(msgID, encoded_msg)
-      ]
-    --[ ClientSendsCloudMessageAfterCompromisedNonce(server, sessionID, secretAuthMsg3, authKey) ]->
-      [ Out(MSG(encoded_msg)) ]
   
-  rule ServerCloudChat_4:
-      [
-        // TODO: switch to phase 1 here
-        ServerCloudChatState(server, 'STEP_2_3', <sessionID, authKey>, msgID),
-        In(MSG(encoded_msg)),
-        Fr(~newMsgID)
-      ]
-    -->
-      [ 
-        RequestServerDecodeCloudChatMsg(~newMsgID, encoded_msg),
-        ServerCloudChatState(server, 'STEP_3_1', <sessionID, authKey>, ~newMsgID)
-      ]
-
-  rule ServerCloudChat_4_1:
+  rule ClientCloudChat_3:
     let
-      msg3 = CC('CLIENT', sessionID, plaintext3)
+      kID  = keyID(authKey)
+      
+      /* Pattern matching for the incoming message */
+      msg2 = <'SERVER', ~sessionID, m2>
+      mk2  = msgKey(authKey, msg2)
+      c2   = senc(msg2, kdfKey(authKey, mk2), kdfIV(authKey, mk2))
     in
-      [
-        ServerCloudChatState(server, 'STEP_3_1', <sessionID, authKey>, msgID),
-        ServerDecodedCloudChatMsg(msgID, msg3, authKey)
+      [ 
+        ClientCloudChatState_1(<~sessionID, authKey, ~m1>),
+        In(<kID, mk2, c2>)
       ]
-    --[ ServerReceivesCloudMessageAfterCompromisedNonce(server, sessionID, plaintext3, authKey) ]->
-      []
-*/
+    --[ ClientReceivesCloudMessage(~sessionID, m2, authKey) ]->
+      [ ClientCloudChatState_3(<~sessionID, authKey, ~m1, m2>) ]
+
+
+// Sending another message to check for post-compromise 
+// should NOT be needed in Tamarin.
+//
+//  rule ClientCloudChat_3:
+//    let
+//      kID  = keyID(authKey)
+//      
+//      /* Pattern matching for the incoming message */
+//      msg2 = <'CLIENT', ~sessionID, m2>
+//      mk2  = msgKey(authKey, msg2)
+//      c2   = senc(msg2, kdfKey(authKey, mk2), kdfIV(authKey, mk2))
+//
+//      /* Outgoing message creation */
+//      msg3 = <'SERVER', ~sessionID, ~m3>
+//      mk3  = msgKey(authKey, msg3)
+//      c3   = senc(msg3, kdfKey(authKey, mk3), kdfIV(authKey, mk3))
+//    in
+//      [ 
+//        ClientCloudChatState_1(<~sessionID, authKey, ~m1>),
+//        In(<kID, mk2, c2>),
+//        Fr(~m3)
+//      ]
+//    --[ 
+//        ClientReceivesCloudMessage(~sessionID, m2, authKey),
+//        ClientSendsCloudMessageAfterCompromisedNonce(~sessionID, ~m3, authKey)
+//      ]->
+//      [ 
+//        ClientCloudChatState_3(<~sessionID, authKey, ~m1, m2, ~m3>),
+//        Out(<kID, mk3, c3>)
+//      ]
+//  
+//
+//
+//  rule ServerCloudChat_4:
+//    let
+//      kID  = keyID(authKey)
+//
+//      /* Pattern matching for the incoming message */
+//      msg3 = <'CLIENT', sessionID, m3>
+//      mk3  = msgKey(authKey, msg3)
+//      c3   = senc(msg3, kdfKey(authKey, mk3), kdfIV(authKey, mk3))
+//    in
+//      [
+//        ServerCloudChatState_2(<sessionID, authKey, m1, ~m2>),
+//        In(<kID, mk3, c3>)
+//      ]
+//    --[ ServerReceivesCloudMessageAfterCompromisedNonce(sessionID, m3, authKey) ]->
+//      [ 
+//        ServerCloudChatState_2(<sessionID, authKey, m1, ~m2, m3>)
+//      ]
+//

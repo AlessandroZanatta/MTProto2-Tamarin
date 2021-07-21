@@ -1,0 +1,85 @@
+
+  /*
+   * If the authorization key has been generated correctly and it is known only
+   * to the client and the server, then cloud chats messages are secure against
+   * attackers (the messages can be seen by the server, of course).
+   */
+
+  /*
+   * Client -> Server
+   * 
+   * Expected result: True
+   * Estimated time: ~10 seconds
+   */
+  lemma LemmaCloudChatSecrecyClientToServer:
+    "
+      ∀ sid msg authKey #i #j #r.
+        (
+          /* Whenever a client sends a cloud message to the server */
+          ClientSendsCloudMessage(sid, msg, authKey) @i ∧
+
+          /* and the server receives it */
+          ServerReceivesCloudMessage(sid, msg, authKey) @j ∧
+
+          /* and the attacker knows it */
+          K(msg) @r ∧
+
+          /* and no secret was leaked, but the authorization key authKey */
+          ¬(∃ sk #r.   RegisteredAuthKey(sk) @r) ∧
+          // ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
+          ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
+          ¬(∃ n #r.    CompromisedNk(n) @r) ∧
+          ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
+          ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
+          ¬(∃ s #r.    CompromisedServerExponent(s) @r) ∧
+          ¬(∃ skey #r. PostCompromisedPrivateKey(skey) @r) ∧
+          ¬(∃ n #r.    PostCompromisedNonce(n) @r) ∧
+          ¬(∃ c #r.    PostCompromisedClientExponent(c) @r) ∧
+          ¬(∃ s #r.    PostCompromisedServerExponent(s) @r)
+        )
+        ==>
+        (
+          /* then the authorization key was actually compromised */
+          (∃ #r.   CompromisedAuthKey(authKey) @r)
+        )
+    "
+
+
+  /*
+   * Client -> Server
+   * 
+   * Expected result: True
+   * Estimated time: ~10 seconds
+   */
+  lemma LemmaCloudChatSecrecyServerToClient:
+    "
+      ∀ sid msg authKey #i #j #r.
+        (
+          /* Whenever a server sends a cloud message to the client */
+          ServerSendsCloudMessage(sid, msg, authKey) @j ∧
+
+          /* and the client receives it */
+          ClientReceivesCloudMessage(sid, msg, authKey) @i ∧
+
+          /* and the attacker knows it */
+          K(msg) @r ∧
+        
+          /* and no secret was leaked, but the authorization key authKey */
+          ¬(∃ sk #r.   RegisteredAuthKey(sk) @r) ∧
+          // ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
+          ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
+          ¬(∃ n #r.    CompromisedNk(n) @r) ∧
+          ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
+          ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
+          ¬(∃ s #r.    CompromisedServerExponent(s) @r) ∧
+          ¬(∃ skey #r. PostCompromisedPrivateKey(skey) @r) ∧
+          ¬(∃ n #r.    PostCompromisedNonce(n) @r) ∧
+          ¬(∃ c #r.    PostCompromisedClientExponent(c) @r) ∧
+          ¬(∃ s #r.    PostCompromisedServerExponent(s) @r)
+        )
+        ==>
+        (
+          /* then the authorization key was actually compromised */
+          (∃ #r.   CompromisedAuthKey(authKey) @r)
+        )
+    "

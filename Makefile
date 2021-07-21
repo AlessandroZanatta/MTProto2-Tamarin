@@ -10,7 +10,7 @@ TAMARIN_FLAGS = --quit-on-warning
 LIB           = ./mtproto2.spthy
 SRC_DIR       = ./src
 LEMMAS_DIR    = lemmas
-ENC           = model2
+ENC           = model1
 DEBUG_DIR     = debug
 OUTPUT_DIR    = ./out
 UTT_DIR       = ./utt_configs
@@ -20,29 +20,37 @@ LIB_SRC       = $(SRC_DIR)/preamble.spthy
 LIB_SRC      += $(SRC_DIR)/mtproto2-common.spthy
 LIB_SRC      += $(SRC_DIR)/mtproto2-encryption/$(ENC)/mtproto2-encryption-common.spthy
 LIB_SRC      += $(SRC_DIR)/mtproto2-encryption/$(ENC)/mtproto2-encryption-authorization.spthy
-# LIB_SRC      += $(SRC_DIR)/mtproto2-encryption/$(ENC)/mtproto2-encryption-part-i.spthy
+LIB_SRC      += $(SRC_DIR)/mtproto2-encryption/$(ENC)/mtproto2-encryption-part-i.spthy
 LIB_SRC      += $(SRC_DIR)/mtproto2-authorization.spthy
-# LIB_SRC      += $(SRC_DIR)/mtproto2-cloud-chat.spthy
+LIB_SRC      += $(SRC_DIR)/mtproto2-cloud-chat.spthy
 
 
 # Debug
 DEBUG_SRC     = $(SRC_DIR)/$(DEBUG_DIR)/mtproto2-authorization.spthy
-# DEBUG_SRC    += $(SRC_DIR)/$(DEBUG_DIR)/mtproto2-cloud-chat.spthy
+DEBUG_SRC    += $(SRC_DIR)/$(DEBUG_DIR)/mtproto2-cloud-chat.spthy
 DEBUG_SRC    += $(SRC_DIR)/epilogue.spthy
 
 
 # Security properties
-LEMMAS_SRC    = $(SRC_DIR)/$(LEMMAS_DIR)/mtproto2-query-auth-prot-agreement.spthy
-LEMMAS_SRC   += $(SRC_DIR)/$(LEMMAS_DIR)/mtproto2-query-auth-prot-authentication-client-to-server.spthy
-LEMMAS_SRC   += $(SRC_DIR)/$(LEMMAS_DIR)/mtproto2-query-auth-prot-authentication-server-to-client.spthy
-LEMMAS_SRC   += $(SRC_DIR)/$(LEMMAS_DIR)/mtproto2-query-auth-prot-auth-broken-agreement.spthy
-LEMMAS_SRC   += $(SRC_DIR)/$(LEMMAS_DIR)/mtproto2-query-auth-prot-key-secrecy.spthy
-LEMMAS_SRC   += $(SRC_DIR)/$(LEMMAS_DIR)/mtproto2-query-auth-prot-session.spthy
+
+# Authorization
+AUTH          = authorization
+LEMMAS_SRC    = $(SRC_DIR)/$(LEMMAS_DIR)/$(AUTH)/agreement.spthy
+LEMMAS_SRC   += $(SRC_DIR)/$(LEMMAS_DIR)/$(AUTH)/authentication-client-to-server.spthy
+LEMMAS_SRC   += $(SRC_DIR)/$(LEMMAS_DIR)/$(AUTH)/authentication-server-to-client.spthy
+LEMMAS_SRC   += $(SRC_DIR)/$(LEMMAS_DIR)/$(AUTH)/broken-agreement.spthy
+LEMMAS_SRC   += $(SRC_DIR)/$(LEMMAS_DIR)/$(AUTH)/key-secrecy.spthy
+LEMMAS_SRC   += $(SRC_DIR)/$(LEMMAS_DIR)/$(AUTH)/session.spthy
+
+# Cloud-chat
+CLOUD_CHAT    = cloud-chat
+LEMMAS_SRC   += $(SRC_DIR)/$(LEMMAS_DIR)/$(CLOUD_CHAT)/secrecy.spthy
+LEMMAS_SRC   += $(SRC_DIR)/$(LEMMAS_DIR)/$(CLOUD_CHAT)/kci.spthy
 LEMMAS_SRC   += $(SRC_DIR)/epilogue.spthy
 
 # Observational equivalence lemmas
-DIFF_SRC      = $(SRC_DIR)/$(LEMMAS_DIR)/mtproto2-query-auth-prot-key-strong-secrecy.spthy
-DIFF_SRC     += $(SRC_DIR)/$(LEMMAS_DIR)/mtproto2-query-auth-prot-nk-strong-secrecy.spthy
+DIFF_SRC      = $(SRC_DIR)/$(LEMMAS_DIR)/$(AUTH)/key-strong-secrecy.spthy
+DIFF_SRC     += $(SRC_DIR)/$(LEMMAS_DIR)/$(AUTH)/nk-strong-secrecy.spthy
 DIFF_SRC     += $(SRC_DIR)/epilogue.spthy
 
 # Run

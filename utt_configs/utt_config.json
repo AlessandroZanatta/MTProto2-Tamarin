@@ -8,7 +8,12 @@
         "LemmaAuthProtBrokenAgreement_2",
         "LemmaAuthProtBrokenAgreement_3",
         "LemmaAuthProtKeySecrecy",
-        "LemmaAuthProtSession"
+        "LemmaAuthProtSession",
+        
+        "LemmaCloudChatSecrecyClientToServer",
+        "LemmaCloudChatSecrecyServerToClient",
+        "LemmaCloudChatKCIClient",
+        "LemmaCloudChatKCIServer"
     ],
     "lemma_deny_list": [],
     "global_annotations": {
