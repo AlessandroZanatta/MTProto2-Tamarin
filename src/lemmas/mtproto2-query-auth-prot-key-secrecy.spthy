@@ -2,27 +2,31 @@
   /*
    * Secrecy of the key: if client and server end up negotiating the same key
    * but the attacker knows it, then some secret from that session was leaked.
+   *
+   * Expected result: True
+   * Estimated time: ~10 seconds
    */
   lemma LemmaAuthProtKeySecrecy:
     "
       /* Whenever client and server shared a key and the attacker knows it */
-      ∀ nc ns nk authKey #i #j #k.
-        ClientAcceptsAuthKey(nc, ns, nk, authKey) @i ∧
-        ServerAcceptsAuthKey(nc, nk, nk, authKey) @j ∧
-        K(authKey) @k
+      ∀ nc ns nk shared_key #i #j #k.
+        ClientAcceptsAuthKey(nc, ns, nk, shared_key) @i ∧
+        ServerAcceptsAuthKey(nc, nk, nk, shared_key) @j ∧
+        K(shared_key) @k
         ==>
         /* then some secrects were leaked */
         (
-          (∃ skey #r. RevealedRSAKey(skey) @r) ∨
-          (∃ #r. RevealedNk(nk) @r) ∨
-          (
-            ∃ a b #r1 #r2. 
-              RevealedAuthProtClientExponent(b) @r1 ∧
-              RevealedAuthProtServerExponent(a) @r2
-          ) ∨
-          (∃ b #r. RevealedAuthProtClientEphemeralSecrets(nk, b) @r)
-
-          // TODO: add post-compromises
+          // (∃ sk #r.   RegisteredSharedKey(sk) @r) ∨
+          (∃ #r.      CompromisedSharedKey(shared_key) @r) ∨
+          (∃ skey #r. CompromisedPrivateKey(skey) @r) ∨
+          (∃ #r.      CompromisedNk(nk) @r) ∨
+          (∃ c #r.    CompromisedClientExponent(c) @r) ∨
+          (∃ c #r.    CompromisedClientEphemeralSecrets(nk, c) @r) ∨
+          (∃ s #r.    CompromisedServerExponent(s) @r) ∨
+          (∃ skey #r. PostCompromisedPrivateKey(skey) @r) ∨
+          (∃ #r.      PostCompromisedNonce(nk) @r) ∨
+          (∃ c #r.    PostCompromisedClientExponent(c) @r) ∨
+          (∃ s #r.    PostCompromisedServerExponent(s) @r)
         )
 
     "

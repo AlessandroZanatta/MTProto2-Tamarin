@@ -5,30 +5,35 @@
  * protocol with anyone, including the attacker.
  *
  * Expected result: False
- * Estimated time: ~15 seconds
+ * Estimated time: ~10 seconds
  */
   lemma LemmaAuthProtAuthClientToServer:
     "
-      ∀ nc ns nk authKey #i #j.
+      ∀ nc ns nk shared_key #i #j.
         /* Whenever a client has started a session with nonce nc */
         ClientStartsSession(nc) @i ∧
 
         /* and the server has sent an ACK for the session <nc, ns> */
-        ServerSendsAck(nc, ns, nk, authKey) @j ∧
+        ServerSendsAck(nc, ns, nk, shared_key) @j ∧
 
-        /* and no secret was leaked */
-        ¬(∃ skey #r. RevealedRSAKey(skey) @r) ∧
-        ¬(∃ #r. RevealedNk(nk) @r) ∧
-        ¬(∃ b #r. RevealedAuthProtClientExponent(b) @r) ∧
-        ¬(∃ a #r. RevealedAuthProtServerExponent(a) @r) ∧
-        ¬(∃ b #r. RevealedAuthProtClientEphemeralSecrets(nk, b) @r)
-        // TODO: Add post-compromises
+        /* and no secret was leaked */          
+        ¬(∃ sk #r.   RegisteredSharedKey(sk) @r) ∧
+        ¬(∃ sk #r.   CompromisedSharedKey(sk) @r) ∧
+        ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
+        ¬(∃ n #r.    CompromisedNk(n) @r) ∧
+        ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
+        ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
+        ¬(∃ s #r.    CompromisedServerExponent(s) @r) ∧
+        ¬(∃ skey #r. PostCompromisedPrivateKey(skey) @r) ∧
+        ¬(∃ n #r.    PostCompromisedNonce(n) @r) ∧
+        ¬(∃ c #r.    PostCompromisedClientExponent(c) @r) ∧
+        ¬(∃ s #r.    PostCompromisedServerExponent(s) @r)
         ==>
         (
-          /* then a client has shared an authKey with the server */
+          /* then a client has shared an shared_key with the server */
           (
             ∃ #k.
-            ClientAcceptsAuthKey(nc, ns, nk, authKey) @k
+            ClientAcceptsAuthKey(nc, ns, nk, shared_key) @k
           ) ∨
 
           /* 
@@ -46,7 +51,7 @@
 
   /*
    * However, at the end of the authorization protocol the server knows
-   * for sure that the client that has negotiated the authorization key authKey
+   * for sure that the client that has negotiated the authorization key shared_key
    * is the client who sent the third message of the protocol.
    *
    * Expected result: True
@@ -54,25 +59,31 @@
    */
   lemma LemmaAuthProtAuthClientSentThirdMessage:
     "
-      ∀ nc ns nk authKey #i #j.
+      ∀ nc ns nk shared_key #i #j.
         /* Whenever a client requested DH parameters in session <nc, ns> */
         ClientRequestsDHParameters(nc, ns, nk) @i ∧
 
         /* and the server ended the protocol correctly */
-        ServerSendsAck(nc, ns, nk, authKey) @j ∧
+        ServerSendsAck(nc, ns, nk, shared_key) @j ∧
         
         /* and no secret was leaked */
-        ¬(∃ skey #r. RevealedRSAKey(skey) @r) ∧
-        ¬(∃ #r. RevealedNk(nk) @r) ∧
-        ¬(∃ b #r. RevealedAuthProtClientExponent(b) @r) ∧
-        ¬(∃ a #r. RevealedAuthProtServerExponent(a) @r) ∧
-        ¬(∃ b #r. RevealedAuthProtClientEphemeralSecrets(nk, b) @r)
+        ¬(∃ sk #r.   RegisteredSharedKey(sk) @r) ∧
+        ¬(∃ sk #r.   CompromisedSharedKey(sk) @r) ∧
+        ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
+        ¬(∃ n #r.    CompromisedNk(n) @r) ∧
+        ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
+        ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
+        ¬(∃ s #r.    CompromisedServerExponent(s) @r) ∧
+        ¬(∃ skey #r. PostCompromisedPrivateKey(skey) @r) ∧
+        ¬(∃ n #r.    PostCompromisedNonce(n) @r) ∧
+        ¬(∃ c #r.    PostCompromisedClientExponent(c) @r) ∧
+        ¬(∃ s #r.    PostCompromisedServerExponent(s) @r)
         ==>
         (
-          /* then the client has succesfully shared */
+          /* then the client has succesfully shared a key with the server */
           (
             ∃ #k.
-            ClientAcceptsAuthKey(nc, ns, nk, authKey) @k
+            ClientAcceptsAuthKey(nc, ns, nk, shared_key) @k
           ) ∨
 
           /* 

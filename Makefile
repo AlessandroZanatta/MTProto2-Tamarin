@@ -3,7 +3,6 @@
 
 # SHELL        := env PATH=$(TAMARIN_DIR):$(PATH) /bin/sh
 SHELL 		 := /bin/sh
-TAMARIN_DIR   = ./
 TAMARIN       = tamarin-prover
 TAMARIN_FLAGS = --quit-on-warning 
 
@@ -50,10 +49,9 @@ DIFF_SRC     += $(SRC_DIR)/epilogue.spthy
 UTT_EXEC     := uttamarin 
 UTT_CONF      = $(UTT_DIR)/utt_config.json
 UTT_CONF_DBG  = $(UTT_DIR)/utt_config_dbg.json 
-UTT_TIMEOUT   = 60
 UTT_OUT       = $(OUTPUT_DIR)/utt_output.txt
 UTT_OUT_DBG   = $(OUTPUT_DIR)/utt_output_dbg.txt
-UTT_FLAGS     = -t $(UTT_TIMEOUT)
+UTT_FLAGS     = 
 
 
 # Make rules

@@ -8,16 +8,25 @@
    */
   lemma LemmaAuthProtSession:
     "
-      ∀ nc1 nc2 ns1 ns2 nk1 nk2 authKey #i #j.
-        ClientAcceptsAuthKey(nc1, ns1, nk1, authKey) @i ∧
-        ServerAcceptsAuthKey(nc2, ns2, nk2, authKey) @j
+      ∀ nc1 nc2 ns1 ns2 nk1 nk2 shared_key #i #j.
+        ClientAcceptsAuthKey(nc1, ns1, nk1, shared_key) @i ∧
+        ServerAcceptsAuthKey(nc2, ns2, nk2, shared_key) @j
         ==>
         (
           (nc1 = nc2 ∧ ns1 = ns2 ∧ nk1 = nk2) ∨
-          (∃ skey #r. RevealedRSAKey(skey) @r) ∨
-          (∃ #r. RevealedNk(nk1) @r) ∨
-          (∃ #r. RevealedNk(nk2) @r) ∨
-          (∃ b #r. RevealedAuthProtClientEphemeralSecrets(nk1, b) @r) ∨
-          (∃ b #r. RevealedAuthProtClientEphemeralSecrets(nk2, b) @r)
+          // (∃ sk #r.   RegisteredSharedKey(sk) @r) ∨
+          (∃ #r.      CompromisedSharedKey(shared_key) @r) ∨
+          (∃ skey #r. CompromisedPrivateKey(skey) @r) ∨
+          (∃ #r.      CompromisedNk(nk1) @r) ∨
+          (∃ #r.      CompromisedNk(nk2) @r) ∨
+          (∃ c #r.    CompromisedClientExponent(c) @r) ∨
+          (∃ c #r.    CompromisedClientEphemeralSecrets(nk1, c) @r) ∨
+          (∃ c #r.    CompromisedClientEphemeralSecrets(nk2, c) @r) ∨
+          (∃ s #r.    CompromisedServerExponent(s) @r) ∨
+          (∃ skey #r. PostCompromisedPrivateKey(skey) @r) ∨
+          (∃ #r.      PostCompromisedNonce(nk1) @r) ∨
+          (∃ #r.      PostCompromisedNonce(nk2) @r) ∨
+          (∃ c #r.    PostCompromisedClientExponent(c) @r) ∨
+          (∃ s #r.    PostCompromisedServerExponent(s) @r)
         )
     "

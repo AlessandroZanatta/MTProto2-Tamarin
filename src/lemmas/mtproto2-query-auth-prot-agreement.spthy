@@ -13,25 +13,28 @@
   lemma LemmaAuthProtAgreement:
     "
       /* Whenever a client and a server negotiate an authorization key */
-      ∀ nc ns nk1 nk2 authKey1 authKey2 #i #j.
+      ∀ nc ns nk shared_key1 shared_key2 #i #j.
         (
-          ServerAcceptsAuthKey(nc, ns, nk1, authKey1) @i ∧
-          ClientAcceptsAuthKey(nc, ns, nk2, authKey2) @j ∧
+          ServerAcceptsAuthKey(nc, ns, nk, shared_key1) @i ∧
+          ClientAcceptsAuthKey(nc, ns, nk, shared_key2) @j ∧
 
           /* and no secret was leaked */
-          ¬(∃ skey #r. RevealedRSAKey(skey) @r) ∧
-          ¬(∃ #r. RevealedNk(nk1) @r) ∧
-          ¬(∃ #r. RevealedNk(nk2) @r) ∧
-          ¬(∃ b #r. RevealedAuthProtClientExponent(b) @r) ∧
-          ¬(∃ b #r. RevealedAuthProtClientEphemeralSecrets(nk1, b) @r) ∧
-          ¬(∃ b #r. RevealedAuthProtClientEphemeralSecrets(nk2, b) @r) ∧
-          ¬(∃ a #r. RevealedAuthProtServerExponent(a) @r)
-          // TODO: add post-compromise
+          ¬(∃ sk #r.   RegisteredSharedKey(sk) @r) ∧
+          ¬(∃ sk #r.   CompromisedSharedKey(sk) @r) ∧
+          ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
+          ¬(∃ n #r.    CompromisedNk(n) @r) ∧
+          ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
+          ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
+          ¬(∃ s #r.    CompromisedServerExponent(s) @r) ∧
+          ¬(∃ skey #r. PostCompromisedPrivateKey(skey) @r) ∧
+          ¬(∃ n #r.    PostCompromisedNonce(n) @r) ∧
+          ¬(∃ c #r.    PostCompromisedClientExponent(c) @r) ∧
+          ¬(∃ s #r.    PostCompromisedServerExponent(s) @r)
         )
         ==>
         (
-          /* then the authorization key (and the client nonce) is the same */
-          ( authKey1 = authKey2 ) ∨
+          /* then the authorization key is the same */
+          ( shared_key1 = shared_key2 ) ∨
           
           /* 
            * or the server is actually running two different instances

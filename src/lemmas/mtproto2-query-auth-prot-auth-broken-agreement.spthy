@@ -7,29 +7,35 @@
    * there is no guarantee (everything can be learned by the attacker).
    *
    * Expected result: False
-   * Estimated time: ~10 seconds
+   * Estimated time: ~20 seconds
    */
   lemma LemmaAuthProtBrokenAgreement_1:
     "
 
-      ∀ nc ns nk1 nk2 authKey1 authKey2 #i #j.
+      ∀ nc ns nk1 nk2 shared_key1 shared_key2 #i #j.
         /* 
          * Whenever a client and a server have accepted an authKey 
          * in session <nc, ns>
          */
-        ServerAcceptsAuthKey(nc, ns, nk1, authKey1) @i ∧
-        ClientAcceptsAuthKey(nc, ns, nk2, authKey2) @j ∧
+        ServerAcceptsAuthKey(nc, ns, nk1, shared_key1) @i ∧
+        ClientAcceptsAuthKey(nc, ns, nk2, shared_key2) @j ∧
         
         /* and no secret was leaked but the secret key of the server */
-        // ¬(∃ skey #r. RevealedRSAKey(skey) @r) ∧
-        ¬(∃ nk #r. RevealedNk(nk) @r) ∧
-        ¬(∃ b #r. RevealedAuthProtClientExponent(b) @r) ∧
-        ¬(∃ a #r. RevealedAuthProtServerExponent(a) @r) ∧
-        ¬(∃ nk b #r. RevealedAuthProtClientEphemeralSecrets(nk, b) @r)
+          ¬(∃ sk #r.   RegisteredSharedKey(sk) @r) ∧
+          ¬(∃ sk #r.   CompromisedSharedKey(sk) @r) ∧
+          // ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
+          ¬(∃ n #r.    CompromisedNk(n) @r) ∧
+          ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
+          ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
+          ¬(∃ s #r.    CompromisedServerExponent(s) @r) ∧
+          ¬(∃ skey #r. PostCompromisedPrivateKey(skey) @r) ∧
+          ¬(∃ n #r.    PostCompromisedNonce(n) @r) ∧
+          ¬(∃ c #r.    PostCompromisedClientExponent(c) @r) ∧
+          ¬(∃ s #r.    PostCompromisedServerExponent(s) @r)
         ==>
         (
           /* then client and server have computed the same authKey */
-          (authKey1 = authKey2) ∨
+          (shared_key1 = shared_key2) ∨
          
           /* or the server re-used the server nonce */
           (
@@ -49,29 +55,35 @@
    * on the DH exchange.
 
    * Expected result: False
-   * Estimated time: ~15 seconds
+   * Estimated time: ~30 seconds
    */
   lemma LemmaAuthProtBrokenAgreement_2:
     "
 
-      ∀ nc ns nk1 nk2 authKey1 authKey2 #i #j.
+      ∀ nc ns nk1 nk2 shared_key1 shared_key2 #i #j.
         /* 
          * Whenever a client and a server have accepted an authKey 
          * in session <nc, ns>
          */
-        ServerAcceptsAuthKey(nc, ns, nk1, authKey1) @i ∧
-        ClientAcceptsAuthKey(nc, ns, nk2, authKey2) @j ∧
+        ServerAcceptsAuthKey(nc, ns, nk1, shared_key1) @i ∧
+        ClientAcceptsAuthKey(nc, ns, nk2, shared_key2) @j ∧
         
         /* and no secret was leaked but the secret nonce of the client */
-        ¬(∃ skey #r. RevealedRSAKey(skey) @r) ∧
-        // ¬(∃ nk #r. RevealedNk(nk) @r) ∧
-        ¬(∃ b #r. RevealedAuthProtClientExponent(b) @r) ∧
-        ¬(∃ a #r. RevealedAuthProtServerExponent(a) @r) ∧
-        ¬(∃ nk b #r. RevealedAuthProtClientEphemeralSecrets(nk, b) @r)
+          ¬(∃ sk #r.   RegisteredSharedKey(sk) @r) ∧
+          ¬(∃ sk #r.   CompromisedSharedKey(sk) @r) ∧
+          ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
+          // ¬(∃ n #r.    CompromisedNk(n) @r) ∧
+          ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
+          ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
+          ¬(∃ s #r.    CompromisedServerExponent(s) @r) ∧
+          ¬(∃ skey #r. PostCompromisedPrivateKey(skey) @r) ∧
+          ¬(∃ n #r.    PostCompromisedNonce(n) @r) ∧
+          ¬(∃ c #r.    PostCompromisedClientExponent(c) @r) ∧
+          ¬(∃ s #r.    PostCompromisedServerExponent(s) @r)
         ==>
         (
           /* then client and server have computed the same authKey */
-          (authKey1 = authKey2) ∨
+          (shared_key1 = shared_key2) ∨
          
           /* or the server re-used the server nonce */
           (
@@ -90,33 +102,39 @@
    * If the DH exponents are revealed, the attacker can of course compute
    * the authorization key, but he cannot force the client and the server
    * to compute two different keys, nor he can act as a MITM. This means
-   * that the key agreement actually holds (while secrecy will most probably not).
+   * that the key agreement actually holds (while secrecy will not).
    *
    * Expected result: True
    * Estimated time: ~10 seconds
    */
   lemma LemmaAuthProtBrokenAgreement_3:
     "
-      ∀ nc ns nk1 nk2 authKey1 authKey2 #i #j.
+      ∀ nc ns nk1 nk2 shared_key1 shared_key2 #i #j.
         /* 
          * Whenever a client and a server have accepted an authKey 
          * in session <nc, ns>
          */
-        ServerAcceptsAuthKey(nc, ns, nk1, authKey1) @i ∧
-        ClientAcceptsAuthKey(nc, ns, nk2, authKey2) @j ∧
+        ServerAcceptsAuthKey(nc, ns, nk1, shared_key1) @i ∧
+        ClientAcceptsAuthKey(nc, ns, nk2, shared_key2) @j ∧
         
         /* and no secret was leaked but the secret DH exponents */
-        ¬(∃ skey #r. RevealedRSAKey(skey) @r) ∧
-        ¬(∃ nk #r. RevealedNk(nk) @r) ∧
-        // ¬(∃ b #r. RevealedAuthProtClientExponent(b) @r) ∧
-        // ¬(∃ a #r. RevealedAuthProtServerExponent(a) @r) ∧
-        ¬(∃ nk b #r. RevealedAuthProtClientEphemeralSecrets(nk, b) @r)
+          ¬(∃ sk #r.   RegisteredSharedKey(sk) @r) ∧
+          ¬(∃ sk #r.   CompromisedSharedKey(sk) @r) ∧
+          ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
+          ¬(∃ n #r.    CompromisedNk(n) @r) ∧
+          // ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
+          ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
+          // ¬(∃ s #r.    CompromisedServerExponent(s) @r) ∧
+          ¬(∃ skey #r. PostCompromisedPrivateKey(skey) @r) ∧
+          ¬(∃ n #r.    PostCompromisedNonce(n) @r) ∧
+          ¬(∃ c #r.    PostCompromisedClientExponent(c) @r) ∧
+          ¬(∃ s #r.    PostCompromisedServerExponent(s) @r)
         ==>
         (
           /* 
            * then client and server have computed the same authKey
            */
-          (authKey1 = authKey2) ∨
+          (shared_key1 = shared_key2) ∨
          
           /* or the server re-used the server nonce. */
           (

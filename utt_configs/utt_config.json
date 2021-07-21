@@ -6,7 +6,9 @@
         "LemmaAuthProtAuthServerToClient",
         "LemmaAuthProtBrokenAgreement_1",
         "LemmaAuthProtBrokenAgreement_2",
-        "LemmaAuthProtBrokenAgreement_3"
+        "LemmaAuthProtBrokenAgreement_3",
+        "LemmaAuthProtKeySecrecy",
+        "LemmaAuthProtSession"
     ],
     "lemma_deny_list": [],
     "global_annotations": {

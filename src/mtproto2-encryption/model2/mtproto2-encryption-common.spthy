@@ -89,38 +89,10 @@
 /* Asymmetric encryption                                         */
 /*****************************************************************/
 
-/* Deterministic encryption
- *
- * This is already defined by the builtin `asymmetric-encryption`
- * It's defined here to make use of the same names that are
- * used in Proverif's formal analysis.
+/* 
+ * Deterministic encryption is defined using the 
+ * builtin 'asymmetric-encryption'.
  */
-  functions:
-    /*
-     * Arguments:
-     *  - a plaintext
-     *  - an RSA public key
-     *
-     * Output: a ciphertext
-     */
-    RSA_enc/2,
-    /*
-     * Arguments:
-     *  - a ciphertext
-     *  - an RSA private key
-     *
-     * Output: a plaintext
-     */
-    RSA_dec/2,
-    /*
-     * Arguments:
-     *  - an RSA private key
-     * 
-     * Output: the corresponding public key
-     */
-    pk/1
-
-  equations: RSA_dec(RSA_enc(m, pk(k)), k) = m
 
 /* Probabilistic encryption */
   // functions: RSA_enc/3
@@ -143,22 +115,15 @@
  * achieved (TODO).
  */
 
-  functions:
-    /*
-     * Arguments:
-     *  - a plaintext
-     *  - a shared key
-     *  - a nonce (iv)
-     *
-     * Output: 
-     */
-    AES_IGE_enc/3,
-    /*
-     * Arguments:
-     */
-    AES_IGE_dec/3
-  
-  equations: AES_IGE_dec(AES_IGE_enc(m, k, iv), k, iv) = m
+  functions: senc/3, sdec/3, genKey/2, genIV/2, keyID/1
+  equations: sdec(
+      senc(m, 
+          genKey(ns, nk), 
+          genIV(ns, nk)
+      ), 
+      genKey(ns, nk), 
+      genIV(ns, nk)
+  ) = m
 
 /* 
  * Malleability of the ciphertext is *not* modeled.

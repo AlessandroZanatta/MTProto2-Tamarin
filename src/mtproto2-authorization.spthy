@@ -54,18 +54,19 @@
 /* Protocol exchange definition                                  */
 /*****************************************************************/
 
-  /* 
-   * 1. The client initiates a session to negotiate an 
-   * authorization key.
-   */
-  rule ClientAuth_1 [color=#5feb34]:
-      [
-        /* Get identity of the principal. */
+/* 1. C -> S: Nc */
+  rule Client_1 [color=#E2C290]:
+      [ 
         Fr(~nc),
+
+        /* 
+         * Following the eCK model, generate ephemeral 
+         * secrets and save them for revealing them later. 
+         */
         Fr(~nk),
-        Fr(~b)
+        Fr(~c) 
       ]
-    --[ 
+    --[
         /* 
          * A client starts a run of the authorization protocol with 
          * the server proposing a random nonce ~nc.
@@ -73,34 +74,17 @@
         ClientStartsSession(~nc)
       ]->
       [ 
+        ClientState_1(~nc, ~nk, ~c), 
         Out(~nc),
-
-        /*
-         * Store ephemeral secrets so that they can be revealed later.
-         * This follows the eCK security model. 
-         */
-        !AuthProtClientEphemeralSecrets(~nk, ~b),
-        ClientAuthState_1(~nc, ~nk, ~b)
+        !AuthProtClientEphemeralSecrets(~nk, ~c) 
       ]
 
-
-  /*
-   * 2. The server receives the client nonce and sends his nonce,
-   * together with the public key fingerprint.
-   */
-  rule ServerAuth_2 [color=#3440eb]:
-      [
-        In(nc),
-
-        /* Ephemeral secret (DH exponent) generation */
-        Fr(~a),
-        !RSAServerKey($Server, skey, pkey),
-
-        NS(ns) 
-      ]
+  /* 2. S -> C: Nc, Ns, fpk(pkey) */
+  rule Server_2 [color=#0088CC]:
+      [ In(nc), !PrivateKey($Server, skey), NS(ns), Fr(~s) ]
     --[
         /*
-         * Server $Server has received a request to start a 
+         * Server has received a request to start a 
          * run of the authorization protocol with client nonce nc.
          */
         ServerReceivesRequest(nc),
@@ -115,60 +99,49 @@
          */
         ServerGeneratesNonce(ns)
       ]->
-      [
-        Out(<nc, ns, fpk(pkey)>),
-        !AuthProtServerEphemeralSecrets(~a),
-        ServerAuthState_2(nc, ns, skey, pkey)
+      [ 
+        Out(<nc, ns, fpk(pk(skey))>), 
+        ServerState_2(nc, ns, skey, ~s), 
+        !AuthProtServerEphemeralSecrets(~s) 
       ]
 
 
-  /*
-   * 3. Receive server nonce.
-   */
-  rule ClientAuth_3 [color=#5feb34]:
-    let
-      fp = fpk(spkey)
-      encReqDHP = RSA_enc(<nc, ns, nk>, spkey)
-    in
-      [
-        ClientAuthState_1(nc, nk, b),
-        In(<nc, ns, fp>),
-        !RSAPublicKey($Server, spkey, fp)
+  /* 3. C -> S: Nc, Ns, aenc(Nc, Ns, Nk){pkey} */
+  rule Client_3 [color=#E2C290]:
+      [ 
+        ClientState_1(~nc, ~nk, ~c),
+        In(<~nc, ns, fingerprint>),
+        !PublicKey($Server, pkey, fingerprint)
       ]
     --[
         /*
          * Client X has obtained public key spkey corresponding
          * to the key fingerprint sent by server.
          */
-        ClientGetsServerPublicKey(spkey),
+        ClientGetsServerPublicKey(pkey),
 
         /*
          * Client X requests DH parameters to server by 
          * sending a secret nonce nk in the session identified 
          * by <nc, ns>.
          */
-        ClientRequestsDHParameters(nc, ns, nk) 
+        ClientRequestsDHParameters(~nc, ns, ~nk)
       ]->
-      [
-        Out(<nc, ns, encReqDHP>),
-        ClientAuthState_4(nc, nk, b, ns, spkey)
+      [ 
+        ClientState_3(~nc, ns, ~nk, pkey, ~c),
+        Out(<~nc, ns, aenc(<~nc, ns, ~nk>, pkey)>)
       ]
 
-  /*
-   * 5. Answer to DH exchange.
-   */
-  rule ServerAuth_5 [color=#3440eb]:
+  /* 4. S -> C: Nc, Ns, senc(Nc, Ns, Shalfkey){<Ns, Nk>} */
+  rule Server_4 [color=#0088CC]:
     let
-      encReqDHP = RSA_enc(<nc, ns, nk>, pkey)
-      g_a       = 'g' ^ ~a
-      key       = genKey(ns, nk)
-      iv        = genIV(ns, nk)
-      encAnswer = AES_IGE_enc(<'StoC', nc, ns, g_a>, key, iv)
+      half = 'g' ^ ~s
+      key  = genKey(ns, nk)
+      iv   = genIV(ns, nk)
     in
       [
-        ServerAuthState_2(nc, ns, skey, pkey),
-        In(<nc, ns, encReqDHP>),
-        Fr(~a)
+        ServerState_2(nc, ns, skey, ~s),
+        In(aenc(<nc, ns, nk>, pk(skey)))
       ]
     --[
         /* 
@@ -183,302 +156,255 @@
          * to a client who has started session <nc, ns> and sent
          * secret nonce nk.
          */
-        ServerSendsDHParameters(nc, ns, nk, g_a)
+        ServerSendsDHParameters(nc, ns, nk, half)
       ]->
       [
-        Out(<nc, ns, encAnswer>),
-        ServerAuthState_5(nc, ns, skey, pkey, nk, ~a, g_a)
+        ServerState_4(nc, ns, nk, skey, ~s),
+        Out(<nc, ns, senc(<'StoC', nc, ns, half>, key, iv)>)
       ]
 
-
-  /*
-   * 6-7. Client receives server's half key and answers with his half key.
-   */
-  rule ClientAuth_6 [color=#5feb34]:
+  /* 5. C -> S: Nc, Ns, senc(Nc, Ns, Chalfkey){<Ns, Nk>} */
+  rule Client_5 [color=#E2C290]:
     let
-      key         = genKey(ns, nk)
-      iv          = genIV(ns, nk)
-      encAuthMsg1 = AES_IGE_enc(<nc, ns, g_a>, key, iv)
-
-      authKey     = g_a  ^ b
-      g_b         = 'g'  ^ b
-      encAuthMsg2 = AES_IGE_enc(<nc, ns, g_b>, key, iv) 
+      g_s        = 'g' ^ ~s
+      key  = genKey(ns, ~nk)
+      iv   = genIV(ns, ~nk)
+      half       = 'g' ^ ~c
+      shared_key = g_s ^ ~c
     in
       [
-        ClientAuthState_4(nc, nk, b, ns, spkey),
-        In(<nc, ns, encAuthMsg1>)
+        ClientState_3(~nc, ns, ~nk, pkey, ~c),
+        In(<~nc, ns, senc(<'StoC', ~nc, ns, g_s>, key, iv)>)
       ]
     --[
         /*
-         * Client X has recevied DH paramters <p, g> and the server's
-         * half key g_a from server in the session identified by <nc, ns>
+         * Client X has received DH paramters and the server's
+         * half key g_s from server in the session identified by <nc, ns>
          * for which the client has generated secret nonce nk.
          */
-        ClientReceivesDHParameters(nc, ns, nk, g_a),
-        
-        /* 
-         * Allow the process to continue only if the DH parameters 
-         * are good or we explicitly allow weak parameters.
-         */
-        // WeakDHAllowed(p, g, g_a, 'DISALLOW_WEAK_DH'),
- 
-        /*
-         * Client does/does not validate the received DH parameters.
-         *
-         * A broken client might accept DH parameters unconditionally. 
-         * The following event allows us to test whether the client 
-         * is running the protocol with bad parameters (in which 
-         * case it is assumed that it has not checked them) or with 
-         * strong parameters (in which case it is assumed that it has 
-         * checked them).
-         *
-         * This fact is supposed to be checked using the 
-         * following expression (or an equivalent one):
-         * ClientChecksDHParameters(p, g, half)
-         * ==>
-         * (
-         *   ¬(p = WEAK_MODULO) ∧
-         *   ¬(g = BAD_ELEMENT) ∧
-         *   ¬(half = BAD_ELEMENT)
-         * )
-         */
-        // ClientChecksDHParameters(p, g, g_a),
+        ClientReceivesDHParameters(~nc, ns, ~nk, g_s),
 
         /*
-         * Client X has accepted the DH paramteres <p, g> received 
+         * Client X has accepted the DH parameter received 
          * from server in session <nc, ns> for which the client has
          * generated secret nonce nk and received the server's half
-         * key g_a.
+         * key g_s.
          */
-        ClientAcceptsDHParameters(nc, ns, nk, g_a),
+        ClientAcceptsDHParameters(~nc, ns, ~nk, g_s),
 
         /*
          * Client X completes the DH exchange with server in session 
          * <nc, ns> for which X has generate the secret nonce nk and has 
-         * received DH parameters <p, g> and half key g_a by computing
+         * received DH parameters <p, g> and half key g_s by computing
          * the authorization key authKey and by sending its half key
          * g_b to the server.
          */
-        ClientEndsDHExchange(nc, ns, nk, g_a, b, authKey),
+        ClientEndsDHExchange(~nc, ns, ~nk, g_s, ~c, shared_key),
 
         /*
          * Client X has negotiated the authorization key authKey with
          * server in session <nc, ns>.
          */
-        ClientAcceptsAuthKey(nc, ns, nk, authKey)
-      ]->
-      [ 
-        Out(<nc, ns, encAuthMsg2>),
-        ClientAuthState_7(nc, nk, b, ns, spkey, g_a, authKey)
-      ]
-
-
-  /*
-   * 9. Server sends ACK to client.
-   */
-  rule ServerAuth_9 [color=#3440eb]:
-    let
-      key        = genKey(ns, nk)
-      iv         = genIV(ns, nk)
-      // TODO: this g_b might not come from the client but from the earlier server message
-      // that the server itself sent (reflection attack maybe possible ??)
-      encAuthMsg = AES_IGE_enc(<nc, ns, g_b>, key, iv)
-      authKey    = g_b ^ a 
-    in
+        ClientAcceptsAuthKey(~nc, ns, ~nk, shared_key)]->
       [
-        ServerAuthState_5(nc, ns, skey, pkey, nk, a, g_a),
-        In(<nc, ns, encAuthMsg>)
+        ClientState_5(~nc, ns, ~nk, pkey, g_s, ~c, shared_key),
+        Out(<~nc, ns, senc(<'CtoS', ~nc, ns, half>, key, iv)>),
+        !AuthKeyClient($Server, shared_key)
       ]
-    --[
+
+
+  /* 6. S -> C: Nc, Ns, fpk(Nk, shared_key) */
+  rule Server_6 [color=#0088CC]:
+    let
+      g_c        = 'g' ^ ~c
+      key  = genKey(ns, nk)
+      iv   = genIV(ns, nk)
+      shared_key = g_c ^ ~s
+    in
+      [ 
+        ServerState_4(nc, ns, nk, skey, ~s), 
+        In(<nc, ns, senc(<'CtoS', nc, ns, g_c>, key, iv)>) 
+      ]
+    --[ 
         /*
          * Server completes the DH exchange with parameters <p, g>
          * in session <nc, ns> for which a client has generated
          * the secret nonce nk and the half key g_b by computing
          * the authorization key authKey.
          */
-        ServerEndsDHExchange(nc, ns, nk, g_b, authKey),
+        ServerEndsDHExchange(nc, ns, nk, g_c, shared_key),
 
         /*
          * Server has negotiated the authorization key authKey with a 
          * client in session <nc, ns>.
          */
-        ServerAcceptsAuthKey(nc, ns, nk, authKey),
+        ServerAcceptsAuthKey(nc, ns, nk, shared_key),
       
         /*
          * Server sends an acknowledgment to a client in session 
          * <nc, ns> for which the client has generated secret nonce nk.
          */
-        ServerSendsAck(nc, ns, nk, authKey)
-
+        ServerSendsAck(nc, ns, nk, shared_key)
       ]->
       [ 
-        Out(<nc, ns, hashNk(nk, authKey)>),
-
-        /* Protocol ends here. The following is for testing queries. */
-        !AuthKeyServer(keyID(authKey), authKey),
-        !ServerEndsProtocol(nc, ns, nk, pkey, a, g_b, authKey)
+        !AuthKeyServer(keyID(shared_key), shared_key), 
+        Out(<nc, ns, hashNk(nk, shared_key)>),
+        !ServerEndsProtocol(nc, ns, nk, shared_key, skey, ~s) 
       ]
+  
 
-
-  /*
-   * 10. Client receives ACK from server.
-   */
-  rule ClientAuth_10 [color=#5feb34]:
-      [
-        ClientAuthState_7(nc, nk, b, ns, spkey, g_a, authKey),
-        In(<nc, ns, hashNk(nk, authKey)>)
+  rule Client_7 [color=#E2C290]:
+      [ 
+        ClientState_5(~nc, ns, ~nk, pkey, g_s, ~c, shared_key),
+        In(<~nc, ns, hashNk(~nk, shared_key)>)
       ]
-    --[
+    --[ 
         /*
          * Client X has received an acknowledgment from the server for
          * the authorization key negotiated in session <nc, ns>.
          */
-        ClientReceivesAck(nc, ns, nk, authKey)
+        ClientReceivesAck(~nc, ns, ~nk, shared_key)
       ]->
-      [
-        /* Protocol ends here. The following is for testing queries. */
-        !AuthKeyClient($Server, authKey),
-        !ClientEndsProtocol(nc, ns, nk, spkey, b, g_a, authKey)
-      ]
-
+      [ !ClientEndsProtocol(~nc, ns, ~nk, shared_key, ~c) ]
+  
 
 /*****************************************************************/
 /* Key registration and Diffie Hellman parameters                */
 /*****************************************************************/
 
-  /* Generates a new private/public key pair for a server. */
-  rule RegisterRSAKey [color=#c334eb]:
-      [ Fr(~sk) ]
-    --[ RegisterRSAKey(~sk) ]->
-      [
-        !RSAServerKey($X, ~sk, pk(~sk)),
-        !RSAPublicKey($X, pk(~sk), fpk(pk(~sk))),
-        Out(pk(~sk)),
-        Out($X)
-      ]
-
-  rule GenRandomServerNonce [color=#c334eb]:
-      [ Fr(~ns) ]
-    --[ RandomServerNonceGenerated(~ns) ]->
-      [ NS(~ns) ]
- 
-  rule GenFixedServerNonce [color=#c334eb]:
-      []
-    --[ FixedServerNonceGenerated() ]->
-      [ NS('FIXED_NS') ]
-
-//  /* Generate good/bad DH parameters and save them. */
-//  rule GenGoodDHParameter [color=#c334eb]:
-//      [ Fr(~g) ]
-//    --[ GoodDHParameterGenerated(~g) ]->
-//      [ !DiffieHellmanParameter(~g) ]
-//
-//  rule GenBadDHParameter [color=#c334eb]:
-//      []
-//    --[ BadDHParameterGenerated(grpid) ]->
-//      [ !DiffieHellmanParameter(grpid) ]
+  /* Register a public key for the server */
+  rule RegisterPublicKey [color=#99C24D]:
+    let
+      pkey        = pk(~skey)
+      fingerprint = fpk(pkey)
+    in
+      [ Fr(~skey) ]
+    -->
+      [ !PrivateKey($X, ~skey), !PublicKey($X, pkey, fingerprint), Out(pkey) ]
   
+  rule GenerateRandomServerNonce [color=#99C24D]:
+      [ Fr(~ns) ]
+    -->
+      [ NS(~ns) ]
 
-  /* 
-   * Allows the attacker to register an authorization key for 
-   * itself with a server.
-   */
-  rule RegisterAuthKey [color=#eb3434]:
-      [ In(<X, authKey>) ]
-    --[ 
-        NotChoosePrincipal(X, $Alice, $Bob), 
-        RegisterAuthKey(keyID(authKey), authKey) 
-      ]->
-      [ !AuthKeyServer(keyID(authKey), authKey) ]
+  rule GenerateFixedServerNonce [color=#99C24D]:
+      []
+    -->
+      [ NS('FIXED_NS') ]
 
 
 /*****************************************************************/
 /* Revealing of secret information                               */
 /*****************************************************************/
 
+  /* 
+   * Allows the attacker to register an authorization key for 
+   * itself with a server. 
+   *
+   * Note that the attacker is required to provide two fresh DH 
+   * secret exponents. This is needed to restrict the range of 
+   * possible "values" the shared key may assume.
+   */
+  rule RegisterSharedKey [color=#FE4A49]:
+    let
+      shared_key = 'g' ^ ~c ^ ~s
+    in
+      [ In(<~c, ~s>) ]
+    --[ RegisteredSharedKey(shared_key) ]->
+      [ !AuthKeyServer(keyID(shared_key), shared_key) ]
+
+  /* Compromise shared key. */
+  rule CompromiseSharedKey [color=#FE4A49]:
+      [ 
+        !AuthKeyClient($Server, shared_key),
+        !AuthKeyServer(keyID(shared_key), shared_key)
+      ]
+    --[ CompromisedSharedKey(shared_key) ]->
+      [ Out(shared_key) ]
+
   /* Reveals long-term secret of the server. */
-  rule RevealRSAKey [color=#eb3434]:
-      [ !RSAServerKey($Server, skey, pkey) ]
-    --[ RevealedRSAKey(skey) ]->
+  rule CompromisePrivateKey [color=#FE4A49]:
+      [ !PrivateKey($Server, skey) ]
+    --[ CompromisedPrivateKey(skey) ]->
       [ Out(skey) ]
 
-//  /* Reveals session key shared between client and server. */
-//  rule RevealAuthKey [color=#eb3434]:
-//      [ 
-//        !AuthProtClientEphemeralSecrets(nk, ~b),
-//        !AuthProtServerEphemeralSecrets(~a),
-//        !AuthKeyServer(fp, authKey), 
-//        !AuthKeyClient($Server, authKey)
-//      ]
-//    --[ 
-//        Eq('g'^~a^~b, authKey),
-//        RevealedAuthKey(authKey)
-//      ]->
-//      [ Out(authKey) ]
-
-
   /* Reveals the secret client's nonce. */
-  rule RevealNk [color=#eb3434]:
+  rule CompromiseNk [color=#FE4A49]:
       [ !AuthProtClientEphemeralSecrets(nk, b) ]
-    --[ RevealedNk(nk) ]->
+    --[ CompromisedNk(nk) ]->
       [ Out(nk) ]
-  
+
   /* Reveals the client's DH secret exponent. */
-  rule RevealAuthProtClientExponent [color=#eb3434]:
-      [ !AuthProtClientEphemeralSecrets(nk, b) ]
-    --[ RevealedAuthProtClientExponent(b) ]->
-      [ Out(b) ]
+  rule CompromiseAuthProtClientExponent [color=#FE4A49]:
+      [ !AuthProtClientEphemeralSecrets(nk, c) ]
+    --[ CompromisedClientExponent(c) ]->
+      [ Out(c) ]
 
   /* Reveals all client's ephemeral secrets. */
-  rule RevealAuthProtClientEphemeralSecrets [color=#eb3434]:
-      [ !AuthProtClientEphemeralSecrets(nk, b) ]
-    --[ RevealedAuthProtClientEphemeralSecrets(nk, b) ]->
-      [ Out(<nk, b>) ]
+  rule CompromiseClientEphemeralSecrets [color=#FE4A49]:
+      [ !AuthProtClientEphemeralSecrets(nk, c) ]
+    --[ CompromisedClientEphemeralSecrets(nk, c) ]->
+      [ Out(<nk, c>) ]
 
-  /* Reveals the server's DH secret exponent. */
-  rule RevealAuthProtServerExponent [color=#eb3434]:
-      [ !AuthProtServerEphemeralSecrets(a) ]
-    --[ RevealedAuthProtServerExponent(a) ]->
-      [ Out(a) ]
+  /* Reveals the client's DH secret exponent. */
+  rule CompromiseAuthProtServerExponent [color=#FE4A49]:
+      [ !AuthProtServerEphemeralSecrets(s) ]
+    --[ CompromisedServerExponent(s) ]->
+      [ Out(s) ]
 
 
 /*****************************************************************/
 /* Post-revealing of secret information                          */
 /*****************************************************************/
 
-// TODO: post-revealing rules cause partial deconstructions/non-termination
-//
-//  /* 
-//   * Reveals the private key of the server after the protocol
-//   * has been run (at least once).
-//   */
-//  rule PostCompromiseRSAKey [color=#eb3434]:
-//      [
-//        !ClientEndsProtocol(nc, ns, nk, pk, b, g_a, authKey),
-//        !ServerEndsProtocol(nc, ns, nk, pk, a, g_b, authKey),
-//        !RSAServerKey($Server, sk, pk)
-//      ]
-//    --[ PostCompromisedRSAKey(sk) ]->
-//      [ Out(sk) ]
-//
-//  /*
-//   * Reveals the secret nonce generated by the client after the 
-//   * protocol has been run. 
-//   */
-//  rule PostCompromiseNonce [color=#eb3434]:
-//      [ 
-//        !AuthProtClientEphemeralSecrets(nk, b),
-//        !AuthKeyServer(fp, authKey),
-//        !AuthKeyClient($Server, authKey)
-//      ]
-//    --[ PostCompromisedNonce(nk) ]->
-//      [ Out(nk) ]
-//
-//  /* Reveals an authorization key after the protocol has been run. */
-//  rule PostCompromiseAuthKey [color=#eb3434]:
-//      [ 
-//        !AuthKeyServer(fp, authKey), 
-//        !AuthKeyClient($Server, authKey)
-//      ]
-//    --[ PostCompromisedAuthKey(authKey) ]->
-//      [ Out(authKey) ]
+  /* 
+   * Reveals the private key of the server AFTER a 
+   * successful protocol execution.
+   */
+  rule PostCompromisePrivateKey [color=#FE4A49]:
+      [
+        !ClientEndsProtocol(nc, ns, nk, shared_key, c),
+        !ServerEndsProtocol(nc, ns, nk, shared_key, skey, s),
+        !PrivateKey($Server, skey)
+      ]
+    --[ PostCompromisedPrivateKey(skey) ]->
+      [ Out(skey) ]
+
+  
+  /* 
+   * Reveals the secret nonce nk AFTER a 
+   * successful protocol execution.
+   */
+  rule PostCompromiseNonce [color=#FE4A49]:
+      [
+        !ClientEndsProtocol(nc, ns, nk, shared_key, c),
+        !ServerEndsProtocol(nc, ns, nk, shared_key, skey, s)
+      ]
+    --[ PostCompromisedNonce(nk) ]->
+      [ Out(nk) ]
+
+
+  /* 
+   * Reveals the secret exponent of the client 
+   * AFTER a successful protocol execution.
+   */
+  rule PostCompromiseClientExponent [color=#FE4A49]:
+      [
+        !ClientEndsProtocol(nc, ns, nk, shared_key, c),
+        !ServerEndsProtocol(nc, ns, nk, shared_key, skey, s)
+      ]
+    --[ PostCompromisedClientExponent(c) ]->
+      [ Out(c) ]
+
+
+  /* 
+   * Reveals the secret exponent of the server 
+   * AFTER a successful protocol execution.
+   */
+  rule PostCompromiseServerExponent [color=#FE4A49]:
+      [
+        !ClientEndsProtocol(nc, ns, nk, shared_key, c),
+        !ServerEndsProtocol(nc, ns, nk, shared_key, skey, s)
+      ]
+    --[ PostCompromisedServerExponent(s) ]->
+      [ Out(s) ]

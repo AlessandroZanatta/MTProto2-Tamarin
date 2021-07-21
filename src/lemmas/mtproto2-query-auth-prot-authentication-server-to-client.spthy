@@ -13,11 +13,17 @@
         ClientReceivesAck(nc, ns, nk, authKey) @i ∧
         
         /* and no secret was leaked */
-        ¬(∃ skey #r. RevealedRSAKey(skey) @r) ∧
-        ¬(∃ #r. RevealedNk(nk) @r) ∧
-        ¬(∃ b #r. RevealedAuthProtClientExponent(b) @r) ∧
-        ¬(∃ a #r. RevealedAuthProtServerExponent(a) @r) ∧
-        ¬(∃ b #r. RevealedAuthProtClientEphemeralSecrets(nk, b) @r)
+        ¬(∃ sk #r.   RegisteredSharedKey(sk) @r) ∧
+        ¬(∃ sk #r.   CompromisedSharedKey(sk) @r) ∧
+        ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
+        ¬(∃ n #r.    CompromisedNk(n) @r) ∧
+        ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
+        ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
+        ¬(∃ s #r.    CompromisedServerExponent(s) @r) ∧
+        ¬(∃ skey #r. PostCompromisedPrivateKey(skey) @r) ∧
+        ¬(∃ n #r.    PostCompromisedNonce(n) @r) ∧
+        ¬(∃ c #r.    PostCompromisedClientExponent(c) @r) ∧
+        ¬(∃ s #r.    PostCompromisedServerExponent(s) @r)
         ==>
         (
           /* 

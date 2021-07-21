@@ -1,4 +1,4 @@
 theory mtproto2
 
 begin
-  builtins: diffie-hellman
+  builtins: diffie-hellman, asymmetric-encryption
