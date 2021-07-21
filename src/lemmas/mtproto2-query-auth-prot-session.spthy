@@ -8,14 +8,14 @@
    */
   lemma LemmaAuthProtSession:
     "
-      ∀ nc1 nc2 ns1 ns2 nk1 nk2 shared_key #i #j.
-        ClientAcceptsAuthKey(nc1, ns1, nk1, shared_key) @i ∧
-        ServerAcceptsAuthKey(nc2, ns2, nk2, shared_key) @j
+      ∀ nc1 nc2 ns1 ns2 nk1 nk2 authKey #i #j.
+        ClientAcceptsAuthKey(nc1, ns1, nk1, authKey) @i ∧
+        ServerAcceptsAuthKey(nc2, ns2, nk2, authKey) @j
         ==>
         (
           (nc1 = nc2 ∧ ns1 = ns2 ∧ nk1 = nk2) ∨
-          // (∃ sk #r.   RegisteredSharedKey(sk) @r) ∨
-          (∃ #r.      CompromisedSharedKey(shared_key) @r) ∨
+          // (∃ sk #r.   RegisteredAuthKey(sk) @r) ∨
+          (∃ #r.      CompromisedAuthKey(authKey) @r) ∨
           (∃ skey #r. CompromisedPrivateKey(skey) @r) ∨
           (∃ #r.      CompromisedNk(nk1) @r) ∨
           (∃ #r.      CompromisedNk(nk2) @r) ∨

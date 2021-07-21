@@ -73,36 +73,36 @@
   lemma LemmaAuthClientEndsDHExchange:
     exists-trace
     "
-      ∃ nc ns nk g_s c shared_key #i.
-        ClientEndsDHExchange(nc, ns, nk, g_s, c, shared_key) @i
+      ∃ nc ns nk g_s c authKey #i.
+        ClientEndsDHExchange(nc, ns, nk, g_s, c, authKey) @i
     "
 
   lemma LemmaAuthClientAcceptsAuthKey:
     exists-trace
     "
-      ∃ nc ns nk shared_key #i.
-        ClientAcceptsAuthKey(nc, ns, nk, shared_key) @i
+      ∃ nc ns nk authKey #i.
+        ClientAcceptsAuthKey(nc, ns, nk, authKey) @i
     "
 
   lemma LemmaAuthServerEndsDHExchange:
     exists-trace
     "
-      ∃ nc ns nk g_c shared_key #i.
-        ServerEndsDHExchange(nc, ns, nk, g_c, shared_key) @i
+      ∃ nc ns nk g_c authKey #i.
+        ServerEndsDHExchange(nc, ns, nk, g_c, authKey) @i
     "
 
   lemma LemmaAuthServerAcceptsAuthKey:
     exists-trace
     "
-      ∃ nc ns nk shared_key #i.
-        ServerAcceptsAuthKey(nc, ns, nk, shared_key) @i
+      ∃ nc ns nk authKey #i.
+        ServerAcceptsAuthKey(nc, ns, nk, authKey) @i
     "
 
   lemma LemmaAuthServerSendsAck:
     exists-trace
     "
-      ∃ nc ns nk shared_key #i.
-        ServerSendsAck(nc, ns, nk, shared_key) @i
+      ∃ nc ns nk authKey #i.
+        ServerSendsAck(nc, ns, nk, authKey) @i
     "
   
   /*
@@ -115,22 +115,22 @@
   lemma LemmaAuthClientReceivesAck:
     exists-trace
     "
-      ∃ nc ns nk shared_key #i.
-        ClientReceivesAck(nc, ns, nk, shared_key) @i
+      ∃ nc ns nk authKey #i.
+        ClientReceivesAck(nc, ns, nk, authKey) @i
     "
   
-  lemma LemmaAuthRegisteredSharedKey:
+  lemma LemmaAuthRegisteredAuthKey:
     exists-trace
     "
-      ∃ shared_key #i.
-        RegisteredSharedKey(shared_key) @i
+      ∃ authKey #i.
+        RegisteredAuthKey(authKey) @i
     "
 
-  lemma LemmaAuthCompromisedSharedKey:
+  lemma LemmaAuthCompromisedAuthKey:
     exists-trace
     "
-      ∃ shared_key #i.
-        CompromisedSharedKey(shared_key) @i
+      ∃ authKey #i.
+        CompromisedAuthKey(authKey) @i
     "
 
   lemma LemmaAuthCompromisedPrivateKey:

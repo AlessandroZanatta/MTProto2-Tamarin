@@ -13,8 +13,8 @@
         ClientReceivesAck(nc, ns, nk, authKey) @i ∧
         
         /* and no secret was leaked */
-        ¬(∃ sk #r.   RegisteredSharedKey(sk) @r) ∧
-        ¬(∃ sk #r.   CompromisedSharedKey(sk) @r) ∧
+        ¬(∃ sk #r.   RegisteredAuthKey(sk) @r) ∧
+        ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
         ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
         ¬(∃ n #r.    CompromisedNk(n) @r) ∧
         ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧

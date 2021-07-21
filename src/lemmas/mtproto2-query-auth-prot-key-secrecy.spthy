@@ -9,15 +9,15 @@
   lemma LemmaAuthProtKeySecrecy:
     "
       /* Whenever client and server shared a key and the attacker knows it */
-      ∀ nc ns nk shared_key #i #j #k.
-        ClientAcceptsAuthKey(nc, ns, nk, shared_key) @i ∧
-        ServerAcceptsAuthKey(nc, nk, nk, shared_key) @j ∧
-        K(shared_key) @k
+      ∀ nc ns nk authKey #i #j #k.
+        ClientAcceptsAuthKey(nc, ns, nk, authKey) @i ∧
+        ServerAcceptsAuthKey(nc, nk, nk, authKey) @j ∧
+        K(authKey) @k
         ==>
         /* then some secrects were leaked */
         (
-          // (∃ sk #r.   RegisteredSharedKey(sk) @r) ∨
-          (∃ #r.      CompromisedSharedKey(shared_key) @r) ∨
+          // (∃ sk #r.   RegisteredAuthKey(sk) @r) ∨
+          (∃ #r.      CompromisedAuthKey(authKey) @r) ∨
           (∃ skey #r. CompromisedPrivateKey(skey) @r) ∨
           (∃ #r.      CompromisedNk(nk) @r) ∨
           (∃ c #r.    CompromisedClientExponent(c) @r) ∨

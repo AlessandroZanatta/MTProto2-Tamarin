@@ -115,13 +115,13 @@
       ]
     --[
         /*
-         * Client X has obtained public key spkey corresponding
+         * Client has obtained public key pkey corresponding
          * to the key fingerprint sent by server.
          */
         ClientGetsServerPublicKey(pkey),
 
         /*
-         * Client X requests DH parameters to server by 
+         * Client requests DH parameters to server by 
          * sending a secret nonce nk in the session identified 
          * by <nc, ns>.
          */
@@ -132,7 +132,7 @@
         Out(<~nc, ns, aenc(<~nc, ns, ~nk>, pkey)>)
       ]
 
-  /* 4. S -> C: Nc, Ns, senc(Nc, Ns, Shalfkey){<Ns, Nk>} */
+  /* 4. S -> C: Nc, Ns, senc(Nc, Ns, halfkey){key, iv} */
   rule Server_4 [color=#0088CC]:
     let
       half = 'g' ^ ~s
@@ -152,7 +152,7 @@
         ServerAcceptsClient(nc, ns, nk),
 
         /*
-         * Server sends DH parameter 'g' and its half-key g_a
+         * Server sends DH parameter 'g' and its half-key
          * to a client who has started session <nc, ns> and sent
          * secret nonce nk.
          */
@@ -163,14 +163,14 @@
         Out(<nc, ns, senc(<'StoC', nc, ns, half>, key, iv)>)
       ]
 
-  /* 5. C -> S: Nc, Ns, senc(Nc, Ns, Chalfkey){<Ns, Nk>} */
+  /* 5. C -> S: Nc, Ns, senc(Nc, Ns, halfkey){key, iv} */
   rule Client_5 [color=#E2C290]:
     let
       g_s        = 'g' ^ ~s
       key  = genKey(ns, ~nk)
       iv   = genIV(ns, ~nk)
       half       = 'g' ^ ~c
-      shared_key = g_s ^ ~c
+      authKey = g_s ^ ~c
     in
       [
         ClientState_3(~nc, ns, ~nk, pkey, ~c),
@@ -178,14 +178,14 @@
       ]
     --[
         /*
-         * Client X has received DH paramters and the server's
+         * Client has received DH paramters and the server's
          * half key g_s from server in the session identified by <nc, ns>
          * for which the client has generated secret nonce nk.
          */
         ClientReceivesDHParameters(~nc, ns, ~nk, g_s),
 
         /*
-         * Client X has accepted the DH parameter received 
+         * Client has accepted the DH parameter received 
          * from server in session <nc, ns> for which the client has
          * generated secret nonce nk and received the server's half
          * key g_s.
@@ -193,33 +193,32 @@
         ClientAcceptsDHParameters(~nc, ns, ~nk, g_s),
 
         /*
-         * Client X completes the DH exchange with server in session 
-         * <nc, ns> for which X has generate the secret nonce nk and has 
-         * received DH parameters <p, g> and half key g_s by computing
-         * the authorization key authKey and by sending its half key
-         * g_b to the server.
+         * Client completes the DH exchange with server in session 
+         * <nc, ns> for which the client has generate the secret nonce 
+         * nk and has received DH parameters <p, g> and half key g_s by 
+         * computing the authorization key authKey and by sending its 
+         * half key g_c to the server.
          */
-        ClientEndsDHExchange(~nc, ns, ~nk, g_s, ~c, shared_key),
+        ClientEndsDHExchange(~nc, ns, ~nk, g_s, ~c, authKey),
 
         /*
-         * Client X has negotiated the authorization key authKey with
+         * Client has negotiated the authorization key authKey with
          * server in session <nc, ns>.
          */
-        ClientAcceptsAuthKey(~nc, ns, ~nk, shared_key)]->
+        ClientAcceptsAuthKey(~nc, ns, ~nk, authKey)]->
       [
-        ClientState_5(~nc, ns, ~nk, pkey, g_s, ~c, shared_key),
-        Out(<~nc, ns, senc(<'CtoS', ~nc, ns, half>, key, iv)>),
-        !AuthKeyClient($Server, shared_key)
+        ClientState_5(~nc, ns, ~nk, pkey, g_s, ~c, authKey),
+        Out(<~nc, ns, senc(<'CtoS', ~nc, ns, half>, key, iv)>)
       ]
 
 
-  /* 6. S -> C: Nc, Ns, fpk(Nk, shared_key) */
+  /* 6. S -> C: Nc, Ns, hashNk(Nk, authKey) */
   rule Server_6 [color=#0088CC]:
     let
       g_c        = 'g' ^ ~c
       key  = genKey(ns, nk)
       iv   = genIV(ns, nk)
-      shared_key = g_c ^ ~s
+      authKey = g_c ^ ~s
     in
       [ 
         ServerState_4(nc, ns, nk, skey, ~s), 
@@ -227,45 +226,47 @@
       ]
     --[ 
         /*
-         * Server completes the DH exchange with parameters <p, g>
-         * in session <nc, ns> for which a client has generated
-         * the secret nonce nk and the half key g_b by computing
-         * the authorization key authKey.
+         * Server completes the DH exchange in session <nc, ns> 
+         * for which a client has generated the secret nonce nk 
+         * and the half key g_c by computing the authorization key authKey.
          */
-        ServerEndsDHExchange(nc, ns, nk, g_c, shared_key),
+        ServerEndsDHExchange(nc, ns, nk, g_c, authKey),
 
         /*
          * Server has negotiated the authorization key authKey with a 
          * client in session <nc, ns>.
          */
-        ServerAcceptsAuthKey(nc, ns, nk, shared_key),
+        ServerAcceptsAuthKey(nc, ns, nk, authKey),
       
         /*
          * Server sends an acknowledgment to a client in session 
          * <nc, ns> for which the client has generated secret nonce nk.
          */
-        ServerSendsAck(nc, ns, nk, shared_key)
+        ServerSendsAck(nc, ns, nk, authKey)
       ]->
       [ 
-        !AuthKeyServer(keyID(shared_key), shared_key), 
-        Out(<nc, ns, hashNk(nk, shared_key)>),
-        !ServerEndsProtocol(nc, ns, nk, shared_key, skey, ~s) 
+        !AuthKeyServer(keyID(authKey), authKey), 
+        Out(<nc, ns, hashNk(nk, authKey)>),
+        !ServerEndsProtocol(nc, ns, nk, authKey, skey, ~s) 
       ]
   
 
   rule Client_7 [color=#E2C290]:
       [ 
-        ClientState_5(~nc, ns, ~nk, pkey, g_s, ~c, shared_key),
-        In(<~nc, ns, hashNk(~nk, shared_key)>)
+        ClientState_5(~nc, ns, ~nk, pkey, g_s, ~c, authKey),
+        In(<~nc, ns, hashNk(~nk, authKey)>)
       ]
     --[ 
         /*
          * Client X has received an acknowledgment from the server for
          * the authorization key negotiated in session <nc, ns>.
          */
-        ClientReceivesAck(~nc, ns, ~nk, shared_key)
+        ClientReceivesAck(~nc, ns, ~nk, authKey)
       ]->
-      [ !ClientEndsProtocol(~nc, ns, ~nk, shared_key, ~c) ]
+      [ 
+        !AuthKeyClient($Server, authKey),
+        !ClientEndsProtocol(~nc, ns, ~nk, authKey, ~c)
+      ]
   
 
 /*****************************************************************/
@@ -305,22 +306,22 @@
    * secret exponents. This is needed to restrict the range of 
    * possible "values" the shared key may assume.
    */
-  rule RegisterSharedKey [color=#FE4A49]:
+  rule RegisterAuthKey [color=#FE4A49]:
     let
-      shared_key = 'g' ^ ~c ^ ~s
+      authKey = 'g' ^ ~c ^ ~s
     in
       [ In(<~c, ~s>) ]
-    --[ RegisteredSharedKey(shared_key) ]->
-      [ !AuthKeyServer(keyID(shared_key), shared_key) ]
+    --[ RegisteredAuthKey(authKey) ]->
+      [ !AuthKeyServer(keyID(authKey), authKey) ]
 
   /* Compromise shared key. */
-  rule CompromiseSharedKey [color=#FE4A49]:
+  rule CompromiseAuthKey [color=#FE4A49]:
       [ 
-        !AuthKeyClient($Server, shared_key),
-        !AuthKeyServer(keyID(shared_key), shared_key)
+        !AuthKeyClient($Server, authKey),
+        !AuthKeyServer(keyID(authKey), authKey)
       ]
-    --[ CompromisedSharedKey(shared_key) ]->
-      [ Out(shared_key) ]
+    --[ CompromisedAuthKey(authKey) ]->
+      [ Out(authKey) ]
 
   /* Reveals long-term secret of the server. */
   rule CompromisePrivateKey [color=#FE4A49]:
@@ -363,8 +364,8 @@
    */
   rule PostCompromisePrivateKey [color=#FE4A49]:
       [
-        !ClientEndsProtocol(nc, ns, nk, shared_key, c),
-        !ServerEndsProtocol(nc, ns, nk, shared_key, skey, s),
+        !ClientEndsProtocol(nc, ns, nk, authKey, c),
+        !ServerEndsProtocol(nc, ns, nk, authKey, skey, s),
         !PrivateKey($Server, skey)
       ]
     --[ PostCompromisedPrivateKey(skey) ]->
@@ -377,8 +378,8 @@
    */
   rule PostCompromiseNonce [color=#FE4A49]:
       [
-        !ClientEndsProtocol(nc, ns, nk, shared_key, c),
-        !ServerEndsProtocol(nc, ns, nk, shared_key, skey, s)
+        !ClientEndsProtocol(nc, ns, nk, authKey, c),
+        !ServerEndsProtocol(nc, ns, nk, authKey, skey, s)
       ]
     --[ PostCompromisedNonce(nk) ]->
       [ Out(nk) ]
@@ -390,8 +391,8 @@
    */
   rule PostCompromiseClientExponent [color=#FE4A49]:
       [
-        !ClientEndsProtocol(nc, ns, nk, shared_key, c),
-        !ServerEndsProtocol(nc, ns, nk, shared_key, skey, s)
+        !ClientEndsProtocol(nc, ns, nk, authKey, c),
+        !ServerEndsProtocol(nc, ns, nk, authKey, skey, s)
       ]
     --[ PostCompromisedClientExponent(c) ]->
       [ Out(c) ]
@@ -403,8 +404,8 @@
    */
   rule PostCompromiseServerExponent [color=#FE4A49]:
       [
-        !ClientEndsProtocol(nc, ns, nk, shared_key, c),
-        !ServerEndsProtocol(nc, ns, nk, shared_key, skey, s)
+        !ClientEndsProtocol(nc, ns, nk, authKey, c),
+        !ServerEndsProtocol(nc, ns, nk, authKey, skey, s)
       ]
     --[ PostCompromisedServerExponent(s) ]->
       [ Out(s) ]

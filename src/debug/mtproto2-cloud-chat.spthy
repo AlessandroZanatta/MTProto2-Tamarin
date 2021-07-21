@@ -1,6 +1,6 @@
 
 
-  rule DEBUG_CreateSharedKey:
+  rule DEBUG_CreateAuthKey:
     let
       authKey = 'g' ^ ~a ^ ~b
     in

@@ -18,8 +18,8 @@
         "LemmaAuthServerAcceptsAuthKey",
         "LemmaAuthServerSendsAck",
         
-        "LemmaAuthRegisteredSharedKey",
-        "LemmaAuthCompromisedSharedKey",
+        "LemmaAuthRegisteredAuthKey",
+        "LemmaAuthCompromisedAuthKey",
         "LemmaAuthCompromisedPrivateKey",
         "LemmaAuthCompromisedNk",
         "LemmaAuthCompromisedClientEphemeralSecrets",

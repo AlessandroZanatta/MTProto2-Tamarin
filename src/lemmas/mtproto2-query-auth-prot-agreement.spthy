@@ -13,14 +13,14 @@
   lemma LemmaAuthProtAgreement:
     "
       /* Whenever a client and a server negotiate an authorization key */
-      ∀ nc ns nk shared_key1 shared_key2 #i #j.
+      ∀ nc ns nk authKey1 authKey2 #i #j.
         (
-          ServerAcceptsAuthKey(nc, ns, nk, shared_key1) @i ∧
-          ClientAcceptsAuthKey(nc, ns, nk, shared_key2) @j ∧
+          ServerAcceptsAuthKey(nc, ns, nk, authKey1) @i ∧
+          ClientAcceptsAuthKey(nc, ns, nk, authKey2) @j ∧
 
           /* and no secret was leaked */
-          ¬(∃ sk #r.   RegisteredSharedKey(sk) @r) ∧
-          ¬(∃ sk #r.   CompromisedSharedKey(sk) @r) ∧
+          ¬(∃ sk #r.   RegisteredAuthKey(sk) @r) ∧
+          ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
           ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
           ¬(∃ n #r.    CompromisedNk(n) @r) ∧
           ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
@@ -34,7 +34,7 @@
         ==>
         (
           /* then the authorization key is the same */
-          ( shared_key1 = shared_key2 ) ∨
+          ( authKey1 = authKey2 ) ∨
           
           /* 
            * or the server is actually running two different instances

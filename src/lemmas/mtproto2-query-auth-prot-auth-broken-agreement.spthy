@@ -12,17 +12,17 @@
   lemma LemmaAuthProtBrokenAgreement_1:
     "
 
-      ∀ nc ns nk1 nk2 shared_key1 shared_key2 #i #j.
+      ∀ nc ns nk1 nk2 authKey1 authKey2 #i #j.
         /* 
          * Whenever a client and a server have accepted an authKey 
          * in session <nc, ns>
          */
-        ServerAcceptsAuthKey(nc, ns, nk1, shared_key1) @i ∧
-        ClientAcceptsAuthKey(nc, ns, nk2, shared_key2) @j ∧
+        ServerAcceptsAuthKey(nc, ns, nk1, authKey1) @i ∧
+        ClientAcceptsAuthKey(nc, ns, nk2, authKey2) @j ∧
         
         /* and no secret was leaked but the secret key of the server */
-          ¬(∃ sk #r.   RegisteredSharedKey(sk) @r) ∧
-          ¬(∃ sk #r.   CompromisedSharedKey(sk) @r) ∧
+          ¬(∃ sk #r.   RegisteredAuthKey(sk) @r) ∧
+          ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
           // ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
           ¬(∃ n #r.    CompromisedNk(n) @r) ∧
           ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
@@ -35,7 +35,7 @@
         ==>
         (
           /* then client and server have computed the same authKey */
-          (shared_key1 = shared_key2) ∨
+          (authKey1 = authKey2) ∨
          
           /* or the server re-used the server nonce */
           (
@@ -60,17 +60,17 @@
   lemma LemmaAuthProtBrokenAgreement_2:
     "
 
-      ∀ nc ns nk1 nk2 shared_key1 shared_key2 #i #j.
+      ∀ nc ns nk1 nk2 authKey1 authKey2 #i #j.
         /* 
          * Whenever a client and a server have accepted an authKey 
          * in session <nc, ns>
          */
-        ServerAcceptsAuthKey(nc, ns, nk1, shared_key1) @i ∧
-        ClientAcceptsAuthKey(nc, ns, nk2, shared_key2) @j ∧
+        ServerAcceptsAuthKey(nc, ns, nk1, authKey1) @i ∧
+        ClientAcceptsAuthKey(nc, ns, nk2, authKey2) @j ∧
         
         /* and no secret was leaked but the secret nonce of the client */
-          ¬(∃ sk #r.   RegisteredSharedKey(sk) @r) ∧
-          ¬(∃ sk #r.   CompromisedSharedKey(sk) @r) ∧
+          ¬(∃ sk #r.   RegisteredAuthKey(sk) @r) ∧
+          ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
           ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
           // ¬(∃ n #r.    CompromisedNk(n) @r) ∧
           ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
@@ -83,7 +83,7 @@
         ==>
         (
           /* then client and server have computed the same authKey */
-          (shared_key1 = shared_key2) ∨
+          (authKey1 = authKey2) ∨
          
           /* or the server re-used the server nonce */
           (
@@ -109,17 +109,17 @@
    */
   lemma LemmaAuthProtBrokenAgreement_3:
     "
-      ∀ nc ns nk1 nk2 shared_key1 shared_key2 #i #j.
+      ∀ nc ns nk1 nk2 authKey1 authKey2 #i #j.
         /* 
          * Whenever a client and a server have accepted an authKey 
          * in session <nc, ns>
          */
-        ServerAcceptsAuthKey(nc, ns, nk1, shared_key1) @i ∧
-        ClientAcceptsAuthKey(nc, ns, nk2, shared_key2) @j ∧
+        ServerAcceptsAuthKey(nc, ns, nk1, authKey1) @i ∧
+        ClientAcceptsAuthKey(nc, ns, nk2, authKey2) @j ∧
         
         /* and no secret was leaked but the secret DH exponents */
-          ¬(∃ sk #r.   RegisteredSharedKey(sk) @r) ∧
-          ¬(∃ sk #r.   CompromisedSharedKey(sk) @r) ∧
+          ¬(∃ sk #r.   RegisteredAuthKey(sk) @r) ∧
+          ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
           ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
           ¬(∃ n #r.    CompromisedNk(n) @r) ∧
           // ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
@@ -134,7 +134,7 @@
           /* 
            * then client and server have computed the same authKey
            */
-          (shared_key1 = shared_key2) ∨
+          (authKey1 = authKey2) ∨
          
           /* or the server re-used the server nonce. */
           (
