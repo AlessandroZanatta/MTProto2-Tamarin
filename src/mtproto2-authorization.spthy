@@ -298,22 +298,6 @@
 /* Revealing of secret information                               */
 /*****************************************************************/
 
-  /* 
-   * Allows the attacker to register an authorization key for 
-   * itself with a server. 
-   *
-   * Note that the attacker is required to provide two fresh DH 
-   * secret exponents. This is needed to restrict the range of 
-   * possible "values" the shared key may assume.
-   */
-  rule RegisterAuthKey [color=#FE4A49]:
-    let
-      authKey = 'g' ^ ~c ^ ~s
-    in
-      [ In(<~c, ~s>) ]
-    --[ RegisteredAuthKey(authKey) ]->
-      [ !AuthKeyServer(keyID(authKey), authKey) ]
-
   /* Compromise shared key. */
   rule CompromiseAuthKey [color=#FE4A49]:
       [ 
@@ -357,55 +341,56 @@
 /*****************************************************************/
 /* Post-revealing of secret information                          */
 /*****************************************************************/
-
-  /* 
-   * Reveals the private key of the server AFTER a 
-   * successful protocol execution.
-   */
-  rule PostCompromisePrivateKey [color=#FE4A49]:
-      [
-        !ClientEndsProtocol(nc, ns, nk, authKey, c),
-        !ServerEndsProtocol(nc, ns, nk, authKey, skey, s),
-        !PrivateKey($Server, skey)
-      ]
-    --[ PostCompromisedPrivateKey(skey) ]->
-      [ Out(skey) ]
-
-  
-  /* 
-   * Reveals the secret nonce nk AFTER a 
-   * successful protocol execution.
-   */
-  rule PostCompromiseNonce [color=#FE4A49]:
-      [
-        !ClientEndsProtocol(nc, ns, nk, authKey, c),
-        !ServerEndsProtocol(nc, ns, nk, authKey, skey, s)
-      ]
-    --[ PostCompromisedNonce(nk) ]->
-      [ Out(nk) ]
-
-
-  /* 
-   * Reveals the secret exponent of the client 
-   * AFTER a successful protocol execution.
-   */
-  rule PostCompromiseClientExponent [color=#FE4A49]:
-      [
-        !ClientEndsProtocol(nc, ns, nk, authKey, c),
-        !ServerEndsProtocol(nc, ns, nk, authKey, skey, s)
-      ]
-    --[ PostCompromisedClientExponent(c) ]->
-      [ Out(c) ]
-
-
-  /* 
-   * Reveals the secret exponent of the server 
-   * AFTER a successful protocol execution.
-   */
-  rule PostCompromiseServerExponent [color=#FE4A49]:
-      [
-        !ClientEndsProtocol(nc, ns, nk, authKey, c),
-        !ServerEndsProtocol(nc, ns, nk, authKey, skey, s)
-      ]
-    --[ PostCompromisedServerExponent(s) ]->
-      [ Out(s) ]
+//
+//  /* 
+//   * Reveals the private key of the server AFTER a 
+//   * successful protocol execution.
+//   */
+//  rule PostCompromisePrivateKey [color=#FE4A49]:
+//      [
+//        !ClientEndsProtocol(nc, ns, nk, authKey, c),
+//        !ServerEndsProtocol(nc, ns, nk, authKey, skey, s),
+//        !PrivateKey($Server, skey)
+//      ]
+//    --[ PostCompromisedPrivateKey(skey) ]->
+//      [ Out(skey) ]
+//
+//  
+//  /* 
+//   * Reveals the secret nonce nk AFTER a 
+//   * successful protocol execution.
+//   */
+//  rule PostCompromiseNonce [color=#FE4A49]:
+//      [
+//        !ClientEndsProtocol(nc, ns, nk, authKey, c),
+//        !ServerEndsProtocol(nc, ns, nk, authKey, skey, s)
+//      ]
+//    --[ PostCompromisedNonce(nk) ]->
+//      [ Out(nk) ]
+//
+//
+//  /* 
+//   * Reveals the secret exponent of the client 
+//   * AFTER a successful protocol execution.
+//   */
+//  rule PostCompromiseClientExponent [color=#FE4A49]:
+//      [
+//        !ClientEndsProtocol(nc, ns, nk, authKey, c),
+//        !ServerEndsProtocol(nc, ns, nk, authKey, skey, s)
+//      ]
+//    --[ PostCompromisedClientExponent(c) ]->
+//      [ Out(c) ]
+//
+//
+//  /* 
+//   * Reveals the secret exponent of the server 
+//   * AFTER a successful protocol execution.
+//   */
+//  rule PostCompromiseServerExponent [color=#FE4A49]:
+//      [
+//        !ClientEndsProtocol(nc, ns, nk, authKey, c),
+//        !ServerEndsProtocol(nc, ns, nk, authKey, skey, s)
+//      ]
+//    --[ PostCompromisedServerExponent(s) ]->
+//      [ Out(s) ]
+//

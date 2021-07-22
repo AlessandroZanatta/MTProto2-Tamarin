@@ -1,129 +1,218 @@
   
-  /* Expected result: True */
+/*
+ * Negation of the existence of attacks is used to drastically increase
+ * the speed at which reachability lemmas are proved (10 times faster or more,
+ * for certain lemmas).
+ * Adding restrictions on the capabilities to lemmas using this 
+ * fact should prove beneficial time-wise.
+ */
+
   lemma LemmaAuthClientStartsSession:
     exists-trace
     "
       ∃ nc #i.
-        ClientStartsSession(nc) @i
+        ClientStartsSession(nc) @i ∧
+        ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
+        ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
+        ¬(∃ n #r.    CompromisedNk(n) @r) ∧
+        ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
+        ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
+        ¬(∃ s #r.    CompromisedServerExponent(s) @r)
     "
 
   lemma LemmaAuthServerReceivesRequest:
     exists-trace
     "
       ∃ nc #i.
-        ServerReceivesRequest(nc) @i
+        ServerReceivesRequest(nc) @i ∧
+        ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
+        ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
+        ¬(∃ n #r.    CompromisedNk(n) @r) ∧
+        ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
+        ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
+        ¬(∃ s #r.    CompromisedServerExponent(s) @r)
     " 
   
   lemma LemmaAuthServerGeneratesNonceIsRandom:
     exists-trace
     "
       ∃ ns #i.
-        ServerGeneratesNonce(ns) @i ∧ ¬(ns = 'FIXED_NS')
+        ServerGeneratesNonce(ns) @i ∧ ¬(ns = 'FIXED_NS') ∧
+        ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
+        ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
+        ¬(∃ n #r.    CompromisedNk(n) @r) ∧
+        ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
+        ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
+        ¬(∃ s #r.    CompromisedServerExponent(s) @r)
     "
 
   lemma LemmaAuthServerGeneratesNonceIsFixed:
     exists-trace
     "
       ∃ ns #i.
-        ServerGeneratesNonce(ns) @i ∧ (ns = 'FIXED_NS')
+        ServerGeneratesNonce(ns) @i ∧ (ns = 'FIXED_NS') ∧
+        ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
+        ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
+        ¬(∃ n #r.    CompromisedNk(n) @r) ∧
+        ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
+        ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
+        ¬(∃ s #r.    CompromisedServerExponent(s) @r)
     "
 
   lemma LemmaAuthClientGetsServerPublicKey:
     exists-trace
     "
       ∃ pkey #i.
-        ClientGetsServerPublicKey(pkey) @i
+        ClientGetsServerPublicKey(pkey) @i ∧
+        ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
+        ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
+        ¬(∃ n #r.    CompromisedNk(n) @r) ∧
+        ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
+        ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
+        ¬(∃ s #r.    CompromisedServerExponent(s) @r)
     " 
 
   lemma LemmaAuthClientRequestsDHParameters:
     exists-trace
     "
       ∃ nc ns nk #i.
-        ClientRequestsDHParameters(nc, ns, nk) @i
+        ClientRequestsDHParameters(nc, ns, nk) @i ∧
+        ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
+        ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
+        ¬(∃ n #r.    CompromisedNk(n) @r) ∧
+        ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
+        ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
+        ¬(∃ s #r.    CompromisedServerExponent(s) @r)
     "
 
   lemma LemmaAuthServerAcceptsClient:
     exists-trace
     "
       ∃ nc ns nk #i.
-        ServerAcceptsClient(nc, ns, nk) @i
+        ServerAcceptsClient(nc, ns, nk) @i ∧
+        ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
+        ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
+        ¬(∃ n #r.    CompromisedNk(n) @r) ∧
+        ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
+        ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
+        ¬(∃ s #r.    CompromisedServerExponent(s) @r)
     "
 
   lemma LemmaAuthServerSendsDHParameters:
     exists-trace
     "
       ∃ nc ns nk half #i.
-        ServerSendsDHParameters(nc, ns, nk, half) @i
+        ServerSendsDHParameters(nc, ns, nk, half) @i ∧
+        ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
+        ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
+        ¬(∃ n #r.    CompromisedNk(n) @r) ∧
+        ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
+        ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
+        ¬(∃ s #r.    CompromisedServerExponent(s) @r)
     "
 
   lemma LemmaAuthClientReceivesDHParameters:
     exists-trace
     "
       ∃ nc ns nk half #i.
-        ClientReceivesDHParameters(nc, ns, nk, half) @i
+        ClientReceivesDHParameters(nc, ns, nk, half) @i ∧
+        ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
+        ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
+        ¬(∃ n #r.    CompromisedNk(n) @r) ∧
+        ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
+        ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
+        ¬(∃ s #r.    CompromisedServerExponent(s) @r)
     "
 
   lemma LemmaAuthClientAcceptsDHParameters:
     exists-trace
     "
       ∃ nc ns nk half #i.
-        ClientAcceptsDHParameters(nc, ns, nk, half) @i
+        ClientAcceptsDHParameters(nc, ns, nk, half) @i ∧
+        ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
+        ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
+        ¬(∃ n #r.    CompromisedNk(n) @r) ∧
+        ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
+        ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
+        ¬(∃ s #r.    CompromisedServerExponent(s) @r)
     "
 
   lemma LemmaAuthClientEndsDHExchange:
     exists-trace
     "
       ∃ nc ns nk g_s c authKey #i.
-        ClientEndsDHExchange(nc, ns, nk, g_s, c, authKey) @i
+        ClientEndsDHExchange(nc, ns, nk, g_s, c, authKey) @i ∧
+        ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
+        ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
+        ¬(∃ n #r.    CompromisedNk(n) @r) ∧
+        ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
+        ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
+        ¬(∃ s #r.    CompromisedServerExponent(s) @r)
     "
 
   lemma LemmaAuthClientAcceptsAuthKey:
     exists-trace
     "
       ∃ nc ns nk authKey #i.
-        ClientAcceptsAuthKey(nc, ns, nk, authKey) @i
+        ClientAcceptsAuthKey(nc, ns, nk, authKey) @i ∧
+        ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
+        ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
+        ¬(∃ n #r.    CompromisedNk(n) @r) ∧
+        ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
+        ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
+        ¬(∃ s #r.    CompromisedServerExponent(s) @r)
     "
 
   lemma LemmaAuthServerEndsDHExchange:
     exists-trace
     "
       ∃ nc ns nk g_c authKey #i.
-        ServerEndsDHExchange(nc, ns, nk, g_c, authKey) @i
+        ServerEndsDHExchange(nc, ns, nk, g_c, authKey) @i ∧
+        ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
+        ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
+        ¬(∃ n #r.    CompromisedNk(n) @r) ∧
+        ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
+        ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
+        ¬(∃ s #r.    CompromisedServerExponent(s) @r)
     "
 
   lemma LemmaAuthServerAcceptsAuthKey:
     exists-trace
     "
       ∃ nc ns nk authKey #i.
-        ServerAcceptsAuthKey(nc, ns, nk, authKey) @i
+        ServerAcceptsAuthKey(nc, ns, nk, authKey) @i ∧
+        ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
+        ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
+        ¬(∃ n #r.    CompromisedNk(n) @r) ∧
+        ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
+        ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
+        ¬(∃ s #r.    CompromisedServerExponent(s) @r)
     "
 
   lemma LemmaAuthServerSendsAck:
     exists-trace
     "
       ∃ nc ns nk authKey #i.
-        ServerSendsAck(nc, ns, nk, authKey) @i
+        ServerSendsAck(nc, ns, nk, authKey) @i ∧
+        ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
+        ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
+        ¬(∃ n #r.    CompromisedNk(n) @r) ∧
+        ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
+        ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
+        ¬(∃ s #r.    CompromisedServerExponent(s) @r)
     "
-  
-  /*
-   * This lemma takes more time to prove the more capabilities
-   * the attacker is given (and is free to use).
-   *
-   * Adding restrictions on the capabilities to lemmas using this 
-   * fact should prove beneficial time-wise.
-   */
+
   lemma LemmaAuthClientReceivesAck:
     exists-trace
     "
       ∃ nc ns nk authKey #i.
-        ClientReceivesAck(nc, ns, nk, authKey) @i
-    "
-  
-  lemma LemmaAuthRegisteredAuthKey:
-    exists-trace
-    "
-      ∃ authKey #i.
-        RegisteredAuthKey(authKey) @i
+        ClientReceivesAck(nc, ns, nk, authKey) @i ∧
+        ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
+        ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
+        ¬(∃ n #r.    CompromisedNk(n) @r) ∧
+        ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
+        ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
+        ¬(∃ s #r.    CompromisedServerExponent(s) @r)
     "
 
   lemma LemmaAuthCompromisedAuthKey:
@@ -171,33 +260,33 @@
     "
   
 
-  lemma LemmaAuthPostCompromisedPrivateKey:
-    exists-trace
-    "
-      ∃ skey #i.
-        PostCompromisedPrivateKey(skey) @i
-    "
-
-
-
-  lemma LemmaAuthPostCompromisedNonce:
-    exists-trace
-    "
-      ∃ nk #i.
-        PostCompromisedNonce(nk) @i
-    "
-
-  
-  lemma LemmaAuthPostCompromisedClientExponent:
-    exists-trace
-    "
-      ∃ c #i.
-        PostCompromisedClientExponent(c) @i
-    "
-  
-  lemma LemmaAuthPostCompromisedServerExponent:
-    exists-trace
-    "
-      ∃ s #i.
-        PostCompromisedServerExponent(s) @i
-    "
+//  lemma LemmaAuthPostCompromisedPrivateKey:
+//    exists-trace
+//    "
+//      ∃ skey #i.
+//        PostCompromisedPrivateKey(skey) @i
+//    "
+//
+//
+//
+//  lemma LemmaAuthPostCompromisedNonce:
+//    exists-trace
+//    "
+//      ∃ nk #i.
+//        PostCompromisedNonce(nk) @i
+//    "
+//
+//  
+//  lemma LemmaAuthPostCompromisedClientExponent:
+//    exists-trace
+//    "
+//      ∃ c #i.
+//        PostCompromisedClientExponent(c) @i
+//    "
+//  
+//  lemma LemmaAuthPostCompromisedServerExponent:
+//    exists-trace
+//    "
+//      ∃ s #i.
+//        PostCompromisedServerExponent(s) @i
+//    "

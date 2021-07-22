@@ -17,17 +17,12 @@
         ServerSendsAck(nc, ns, nk, authKey) @j ∧
 
         /* and no secret was leaked */          
-        ¬(∃ sk #r.   RegisteredAuthKey(sk) @r) ∧
         ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
         ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
         ¬(∃ n #r.    CompromisedNk(n) @r) ∧
         ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
         ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
-        ¬(∃ s #r.    CompromisedServerExponent(s) @r) ∧
-        ¬(∃ skey #r. PostCompromisedPrivateKey(skey) @r) ∧
-        ¬(∃ n #r.    PostCompromisedNonce(n) @r) ∧
-        ¬(∃ c #r.    PostCompromisedClientExponent(c) @r) ∧
-        ¬(∃ s #r.    PostCompromisedServerExponent(s) @r)
+        ¬(∃ s #r.    CompromisedServerExponent(s) @r)
         ==>
         (
           /* then a client has shared an authKey with the server */
@@ -67,17 +62,12 @@
         ServerSendsAck(nc, ns, nk, authKey) @j ∧
         
         /* and no secret was leaked */
-        ¬(∃ sk #r.   RegisteredAuthKey(sk) @r) ∧
         ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
         ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
         ¬(∃ n #r.    CompromisedNk(n) @r) ∧
         ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
         ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
-        ¬(∃ s #r.    CompromisedServerExponent(s) @r) ∧
-        ¬(∃ skey #r. PostCompromisedPrivateKey(skey) @r) ∧
-        ¬(∃ n #r.    PostCompromisedNonce(n) @r) ∧
-        ¬(∃ c #r.    PostCompromisedClientExponent(c) @r) ∧
-        ¬(∃ s #r.    PostCompromisedServerExponent(s) @r)
+        ¬(∃ s #r.    CompromisedServerExponent(s) @r)
         ==>
         (
           /* then the client has succesfully shared a key with the server */

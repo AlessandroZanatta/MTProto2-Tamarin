@@ -1,16 +1,34 @@
 
+/*
+ * Negation of the existence of attacks is used to drastically increase
+ * the speed at which reachability lemmas are proved (10 times faster or more,
+ * for certain lemmas).
+ */
+
   lemma LemmaCloudChatClientSendsCloudMessage:
     exists-trace
       "
         ∃ sid m authKey #i.
-          ClientSendsCloudMessage(sid, m, authKey) @i
+          ClientSendsCloudMessage(sid, m, authKey) @i ∧
+          ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
+          ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
+          ¬(∃ n #r.    CompromisedNk(n) @r) ∧
+          ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
+          ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
+          ¬(∃ s #r.    CompromisedServerExponent(s) @r)
       "
 
   lemma LemmaCloudChatClientReceivesCloudMessage:
     exists-trace
       "
         ∃ sid m authKey #i.
-          ClientReceivesCloudMessage(sid, m, authKey) @i
+          ClientReceivesCloudMessage(sid, m, authKey) @i ∧
+          ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
+          ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
+          ¬(∃ n #r.    CompromisedNk(n) @r) ∧
+          ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
+          ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
+          ¬(∃ s #r.    CompromisedServerExponent(s) @r)
       "
 
 //  lemma LemmaCloudChatClientSendsCloudMessageAfterCompromisedNonce:
@@ -24,14 +42,26 @@
     exists-trace
       "
         ∃ sid m authKey #i.
-          ServerReceivesCloudMessage(sid, m, authKey) @i
+          ServerReceivesCloudMessage(sid, m, authKey) @i ∧
+          ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
+          ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
+          ¬(∃ n #r.    CompromisedNk(n) @r) ∧
+          ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
+          ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
+          ¬(∃ s #r.    CompromisedServerExponent(s) @r)
       "
 
   lemma LemmaCloudChatServerSendsCloudMessage:
     exists-trace
       "
         ∃ sid m authKey #i.
-          ServerSendsCloudMessage(sid, m, authKey) @i
+          ServerSendsCloudMessage(sid, m, authKey) @i ∧
+          ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
+          ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
+          ¬(∃ n #r.    CompromisedNk(n) @r) ∧
+          ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
+          ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
+          ¬(∃ s #r.    CompromisedServerExponent(s) @r)
       "
 
 //  lemma LemmaCloudChatServerReceivesCloudMessageAfterCompromisedNonce:

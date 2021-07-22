@@ -16,17 +16,12 @@
         ==>
         /* then some secrects were leaked */
         (
-          // (∃ sk #r.   RegisteredAuthKey(sk) @r) ∨
           (∃ #r.      CompromisedAuthKey(authKey) @r) ∨
           (∃ skey #r. CompromisedPrivateKey(skey) @r) ∨
           (∃ #r.      CompromisedNk(nk) @r) ∨
           (∃ c #r.    CompromisedClientExponent(c) @r) ∨
           (∃ c #r.    CompromisedClientEphemeralSecrets(nk, c) @r) ∨
-          (∃ s #r.    CompromisedServerExponent(s) @r) ∨
-          (∃ skey #r. PostCompromisedPrivateKey(skey) @r) ∨
-          (∃ #r.      PostCompromisedNonce(nk) @r) ∨
-          (∃ c #r.    PostCompromisedClientExponent(c) @r) ∨
-          (∃ s #r.    PostCompromisedServerExponent(s) @r)
+          (∃ s #r.    CompromisedServerExponent(s) @r)
         )
 
     "

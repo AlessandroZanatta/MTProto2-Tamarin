@@ -21,17 +21,12 @@
         ClientAcceptsAuthKey(nc, ns, nk2, authKey2) @j ∧
         
         /* and no secret was leaked but the secret key of the server */
-          ¬(∃ sk #r.   RegisteredAuthKey(sk) @r) ∧
           ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
           // ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
           ¬(∃ n #r.    CompromisedNk(n) @r) ∧
           ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
           ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
-          ¬(∃ s #r.    CompromisedServerExponent(s) @r) ∧
-          ¬(∃ skey #r. PostCompromisedPrivateKey(skey) @r) ∧
-          ¬(∃ n #r.    PostCompromisedNonce(n) @r) ∧
-          ¬(∃ c #r.    PostCompromisedClientExponent(c) @r) ∧
-          ¬(∃ s #r.    PostCompromisedServerExponent(s) @r)
+          ¬(∃ s #r.    CompromisedServerExponent(s) @r)
         ==>
         (
           /* then client and server have computed the same authKey */
@@ -69,17 +64,12 @@
         ClientAcceptsAuthKey(nc, ns, nk2, authKey2) @j ∧
         
         /* and no secret was leaked but the secret nonce of the client */
-          ¬(∃ sk #r.   RegisteredAuthKey(sk) @r) ∧
           ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
           ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
           // ¬(∃ n #r.    CompromisedNk(n) @r) ∧
           ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
           ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
-          ¬(∃ s #r.    CompromisedServerExponent(s) @r) ∧
-          ¬(∃ skey #r. PostCompromisedPrivateKey(skey) @r) ∧
-          ¬(∃ n #r.    PostCompromisedNonce(n) @r) ∧
-          ¬(∃ c #r.    PostCompromisedClientExponent(c) @r) ∧
-          ¬(∃ s #r.    PostCompromisedServerExponent(s) @r)
+          ¬(∃ s #r.    CompromisedServerExponent(s) @r)
         ==>
         (
           /* then client and server have computed the same authKey */
@@ -118,17 +108,12 @@
         ClientAcceptsAuthKey(nc, ns, nk2, authKey2) @j ∧
         
         /* and no secret was leaked but the secret DH exponents */
-          ¬(∃ sk #r.   RegisteredAuthKey(sk) @r) ∧
           ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
           ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
           ¬(∃ n #r.    CompromisedNk(n) @r) ∧
           // ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
-          ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
-          // ¬(∃ s #r.    CompromisedServerExponent(s) @r) ∧
-          ¬(∃ skey #r. PostCompromisedPrivateKey(skey) @r) ∧
-          ¬(∃ n #r.    PostCompromisedNonce(n) @r) ∧
-          ¬(∃ c #r.    PostCompromisedClientExponent(c) @r) ∧
-          ¬(∃ s #r.    PostCompromisedServerExponent(s) @r)
+          ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r)
+          // ¬(∃ s #r.    CompromisedServerExponent(s) @r)
         ==>
         (
           /* 

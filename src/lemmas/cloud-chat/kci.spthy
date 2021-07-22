@@ -2,7 +2,6 @@
 /* Key Compromise Impersionation (Client)                        */
 /*****************************************************************/
 
-
   /*
    * Under no leak of long-term or ephemeral secrets, if an honest client 
    * receives a message encrypted with key k then it was the
@@ -23,17 +22,12 @@
           ClientReceivesCloudMessage(sid1, msg, authKey) @i ∧
 
           /* and no secret was leaked, but the authorization key authKey */
-          ¬(∃ sk #r.   RegisteredAuthKey(sk) @r) ∧
           // ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
           ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
           ¬(∃ n #r.    CompromisedNk(n) @r) ∧
           ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
           ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
-          ¬(∃ s #r.    CompromisedServerExponent(s) @r) ∧
-          ¬(∃ skey #r. PostCompromisedPrivateKey(skey) @r) ∧
-          ¬(∃ n #r.    PostCompromisedNonce(n) @r) ∧
-          ¬(∃ c #r.    PostCompromisedClientExponent(c) @r) ∧
-          ¬(∃ s #r.    PostCompromisedServerExponent(s) @r)
+          ¬(∃ s #r.    CompromisedServerExponent(s) @r)
         )
         ==>
         (
@@ -92,17 +86,12 @@
           ServerReceivesCloudMessage(sid, msg, authKey) @j ∧
 
           /* and no secret was leaked, but the authorization key authKey */
-          ¬(∃ sk #r.   RegisteredAuthKey(sk) @r) ∧
           // ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
           ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
           ¬(∃ n #r.    CompromisedNk(n) @r) ∧
           ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
           ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
-          ¬(∃ s #r.    CompromisedServerExponent(s) @r) ∧
-          ¬(∃ skey #r. PostCompromisedPrivateKey(skey) @r) ∧
-          ¬(∃ n #r.    PostCompromisedNonce(n) @r) ∧
-          ¬(∃ c #r.    PostCompromisedClientExponent(c) @r) ∧
-          ¬(∃ s #r.    PostCompromisedServerExponent(s) @r)
+          ¬(∃ s #r.    CompromisedServerExponent(s) @r)
         )
         ==>
         (

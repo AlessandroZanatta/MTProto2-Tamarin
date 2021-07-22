@@ -12,6 +12,8 @@
         
         "LemmaCloudChatSecrecyClientToServer",
         "LemmaCloudChatSecrecyServerToClient",
+        "LemmaCloudChatSecrecyClientToServerPFS",
+        "LemmaCloudChatSecrecyServerToClientPFS",
         "LemmaCloudChatKCIClient",
         "LemmaCloudChatKCIServer"
     ],

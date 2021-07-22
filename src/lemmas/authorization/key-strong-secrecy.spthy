@@ -1,17 +1,15 @@
 
-  
-
-//  /*
-//   * Observational equivalence of an authorization key
-//   * and a fresh value.
-//   * 
-//   * Expected result: N/A
-//   * Estimated time: N/A
-//   */
-//  rule LemmaAuthProtAuthKeyEquivalence:
-//      [
-//        !AuthKeyClient(server, realAuthKey),
-//        Fr(~freshAuthKey)
-//      ]
-//    -->
-//      [ Out(diff(~freshAuthKey, realAuthKey)) ]
+  /*
+   * Observational equivalence of an authorization key
+   * and a fresh value.
+   * 
+   * Expected result: N/A
+   * Estimated time: N/A
+   */
+  rule LemmaAuthProtAuthKeyEquivalence:
+      [
+        !AuthKeyClient(server, realAuthKey),
+        Fr(~freshAuthKey)
+      ]
+    -->
+      [ Out(diff(~freshAuthKey, realAuthKey)) ]
