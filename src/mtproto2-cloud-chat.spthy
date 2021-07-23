@@ -4,26 +4,15 @@
 /* Helpers                                                       */
 /*****************************************************************/
 
-/* 
- * These constants are used to distinguish client->server from
- * server->client messages.
- *
- * Public constants:
- *  - CLIENT
- *  - SERVER
- */
-
-  rule CreateSharedAuthKey:
-    let
-      authKey = 'g' ^ ~a ^ ~b
-    in
-      [ Fr(~a), Fr(~b) ]
-    --[ FakeSharedAuthKey(authKey) ]->
-      [
-        !AuthKeyClient($Server, authKey),
-        !AuthKeyServer(keyID(authKey), authKey)
-      ]
-
+  /* 
+   * These constants are used to distinguish client->server from
+   * server->client messages.
+   *
+   * Public constants:
+   *  - CLIENT
+   *  - SERVER
+   */
+  
 /*****************************************************************/
 /* Protocol rules                                                */
 /*****************************************************************/
@@ -48,10 +37,19 @@
          */
         Fr(~sessionID),
       
-        /* Message from the client. This is supposed to be secret. */
+        /* 
+         * Fresh message to be sent to the server.
+         * This is supposed to remain secret. 
+         */
         Fr(~m1)
       ]
-    --[ ClientSendsCloudMessage(~sessionID, ~m1, authKey) ]->
+    --[
+        /*
+         * The client has sent the cloud message ~m1 in session
+         * with id ~sessionID and with authorization key authKey
+         */
+        ClientSendsCloudMessage(~sessionID, ~m1, authKey)
+      ]->
       [ 
         ClientCloudChatState_1(<~sessionID, authKey, ~m1>),
         Out(<keyID(authKey), mk1, c1>)
@@ -71,11 +69,27 @@
     in
       [ 
         In(<kID, mk1, c1>),
+
+        /* Long-term key shared with the server */
         !AuthKeyServer(kID, authKey),
+
+        /* 
+         * Fresh message to be sent to the client. 
+         * This is supposed to remain secret 
+         */
         Fr(~m2)
       ]
     --[
+        /*
+         * Server has received the message m1 in session
+         * sessionID using the authorization key authKey
+         */
         ServerReceivesCloudMessage(sessionID, m1, authKey),
+
+        /*
+         * Server has sent the message ~m2 in session
+         * sessionID using the authorization key authKey
+         */
         ServerSendsCloudMessage(sessionID, ~m2, authKey)
       ]->
       [ 
@@ -97,58 +111,12 @@
         ClientCloudChatState_1(<~sessionID, authKey, ~m1>),
         In(<kID, mk2, c2>)
       ]
-    --[ ClientReceivesCloudMessage(~sessionID, m2, authKey) ]->
+    --[ 
+        /*
+         * Client has received the message m1 in session
+         * sessionID using the authorization key authKey
+         */
+        ClientReceivesCloudMessage(~sessionID, m2, authKey)
+      ]->
       [ ClientCloudChatState_3(<~sessionID, authKey, ~m1, m2>) ]
 
-
-// Sending another message to check for post-compromise 
-// should NOT be needed in Tamarin.
-//
-//  rule ClientCloudChat_3:
-//    let
-//      kID  = keyID(authKey)
-//      
-//      /* Pattern matching for the incoming message */
-//      msg2 = <'CLIENT', ~sessionID, m2>
-//      mk2  = msgKey(authKey, msg2)
-//      c2   = senc(msg2, kdfKey(authKey, mk2), kdfIV(authKey, mk2))
-//
-//      /* Outgoing message creation */
-//      msg3 = <'SERVER', ~sessionID, ~m3>
-//      mk3  = msgKey(authKey, msg3)
-//      c3   = senc(msg3, kdfKey(authKey, mk3), kdfIV(authKey, mk3))
-//    in
-//      [ 
-//        ClientCloudChatState_1(<~sessionID, authKey, ~m1>),
-//        In(<kID, mk2, c2>),
-//        Fr(~m3)
-//      ]
-//    --[ 
-//        ClientReceivesCloudMessage(~sessionID, m2, authKey),
-//        ClientSendsCloudMessageAfterCompromisedNonce(~sessionID, ~m3, authKey)
-//      ]->
-//      [ 
-//        ClientCloudChatState_3(<~sessionID, authKey, ~m1, m2, ~m3>),
-//        Out(<kID, mk3, c3>)
-//      ]
-//  
-//
-//
-//  rule ServerCloudChat_4:
-//    let
-//      kID  = keyID(authKey)
-//
-//      /* Pattern matching for the incoming message */
-//      msg3 = <'CLIENT', sessionID, m3>
-//      mk3  = msgKey(authKey, msg3)
-//      c3   = senc(msg3, kdfKey(authKey, mk3), kdfIV(authKey, mk3))
-//    in
-//      [
-//        ServerCloudChatState_2(<sessionID, authKey, m1, ~m2>),
-//        In(<kID, mk3, c3>)
-//      ]
-//    --[ ServerReceivesCloudMessageAfterCompromisedNonce(sessionID, m3, authKey) ]->
-//      [ 
-//        ServerCloudChatState_2(<sessionID, authKey, m1, ~m2, m3>)
-//      ]
-//
