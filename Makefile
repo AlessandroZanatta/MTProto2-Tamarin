@@ -23,11 +23,13 @@ LIB_SRC      += $(SRC_DIR)/mtproto2-encryption/$(ENC)/mtproto2-encryption-author
 LIB_SRC      += $(SRC_DIR)/mtproto2-encryption/$(ENC)/mtproto2-encryption-part-i.spthy
 LIB_SRC      += $(SRC_DIR)/mtproto2-authorization.spthy
 LIB_SRC      += $(SRC_DIR)/mtproto2-cloud-chat.spthy
+LIB_SRC      += $(SRC_DIR)/mtproto2-secret-chat.spthy
 
 
 # Debug
 DEBUG_SRC     = $(SRC_DIR)/$(DEBUG_DIR)/mtproto2-authorization.spthy
 DEBUG_SRC    += $(SRC_DIR)/$(DEBUG_DIR)/mtproto2-cloud-chat.spthy
+DEBUG_SRC    += $(SRC_DIR)/$(DEBUG_DIR)/mtproto2-secret-chat.spthy
 DEBUG_SRC    += $(SRC_DIR)/epilogue.spthy
 
 
@@ -36,9 +38,7 @@ DEBUG_SRC    += $(SRC_DIR)/epilogue.spthy
 # Authorization
 AUTH          = authorization
 LEMMAS_SRC    = $(SRC_DIR)/$(LEMMAS_DIR)/$(AUTH)/agreement.spthy
-LEMMAS_SRC   += $(SRC_DIR)/$(LEMMAS_DIR)/$(AUTH)/authentication-client-to-server.spthy
-LEMMAS_SRC   += $(SRC_DIR)/$(LEMMAS_DIR)/$(AUTH)/authentication-server-to-client.spthy
-LEMMAS_SRC   += $(SRC_DIR)/$(LEMMAS_DIR)/$(AUTH)/broken-agreement.spthy
+LEMMAS_SRC   += $(SRC_DIR)/$(LEMMAS_DIR)/$(AUTH)/authentication.spthy
 LEMMAS_SRC   += $(SRC_DIR)/$(LEMMAS_DIR)/$(AUTH)/key-secrecy.spthy
 LEMMAS_SRC   += $(SRC_DIR)/$(LEMMAS_DIR)/$(AUTH)/session.spthy
 
@@ -46,6 +46,12 @@ LEMMAS_SRC   += $(SRC_DIR)/$(LEMMAS_DIR)/$(AUTH)/session.spthy
 CLOUD_CHAT    = cloud-chat
 LEMMAS_SRC   += $(SRC_DIR)/$(LEMMAS_DIR)/$(CLOUD_CHAT)/secrecy.spthy
 LEMMAS_SRC   += $(SRC_DIR)/$(LEMMAS_DIR)/$(CLOUD_CHAT)/kci.spthy
+
+# Secret-chat
+SECRET_CHAT   = secret-chat
+LEMMAS_SRC   += $(SRC_DIR)/$(LEMMAS_DIR)/$(SECRET_CHAT)/authentication.spthy
+
+# End of LEMMAS_SRC
 LEMMAS_SRC   += $(SRC_DIR)/epilogue.spthy
 
 # Observational equivalence lemmas

@@ -31,7 +31,7 @@
 /*****************************************************************/
   
   functions: 
-    hash/2,      // Hash function with collosions
+    hash/2,      // Hash function with collisions
     hashIdeal/1, // Perfect hash function
     WEAK_HASH/0,
     COLLISION/0,
@@ -45,6 +45,12 @@
 /* Other convenience functions                                   */
 /*****************************************************************/
 
+//  restriction RestrictionChoosePrincipal:
+//    "
+//      ∀ X Y Z #i.
+//        ChoosePrincipal(X, Y, Z) @i ==> ((X = Y) ∨ (X = Z))
+//    "
+
 //  /* Checks if weak DH is allowed or DH parameters are not weak */
 //  restriction CheckWeakDHAllowed:
 //    "
@@ -56,3 +62,9 @@
 //          (¬(p = WEAK_MODULO) ∧ ¬(g = BAD_ELEMENT) ∧ ¬(half = BAD_ELEMENT))
 //        )
 //    "
+
+  restriction RestrictionNotEqual:
+    "
+      ∀ x y #i.
+        NotEq(x, y) @i ==> ¬(x = y)
+    "

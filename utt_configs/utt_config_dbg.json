@@ -33,7 +33,16 @@
         "LemmaCloudChatClientSendsCloudMessage",
         "LemmaCloudChatClientReceivesCloudMessage",
         "LemmaCloudChatServerReceivesCloudMessage",
-        "LemmaCloudChatServerSendsCloudMessage"
+        "LemmaCloudChatServerSendsCloudMessage",
+
+        "LemmaSecretChatInitiatorRequestsDHConfig",
+        "LemmaSecretChatInitiatorRequestsEncryptedChat",
+        "LemmaSecretChatResponderAcceptsInitiator",
+        "LemmaSecretChatResponderHasSessionKeyForEncryptedChat",
+        "LemmaSecretChatSessionKeyFingerprintMatches",
+        "LemmaSecretChatInitiatorHasSessionKeyForEncryptedChat",
+        "LemmaSecretChatResponderAcceptsEncryptedChat",
+        "LemmaSecretChatInitiatorAcceptsEncryptedChat"
     ],
     "lemma_deny_list": [],
     "global_annotations": {

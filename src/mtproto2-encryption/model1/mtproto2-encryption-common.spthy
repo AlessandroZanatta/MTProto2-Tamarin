@@ -59,6 +59,9 @@
      */
     msgKey/2
 
+  /* Fingerprint of a session key */
+  functions: fps/1
+
 
 /*
  * An ephemeral key and an initialization vector are derived from the
