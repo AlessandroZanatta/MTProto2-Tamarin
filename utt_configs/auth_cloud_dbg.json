@@ -18,31 +18,17 @@
         "LemmaAuthServerAcceptsAuthKey",
         "LemmaAuthServerSendsAck",
         
-        "LemmaAuthRegisteredAuthKey",
         "LemmaAuthCompromisedAuthKey",
         "LemmaAuthCompromisedPrivateKey",
         "LemmaAuthCompromisedNk",
         "LemmaAuthCompromisedClientEphemeralSecrets",
         "LemmaAuthCompromisedClientExponent",
         "LemmaAuthCompromisedServerExponent",
-        "LemmaAuthPostCompromisedPrivateKey",
-        "LemmaAuthPostCompromisedNonce",
-        "LemmaAuthPostCompromisedClientExponent",
-        "LemmaAuthPostCompromisedServerExponent",
 
         "LemmaCloudChatClientSendsCloudMessage",
         "LemmaCloudChatClientReceivesCloudMessage",
         "LemmaCloudChatServerReceivesCloudMessage",
-        "LemmaCloudChatServerSendsCloudMessage",
-
-        "LemmaSecretChatInitiatorRequestsDHConfig",
-        "LemmaSecretChatInitiatorRequestsEncryptedChat",
-        "LemmaSecretChatResponderAcceptsInitiator",
-        "LemmaSecretChatResponderHasSessionKeyForEncryptedChat",
-        "LemmaSecretChatSessionKeyFingerprintMatches",
-        "LemmaSecretChatInitiatorHasSessionKeyForEncryptedChat",
-        "LemmaSecretChatResponderAcceptsEncryptedChat",
-        "LemmaSecretChatInitiatorAcceptsEncryptedChat"
+        "LemmaCloudChatServerSendsCloudMessage"
     ],
     "lemma_deny_list": [],
     "global_annotations": {

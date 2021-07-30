@@ -1,0 +1,19 @@
+/*
+ * MTProto 2.0: Rekeying
+ *
+ * Model for the protocol used for updating the session keys of secret chats.
+ *
+ * See: https://core.telegram.org/api/end-to-end/pfs
+ */
+
+
+  rule RekeyingInitiator_1:
+      []
+    -->
+      []
+
+
+  rule RekeyingResponder_2:
+      []
+    -->
+      []

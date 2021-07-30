@@ -18,7 +18,7 @@
 /*****************************************************************/
 
 
-  rule ClientCloudChat_1:
+  rule ClientCloudChat_1 [color=#E2C290]:
     let
       msg1 = <'CLIENT', ~sessionID, ~m1>
       mk1  = msgKey(authKey, msg1)
@@ -55,7 +55,7 @@
         Out(<keyID(authKey), mk1, c1>)
       ]
   
-  rule ServerCloudChat_2:
+  rule ServerCloudChat_2 [color=#0088CC]:
     let
       /* Pattern matching for the incoming message */
       mk1  = msgKey(authKey, msg1)
@@ -98,7 +98,7 @@
       ]
 
   
-  rule ClientCloudChat_3:
+  rule ClientCloudChat_3 [color=#E2C290]:
     let
       kID  = keyID(authKey)
       

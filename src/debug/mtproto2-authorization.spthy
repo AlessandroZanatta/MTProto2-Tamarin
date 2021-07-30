@@ -258,35 +258,4 @@
       ∃ s #i.
         CompromisedServerExponent(s) @i
     "
-  
 
-//  lemma LemmaAuthPostCompromisedPrivateKey:
-//    exists-trace
-//    "
-//      ∃ skey #i.
-//        PostCompromisedPrivateKey(skey) @i
-//    "
-//
-//
-//
-//  lemma LemmaAuthPostCompromisedNonce:
-//    exists-trace
-//    "
-//      ∃ nk #i.
-//        PostCompromisedNonce(nk) @i
-//    "
-//
-//  
-//  lemma LemmaAuthPostCompromisedClientExponent:
-//    exists-trace
-//    "
-//      ∃ c #i.
-//        PostCompromisedClientExponent(c) @i
-//    "
-//  
-//  lemma LemmaAuthPostCompromisedServerExponent:
-//    exists-trace
-//    "
-//      ∃ s #i.
-//        PostCompromisedServerExponent(s) @i
-//    "

@@ -63,8 +63,3 @@
 //        )
 //    "
 
-  restriction RestrictionNotEqual:
-    "
-      ∀ x y #i.
-        NotEq(x, y) @i ==> ¬(x = y)
-    "

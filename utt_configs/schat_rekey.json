@@ -1,7 +1,5 @@
 {
     "lemma_allow_list": [
-        "LemmaAuthProtAuthKeyEquivalence",
-        "LemmaAuthProtNkEquivalence"
     ],
     "lemma_deny_list": [],
     "global_annotations": {

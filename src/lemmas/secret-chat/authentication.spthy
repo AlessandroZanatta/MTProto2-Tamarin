@@ -1,0 +1,39 @@
+
+
+  /*
+   * If a client X (one of I or R) receives a message m encrypted 
+   * with a session key sessionKey in a chat session chatID, then 
+   * such message was sent by the other party, unless they skip some
+   *  mandatory check.
+   *
+   * NOTE: we cannot force chatID1 = chatID2, because the chat session identifier is available to the
+   * server/attacker, who is free to change it when forwarding messages.
+   *
+   * Expected result: True
+   * Estimated time: ~1 minute
+   */
+  lemma LemmaSecretChatAuthentication:
+    "
+      ∀ chatID1 X iUser rUser msg sessionKey #i.
+        ClientReceivesSecretChatMsg(chatID1, X, iUser, rUser, sessionKey, msg) @i ∧
+        ¬(∃ z #r. CompromisedSecretChatInitiatorEphemeralKey(z) @r) ∧
+        ¬(∃ z #r. CompromisedSecretChatResponderEphemeralKey(z) @r)
+        ==>
+        (
+          (∃ Y chatID2 #r. 
+            ClientSendsSecretChatMsg(chatID2, Y, iUser, rUser, sessionKey, msg) @r) ∨
+          (∃ Y chatID2 #r. 
+            ClientSendsSecretChatMsg(chatID2, Y, rUser, iUser, sessionKey, msg) @r) ∨
+          (
+            ∃ Y xID yID #r1 #r2. 
+              OutOfBandKeyComparisonSkipped(xID, X, sessionKey) @r1 ∧
+              OutOfBandKeyComparisonSkipped(yID, Y, sessionKey) @r2
+          )
+        )
+    "
+
+  /*
+   * If an (honest) initiator negotiates a key sessionKey and an
+   * (honest) responder accepts a key sessionKey, then the initiator is
+   * Alice and the responder is Bob.
+   */

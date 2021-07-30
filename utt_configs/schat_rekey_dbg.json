@@ -1,0 +1,21 @@
+{
+    "lemma_allow_list": [
+        "LemmaSecretChatInitiatorRequestsDHConfig",
+        "LemmaSecretChatInitiatorRequestsEncryptedChat",
+        "LemmaSecretChatResponderAcceptsInitiator",
+        "LemmaSecretChatResponderHasSessionKeyForEncryptedChat",
+        "LemmaSecretChatSessionKeyFingerprintMatches",
+        "LemmaSecretChatInitiatorHasSessionKeyForEncryptedChat",
+        "LemmaSecretChatResponderAcceptsEncryptedChat",
+        "LemmaSecretChatInitiatorAcceptsEncryptedChat",
+        "LemmaSecretChatClientReceivesSecretChatMsg",
+        "LemmaSecretChatClientSendsSecretChatMsg"
+    ],
+    "lemma_deny_list": [],
+    "global_annotations": {
+        "important_facts": [],
+        "unimportant_facts": [],
+        "neutral_facts": []
+    },
+    "lemma_annotations": []
+}
