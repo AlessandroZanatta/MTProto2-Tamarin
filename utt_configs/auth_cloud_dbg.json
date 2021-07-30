@@ -1,35 +1,5 @@
 {
-    "lemma_allow_list": [
-        "LemmaAuthClientStartsSession",
-        "LemmaAuthClientGetsServerPublicKey",
-        "LemmaAuthClientRequestsDHParameters",
-        "LemmaAuthClientReceivesDHParameters",
-        "LemmaAuthClientAcceptsDHParameters",
-        "LemmaAuthClientEndsDHExchange",
-        "LemmaAuthClientAcceptsAuthKey",
-        "LemmaAuthClientReceivesAck",
-
-        "LemmaAuthServerReceivesRequest",
-        "LemmaAuthServerGeneratesNonceIsRandom",
-        "LemmaAuthServerGeneratesNonceIsFixed",
-        "LemmaAuthServerAcceptsClient",
-        "LemmaAuthServerSendsDHParameters",
-        "LemmaAuthServerEndsDHExchange",
-        "LemmaAuthServerAcceptsAuthKey",
-        "LemmaAuthServerSendsAck",
-        
-        "LemmaAuthCompromisedAuthKey",
-        "LemmaAuthCompromisedPrivateKey",
-        "LemmaAuthCompromisedNk",
-        "LemmaAuthCompromisedClientEphemeralSecrets",
-        "LemmaAuthCompromisedClientExponent",
-        "LemmaAuthCompromisedServerExponent",
-
-        "LemmaCloudChatClientSendsCloudMessage",
-        "LemmaCloudChatClientReceivesCloudMessage",
-        "LemmaCloudChatServerReceivesCloudMessage",
-        "LemmaCloudChatServerSendsCloudMessage"
-    ],
+    "lemma_allow_list": [],
     "lemma_deny_list": [],
     "global_annotations": {
         "important_facts": [],

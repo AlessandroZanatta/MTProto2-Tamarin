@@ -1,0 +1,18 @@
+  /*
+   * If the secret key is strong, 
+   *
+   * Expected result: ?
+   * Estimated time: ∞ 
+   */
+  rule SecretChatReceiveRoR:
+      [ 
+        !SecretChatClient(X, iUser, rUser, xID, chatID, sessionKey, authKey),
+        Fr(~r)
+      ]
+    --[
+        ChoosePrincipal(iUser, $Alice, $Bob),
+        ChoosePrincipal(rUser, $Alice, $Bob)
+      ]->
+      [
+        Out(diff(sessionKey, ~r))
+      ]

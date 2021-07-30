@@ -1,0 +1,25 @@
+
+  /*
+   * Expected result: ?
+   * Estimated time: ∞ 
+   */
+  rule SecretChatReceiveRoR:
+    let
+      mk  = msgKey(sessionKey, ~m)
+      key = kdfKey(sessionKey, mk)
+      iv  = kdfIV(sessionKey, mk)
+
+      c   = <keyID(sessionKey), mk, senc(~m, key, iv)>
+    in
+      [ 
+        !SecretChatClient(X, iUser, rUser, xID, chatID, sessionKey, authKey),
+        In(c),
+        Fr(~r)
+      ]
+    --[
+        ChoosePrincipal(iUser, $Alice, $Bob),
+        ChoosePrincipal(rUser, $Alice, $Bob)
+      ]->
+      [
+        Out(diff(~m, ~r))
+      ]

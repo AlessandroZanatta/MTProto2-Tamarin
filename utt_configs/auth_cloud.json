@@ -1,22 +1,5 @@
 {
-    "lemma_allow_list": [
-        "LemmaAuthProtAgreement",
-        "LemmaAuthProtAuthClientToServer",
-        "LemmaAuthProtAuthClientSentThirdMessage",
-        "LemmaAuthProtAuthServerToClient",
-        "LemmaAuthProtBrokenAgreement_1",
-        "LemmaAuthProtBrokenAgreement_2",
-        "LemmaAuthProtBrokenAgreement_3",
-        "LemmaAuthProtKeySecrecy",
-        "LemmaAuthProtSession",
-        
-        "LemmaCloudChatSecrecyClientToServer",
-        "LemmaCloudChatSecrecyServerToClient",
-        "LemmaCloudChatSecrecyClientToServerPFS",
-        "LemmaCloudChatSecrecyServerToClientPFS",
-        "LemmaCloudChatKCIClient",
-        "LemmaCloudChatKCIServer"
-    ],
+    "lemma_allow_list": [],
     "lemma_deny_list": [],
     "global_annotations": {
         "important_facts": [],

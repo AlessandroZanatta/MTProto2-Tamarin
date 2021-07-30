@@ -1,0 +1,32 @@
+
+
+  /*
+   * If client X (which is one of iUser or rUser) sends message in a 
+   * secret chat session chatID initiated by iUser with responder 
+   * rUser and the attacker learns the plaintext, then some parties 
+   * did not perform their mandatory checks.
+   *
+   * Note that iUser or rUser may be played by the attacker.
+   *
+   * Expected result: True
+   * Estimated time: ~5 seconds
+   */
+  lemma LemmaSecretChatSecrecy:
+    "
+      ∀ chatID X iUser rUser sessionKey msg #i #j.
+        /* Whenever the client sends a secret chat message msg */
+        ClientSendsSecretChatMsg(chatID, X, iUser, rUser, sessionKey, msg) @i ∧
+        
+        /* but the attacker nows it */
+        K(msg) @j ∧
+
+        /* and no secret was leaked */
+        ¬(∃ z #r. CompromisedSecretChatInitiatorEphemeralKey(z) @r) ∧
+        ¬(∃ z #r. CompromisedSecretChatResponderEphemeralKey(z) @r)
+        ==>
+        (
+          /* then clients skipped the QR validation */
+          ∃ a #r. OutOfBandKeyComparisonSkipped(a, X, sessionKey) @r
+        )
+
+    "

@@ -73,10 +73,13 @@ SCHAT_REKEY_DEBUG += $(SRC_DIR)/epilogue.spthy
 
 # Lemmas
 SCHAT_REKEY_LEMMAS  = $(SRC_DIR)/$(LEMMAS_DIR)/$(SECRET_CHAT)/authentication.spthy
+SCHAT_REKEY_LEMMAS += $(SRC_DIR)/$(LEMMAS_DIR)/$(SECRET_CHAT)/chat-secrecy.spthy
 SCHAT_REKEY_LEMMAS += $(SRC_DIR)/epilogue.spthy
 
 # Observational equivalence lemmas
-SCHAT_REKEY_DIFF_LEMMAS  = $(SRC_DIR)/$(LEMMAS_DIR)/$(SECRET_CHAT)/ror_exponent.spthy
+SCHAT_REKEY_DIFF_LEMMAS  = $(SRC_DIR)/$(LEMMAS_DIR)/$(SECRET_CHAT)/ror-exponent.spthy
+SCHAT_REKEY_DIFF_LEMMAS  = $(SRC_DIR)/$(LEMMAS_DIR)/$(SECRET_CHAT)/ror-msg.spthy
+SCHAT_REKEY_DIFF_LEMMAS  = $(SRC_DIR)/$(LEMMAS_DIR)/$(SECRET_CHAT)/ror-session-key.spthy
 SCHAT_REKEY_DIFF_LEMMAS += $(SRC_DIR)/epilogue.spthy
 
 ############################
