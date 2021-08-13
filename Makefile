@@ -7,8 +7,10 @@ TAMARIN         = tamarin-prover
 TAMARIN_FLAGS   = --quit-on-warning 
 
 # Output source files
-AUTH_CLOUD_FILE  = ./mtproto2-authorization-cloudchat.spthy
-SCHAT_REKEY_FILE = ./mtproto2-secretchat-rekeying.spthy
+AUTH_FILE        = ./mtproto2-authorization.spthy
+SECRET_CHAT_FILE = ./mtproto2-secretchat.spthy
+REKEYING_FILE    = ./mtproto2-rekeying.spthy
+CLOUD_CHAT_FILE  = ./mtproto2-cloudchat.spthy
 
 # Directories
 SRC_DIR         = ./src
@@ -17,144 +19,244 @@ ENC             = model1
 DEBUG_DIR       = debug
 UTT_DIR         = ./utt_configs
 
-##########################################
-# Authorization and Cloud chat protocols #
-##########################################
-AUTH               = authorization
+########################################################
+# Authorization protocol                               #
+########################################################
+AUTH         = authorization
+AUTH_UTT     = $(UTT_DIR)/auth.json
+AUTH_UTT_DBG = $(UTT_DIR)/auth_dbg.json
+
+# Protocol definition
+AUTH_LIB  = $(SRC_DIR)/preamble.spthy
+AUTH_LIB += $(SRC_DIR)/mtproto2-common.spthy
+AUTH_LIB += $(SRC_DIR)/mtproto2-encryption/$(ENC)/mtproto2-encryption-common.spthy
+AUTH_LIB += $(SRC_DIR)/mtproto2-encryption/$(ENC)/mtproto2-encryption-authorization.spthy
+AUTH_LIB += $(SRC_DIR)/mtproto2-encryption/$(ENC)/mtproto2-encryption-part-i.spthy
+AUTH_LIB += $(SRC_DIR)/mtproto2-authorization.spthy
+
+# Debug lemmas
+AUTH_DEBUG  = $(SRC_DIR)/$(DEBUG_DIR)/mtproto2-authorization.spthy
+AUTH_DEBUG += $(SRC_DIR)/epilogue.spthy
+
+# Lemmas
+AUTH_LEMMAS  = $(SRC_DIR)/$(LEMMAS_DIR)/$(AUTH)/agreement.spthy
+AUTH_LEMMAS += $(SRC_DIR)/$(LEMMAS_DIR)/$(AUTH)/authentication.spthy
+AUTH_LEMMAS += $(SRC_DIR)/$(LEMMAS_DIR)/$(AUTH)/key-secrecy.spthy
+AUTH_LEMMAS += $(SRC_DIR)/$(LEMMAS_DIR)/$(AUTH)/session.spthy
+AUTH_LEMMAS += $(SRC_DIR)/epilogue.spthy
+
+# Observational equivalence lemmas
+AUTH_DIFF_LEMMAS  = $(SRC_DIR)/$(LEMMAS_DIR)/$(AUTH)/key-strong-secrecy.spthy
+AUTH_DIFF_LEMMAS += $(SRC_DIR)/$(LEMMAS_DIR)/$(AUTH)/nk-strong-secrecy.spthy
+AUTH_DIFF_LEMMAS += $(SRC_DIR)/epilogue.spthy
+
+########################################################
+# Cloud chat protocol                                  #
+########################################################
 CLOUD_CHAT         = cloud-chat
-AUTH_CLOUD_UTT     = $(UTT_DIR)/auth_cloud.json
-AUTH_CLOUD_UTT_DBG = $(UTT_DIR)/auth_cloud_dbg.json
+CLOUD_CHAT_UTT     = $(UTT_DIR)/cloud_chat.json
+CLOUD_CHAT_UTT_DBG = $(UTT_DIR)/cloud_chat_dbg.json
 
 # Protocol definition
-AUTH_CLOUD_LIB  = $(SRC_DIR)/preamble.spthy
-AUTH_CLOUD_LIB += $(SRC_DIR)/mtproto2-common.spthy
-AUTH_CLOUD_LIB += $(SRC_DIR)/mtproto2-encryption/$(ENC)/mtproto2-encryption-common.spthy
-AUTH_CLOUD_LIB += $(SRC_DIR)/mtproto2-encryption/$(ENC)/mtproto2-encryption-authorization.spthy
-AUTH_CLOUD_LIB += $(SRC_DIR)/mtproto2-encryption/$(ENC)/mtproto2-encryption-part-i.spthy
-AUTH_CLOUD_LIB += $(SRC_DIR)/mtproto2-authorization.spthy
-AUTH_CLOUD_LIB += $(SRC_DIR)/mtproto2-cloud-chat.spthy
+CLOUD_CHAT_LIB  = $(SRC_DIR)/preamble.spthy
+CLOUD_CHAT_LIB += $(SRC_DIR)/mtproto2-common.spthy
+CLOUD_CHAT_LIB += $(SRC_DIR)/mtproto2-encryption/$(ENC)/mtproto2-encryption-common.spthy
+CLOUD_CHAT_LIB += $(SRC_DIR)/mtproto2-encryption/$(ENC)/mtproto2-encryption-authorization.spthy
+CLOUD_CHAT_LIB += $(SRC_DIR)/mtproto2-encryption/$(ENC)/mtproto2-encryption-part-i.spthy
+CLOUD_CHAT_LIB += $(SRC_DIR)/mtproto2-authorization.spthy
+CLOUD_CHAT_LIB += $(SRC_DIR)/mtproto2-cloud-chat.spthy
 
 # Debug lemmas
-AUTH_CLOUD_DEBUG  = $(SRC_DIR)/$(DEBUG_DIR)/mtproto2-authorization.spthy
-AUTH_CLOUD_DEBUG += $(SRC_DIR)/$(DEBUG_DIR)/mtproto2-cloud-chat.spthy
-AUTH_CLOUD_DEBUG += $(SRC_DIR)/epilogue.spthy
+CLOUD_CHAT_DEBUG += $(SRC_DIR)/$(DEBUG_DIR)/mtproto2-cloud-chat.spthy
+CLOUD_CHAT_DEBUG += $(SRC_DIR)/epilogue.spthy
 
 # Lemmas
-AUTH_CLOUD_LEMMAS  = $(SRC_DIR)/$(LEMMAS_DIR)/$(AUTH)/agreement.spthy
-AUTH_CLOUD_LEMMAS += $(SRC_DIR)/$(LEMMAS_DIR)/$(AUTH)/authentication.spthy
-AUTH_CLOUD_LEMMAS += $(SRC_DIR)/$(LEMMAS_DIR)/$(AUTH)/key-secrecy.spthy
-AUTH_CLOUD_LEMMAS += $(SRC_DIR)/$(LEMMAS_DIR)/$(AUTH)/session.spthy
-AUTH_CLOUD_LEMMAS += $(SRC_DIR)/$(LEMMAS_DIR)/$(CLOUD_CHAT)/secrecy.spthy
-AUTH_CLOUD_LEMMAS += $(SRC_DIR)/$(LEMMAS_DIR)/$(CLOUD_CHAT)/kci.spthy
-AUTH_CLOUD_LEMMAS += $(SRC_DIR)/epilogue.spthy
+CLOUD_CHAT_LEMMAS += $(SRC_DIR)/$(LEMMAS_DIR)/$(CLOUD_CHAT)/secrecy.spthy
+CLOUD_CHAT_LEMMAS += $(SRC_DIR)/$(LEMMAS_DIR)/$(CLOUD_CHAT)/kci.spthy
+CLOUD_CHAT_LEMMAS += $(SRC_DIR)/epilogue.spthy
 
 # Observational equivalence lemmas
-AUTH_CLOUD_DIFF_LEMMAS  = $(SRC_DIR)/$(LEMMAS_DIR)/$(AUTH)/key-strong-secrecy.spthy
-AUTH_CLOUD_DIFF_LEMMAS += $(SRC_DIR)/$(LEMMAS_DIR)/$(AUTH)/nk-strong-secrecy.spthy
-AUTH_CLOUD_DIFF_LEMMAS += $(SRC_DIR)/epilogue.spthy
+CLOUD_CHAT_DIFF_LEMMAS  = $(SRC_DIR)/$(LEMMAS_DIR)/$(AUTH)/key-strong-secrecy.spthy
+CLOUD_CHAT_DIFF_LEMMAS += $(SRC_DIR)/$(LEMMAS_DIR)/$(AUTH)/nk-strong-secrecy.spthy
+CLOUD_CHAT_DIFF_LEMMAS += $(SRC_DIR)/epilogue.spthy
 
-######################################
-# Secret chat and rekeying protocols #
-######################################
+
+########################################################
+# Secret chat protocol                                 #
+########################################################
 SECRET_CHAT         = secret-chat
-REKEYING            = rekeying
-SCHAT_REKEY_UTT     = $(UTT_DIR)/schat_rekey.json
-SCHAT_REKEY_UTT_DBG = $(UTT_DIR)/schat_rekey_dbg.json
+SECRET_CHAT_UTT     = $(UTT_DIR)/secret_chat.json
+SECRET_CHAT_UTT_DBG = $(UTT_DIR)/secret_chat_dbg.json
 
 # Protocol definition
-SCHAT_REKEY_LIB  = $(SRC_DIR)/preamble.spthy
-SCHAT_REKEY_LIB += $(SRC_DIR)/mtproto2-common.spthy
-SCHAT_REKEY_LIB += $(SRC_DIR)/mtproto2-encryption/$(ENC)/mtproto2-encryption-common.spthy
-SCHAT_REKEY_LIB += $(SRC_DIR)/mtproto2-secret-chat.spthy
+SECRET_CHAT_LIB  = $(SRC_DIR)/preamble.spthy
+SECRET_CHAT_LIB += $(SRC_DIR)/mtproto2-common.spthy
+SECRET_CHAT_LIB += $(SRC_DIR)/mtproto2-encryption/$(ENC)/mtproto2-encryption-common.spthy
+SECRET_CHAT_LIB += $(SRC_DIR)/mtproto2-secret-chat.spthy
 
 # Debug lemmas
-SCHAT_REKEY_DEBUG  = $(SRC_DIR)/$(DEBUG_DIR)/mtproto2-secret-chat.spthy
-SCHAT_REKEY_DEBUG += $(SRC_DIR)/epilogue.spthy
+SECRET_CHAT_DEBUG  = $(SRC_DIR)/$(DEBUG_DIR)/mtproto2-secret-chat.spthy
+SECRET_CHAT_DEBUG += $(SRC_DIR)/epilogue.spthy
 
 # Lemmas
-SCHAT_REKEY_LEMMAS  = $(SRC_DIR)/$(LEMMAS_DIR)/$(SECRET_CHAT)/authentication.spthy
-SCHAT_REKEY_LEMMAS += $(SRC_DIR)/$(LEMMAS_DIR)/$(SECRET_CHAT)/chat-secrecy.spthy
-SCHAT_REKEY_LEMMAS += $(SRC_DIR)/epilogue.spthy
+SECRET_CHAT_LEMMAS  = $(SRC_DIR)/$(LEMMAS_DIR)/$(SECRET_CHAT)/authentication.spthy
+SECRET_CHAT_LEMMAS += $(SRC_DIR)/$(LEMMAS_DIR)/$(SECRET_CHAT)/chat-secrecy.spthy
+SECRET_CHAT_LEMMAS += $(SRC_DIR)/epilogue.spthy
 
 # Observational equivalence lemmas
-SCHAT_REKEY_DIFF_LEMMAS  = $(SRC_DIR)/$(LEMMAS_DIR)/$(SECRET_CHAT)/ror-exponent.spthy
-SCHAT_REKEY_DIFF_LEMMAS  = $(SRC_DIR)/$(LEMMAS_DIR)/$(SECRET_CHAT)/ror-msg.spthy
-SCHAT_REKEY_DIFF_LEMMAS  = $(SRC_DIR)/$(LEMMAS_DIR)/$(SECRET_CHAT)/ror-session-key.spthy
-SCHAT_REKEY_DIFF_LEMMAS += $(SRC_DIR)/epilogue.spthy
+SECRET_CHAT_DIFF_LEMMAS  = $(SRC_DIR)/$(LEMMAS_DIR)/$(SECRET_CHAT)/ror-exponent.spthy
+SECRET_CHAT_DIFF_LEMMAS  = $(SRC_DIR)/$(LEMMAS_DIR)/$(SECRET_CHAT)/ror-msg.spthy
+SECRET_CHAT_DIFF_LEMMAS  = $(SRC_DIR)/$(LEMMAS_DIR)/$(SECRET_CHAT)/ror-session-key.spthy
+SECRET_CHAT_DIFF_LEMMAS += $(SRC_DIR)/epilogue.spthy
 
-############################
-# UT-Tamarin configuration #
-############################
+
+########################################################
+# Rekeying protocol                                    #
+########################################################
+REKEYING         = rekeying
+REKEYING_UTT     = $(UTT_DIR)/rekeying.json
+REKEYING_UTT_DBG = $(UTT_DIR)/rekeying_dbg.json
+
+# Protocol definition
+REKEYING_LIB  = $(SRC_DIR)/preamble.spthy
+REKEYING_LIB += $(SRC_DIR)/mtproto2-common.spthy
+REKEYING_LIB += $(SRC_DIR)/mtproto2-encryption/$(ENC)/mtproto2-encryption-common.spthy
+REKEYING_LIB += $(SRC_DIR)/mtproto2-rekeying.spthy
+
+# Debug lemmas
+REKEYING_DEBUG  = $(SRC_DIR)/$(DEBUG_DIR)/mtproto2-rekeying.spthy
+REKEYING_DEBUG += $(SRC_DIR)/epilogue.spthy
+
+# Lemmas
+REKEYING_LEMMAS  = $(SRC_DIR)/$(LEMMAS_DIR)/$(REKEYING)/agreement.spthy
+REKEYING_LEMMAS += $(SRC_DIR)/$(LEMMAS_DIR)/$(REKEYING)/authentication.spthy
+REKEYING_LEMMAS += $(SRC_DIR)/epilogue.spthy
+
+# Observational equivalence lemmas
+REKEYING_DIFF_LEMMAS += $(SRC_DIR)/epilogue.spthy
+
+
+########################################################
+# UT-tamarin configuration                             #
+########################################################
 UTT_EXEC  := uttamarin 
 UTT_FLAGS  = 
 
-##############
-# Make rules #
-##############
 
+########################################################
+# Make rules                                           #
+########################################################
 # Run everything (but diff lemmas), including tests
 .PHONY: all
 all:	security debug
 
 # Run security lemmas only
 .PHONY: security
-security:	auth-cloud secret-rekey
+security:	auth cloud-chat secret-chat rekeying
 
 # Run debug lemmas only
 .PHONY: debug
-debug: 		auth-cloud-dbg secret-rekey-dbg
+debug: 		auth-dbg cloud-chat-dbg secret-chat-dbg rekeying-dbg
 
 #---------------------------------------#
-# Authorization and cloud chat protocol #
+# Authorization protocol                #
 #---------------------------------------#
-.PHONY: auth-cloud
-auth-cloud: 	$(AUTH_CLOUD_FILE)
-	cat $(AUTH_CLOUD_LEMMAS) >> $(AUTH_CLOUD_FILE)
-	$(UTT_EXEC) $(UTT_FLAGS) -c $(AUTH_CLOUD_UTT) $(AUTH_CLOUD_FILE)
+.PHONY: auth
+auth: 	$(AUTH_FILE)
+	cat $(AUTH_LEMMAS) >> $(AUTH_FILE)
+	$(UTT_EXEC) $(UTT_FLAGS) -c $(AUTH_UTT) $(AUTH_FILE)
 
-.PHONY: auth-cloud-dbg
-auth-cloud-dbg: 	$(AUTH_CLOUD_FILE)
-	cat $(AUTH_CLOUD_DEBUG) >> $(AUTH_CLOUD_FILE)
-	$(UTT_EXEC) $(UTT_FLAGS) -c $(AUTH_CLOUD_UTT_DBG) $(AUTH_CLOUD_FILE)
+.PHONY: auth-dbg
+auth-dbg: 	$(AUTH_FILE)
+	cat $(AUTH_DEBUG) >> $(AUTH_FILE)
+	$(UTT_EXEC) $(UTT_FLAGS) -c $(AUTH_UTT_DBG) $(AUTH_FILE)
 
-.PHONY: auth-cloud-diff
-auth-cloud-diff:    $(AUTH_CLOUD_FILE)
-	cat $(AUTH_CLOUD_DIFF_LEMMAS) >> $(AUTH_CLOUD_FILE)
-	$(TAMARIN) interactive $(AUTH_CLOUD_FILE) $(TAMARIN_FLAGS) --diff
-
-# This is also a phony target as it gets modified by other rules
-.PHONY: $(AUTH_CLOUD_FILE)
-$(AUTH_CLOUD_FILE):
-	cat $(AUTH_CLOUD_LIB) > $(AUTH_CLOUD_FILE)
-
-#-----------------------------------#
-# Secret chat and rekeying protocol #
-#-----------------------------------#
-.PHONY: secret-rekey
-secret-rekey:	$(SCHAT_REKEY_FILE)
-	cat $(SCHAT_REKEY_LEMMAS) >> $(SCHAT_REKEY_FILE) 
-	$(UTT_EXEC) $(UTT_FLAGS) -c $(SCHAT_REKEY_UTT) $(SCHAT_REKEY_FILE)
-
-.PHONY: secret-rekey-dbg
-secret-rekey-dbg: 	$(SCHAT_REKEY_FILE)
-	cat $(SCHAT_REKEY_DEBUG) >> $(SCHAT_REKEY_FILE)
-	$(UTT_EXEC) $(UTT_FLAGS) -c $(SCHAT_REKEY_UTT_DBG) $(SCHAT_REKEY_FILE)
-
-.PHONY: secret-rekey-diff
-secret-rekey-diff:    $(SCHAT_REKEY_FILE)
-	cat $(SCHAT_REKEY_DIFF_LEMMAS) >> $(SCHAT_REKEY_FILE)
-	$(TAMARIN) interactive $(SCHAT_REKEY_FILE) $(TAMARIN_FLAGS) --diff
+.PHONY: auth-diff
+auth-diff:    $(AUTH_FILE)
+	cat $(AUTH_DIFF_LEMMAS) >> $(AUTH_FILE)
+	$(TAMARIN) interactive $(AUTH_FILE) $(TAMARIN_FLAGS) --diff
 
 # This is also a phony target as it gets modified by other rules
-.PHONY: $(SCHAT_REKEY_FILE)
-$(SCHAT_REKEY_FILE):
-	cat $(SCHAT_REKEY_LIB) > $(SCHAT_REKEY_FILE)
+.PHONY: $(AUTH_FILE)
+$(AUTH_FILE):
+	cat $(AUTH_LIB) > $(AUTH_FILE)
 
-#-------#
-# Clean #
-#-------#
+#---------------------------------------#
+# Cloud chat protocol                   #
+#---------------------------------------#
+.PHONY: cloud-chat
+cloud-chat: 	$(CLOUD_CHAT_FILE)
+	cat $(CLOUD_CHAT_LEMMAS) >> $(CLOUD_CHAT_FILE)
+	$(UTT_EXEC) $(UTT_FLAGS) -c $(CLOUD_CHAT_UTT) $(CLOUD_CHAT_FILE)
+
+.PHONY: cloud-chat-dbg
+cloud-chat-dbg: 	$(CLOUD_CHAT_FILE)
+	cat $(CLOUD_CHAT_DEBUG) >> $(CLOUD_CHAT_FILE)
+	$(UTT_EXEC) $(UTT_FLAGS) -c $(CLOUD_CHAT_UTT_DBG) $(CLOUD_CHAT_FILE)
+
+.PHONY: cloud-chat-diff
+cloud-chat-diff:    $(CLOUD_CHAT_FILE)
+	cat $(CLOUD_CHAT_DIFF_LEMMAS) >> $(CLOUD_CHAT_FILE)
+	$(TAMARIN) interactive $(CLOUD_CHAT_FILE) $(TAMARIN_FLAGS) --diff
+
+# This is also a phony target as it gets modified by other rules
+.PHONY: $(CLOUD_CHAT_FILE)
+$(CLOUD_CHAT_FILE):
+	cat $(CLOUD_CHAT_LIB) > $(CLOUD_CHAT_FILE)
+
+#---------------------------------------#
+# Secret chat protocol                  #
+#---------------------------------------#
+.PHONY: secret-chat
+secret-chat:	$(SECRET_CHAT_FILE)
+	cat $(SECRET_CHAT_LEMMAS) >> $(SECRET_CHAT_FILE) 
+	$(UTT_EXEC) $(UTT_FLAGS) -c $(SECRET_CHAT_UTT) $(SECRET_CHAT_FILE)
+
+.PHONY: secret-chat-dbg
+secret-chat-dbg: 	$(SECRET_CHAT_FILE)
+	cat $(SECRET_CHAT_DEBUG) >> $(SECRET_CHAT_FILE)
+	$(UTT_EXEC) $(UTT_FLAGS) -c $(SECRET_CHAT_UTT_DBG) $(SECRET_CHAT_FILE)
+
+.PHONY: secret-chat-diff
+secret-chat-diff:    $(SECRET_CHAT_FILE)
+	cat $(SECRET_CHAT_DIFF_LEMMAS) >> $(SECRET_CHAT_FILE)
+	$(TAMARIN) interactive $(SECRET_CHAT_FILE) $(TAMARIN_FLAGS) --diff
+
+# This is also a phony target as it gets modified by other rules
+.PHONY: $(SECRET_CHAT_FILE)
+$(SECRET_CHAT_FILE):
+	cat $(SECRET_CHAT_LIB) > $(SECRET_CHAT_FILE)
+
+#---------------------------------------#
+# Rekeying protocol                     #
+#---------------------------------------#
+.PHONY: rekeying 
+rekeying:	$(REKEYING_FILE)
+	cat $(REKEYING_LEMMAS) >> $(REKEYING_FILE) 
+	$(UTT_EXEC) $(UTT_FLAGS) -c $(REKEYING_UTT) $(REKEYING_FILE)
+
+.PHONY: rekeying-dbg
+rekeying-dbg: 	$(REKEYING_FILE)
+	cat $(REKEYING_DEBUG) >> $(REKEYING_FILE)
+	$(UTT_EXEC) $(UTT_FLAGS) -c $(REKEYING_UTT_DBG) $(REKEYING_FILE)
+
+.PHONY: rekeying-diff
+rekeying-diff:    $(REKEYING_FILE)
+	cat $(REKEYING_DIFF_LEMMAS) >> $(REKEYING_FILE)
+	$(TAMARIN) interactive $(REKEYING_FILE) $(TAMARIN_FLAGS) --diff
+
+# This is also a phony target as it gets modified by other rules
+.PHONY: $(REKEYING_FILE)
+$(REKEYING_FILE):
+	cat $(REKEYING_LIB) > $(REKEYING_FILE)
+
+#---------------------------------------#
+# Cleanup                               #
+#---------------------------------------#
 .PHONY: clean
 clean:
 	rm -f client_session_key.aes
-	rm -f $(SCHAT_REKEY_FILE)
-	rm -f $(AUTH_CLOUD_FILE)
+	rm -f $(AUTH_FILE)
+	rm -f $(CLOUD_CHAT_FILE)
+	rm -f $(SECRET_CHAT_FILE)
+	rm -f $(REKEYING_FILE)

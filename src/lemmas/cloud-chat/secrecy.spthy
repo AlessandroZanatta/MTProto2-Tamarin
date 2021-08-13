@@ -38,7 +38,7 @@
         ==>
         (
           /* then the authorization key was actually compromised */
-          (∃ #r.   CompromisedAuthKey(authKey) @r)
+          (∃ #r. CompromisedAuthKey(authKey) @r)
         )
     "
 
@@ -73,7 +73,7 @@
         ==>
         (
           /* then the authorization key was actually compromised */
-          (∃ #r.   CompromisedAuthKey(authKey) @r)
+          (∃ #r. CompromisedAuthKey(authKey) @r)
         )
     "
 
@@ -84,7 +84,7 @@
   /*
    * The secrecy of a message should be preserved for sessions 
    * that executed correctly even if some information is revealed 
-   * after the session has complete ∞d (perfect forward secrecy).
+   * after the session has completed (perfect forward secrecy).
    *
    * This query and the next one show that no PFS is guaranteed in cloud chats.
    */
@@ -106,7 +106,7 @@
           /* and the attacker knows the message */
           K(msg) @m ∧
         
-          /* and no secret was leaked before the message was sent */
+          /* and no secret was leaked before the message was received */
           ¬(∃ sk #r.   CompromisedAuthKey(sk) @r ∧ #r < #j) ∧
           ¬(∃ skey #r. CompromisedPrivateKey(skey) @r ∧ #r < #j) ∧
           ¬(∃ n #r.    CompromisedNk(n) @r ∧ #r < #j) ∧

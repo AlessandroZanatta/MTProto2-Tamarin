@@ -119,14 +119,7 @@
  */
 
   functions: senc/3, sdec/3, genKey/2, genIV/2, keyID/1
-  equations: sdec(
-      senc(m, 
-          genKey(ns, nk), 
-          genIV(ns, nk)
-      ), 
-      genKey(ns, nk), 
-      genIV(ns, nk)
-  ) = m
+  equations: sdec(senc(msg, key, iv), key, iv) = msg
 
 /* 
  * Malleability of the ciphertext is *not* modeled.

@@ -1,5 +1,5 @@
 
-
+  
 /*****************************************************************/
 /* Helpers                                                       */
 /*****************************************************************/
@@ -17,6 +17,19 @@
 /* Protocol rules                                                */
 /*****************************************************************/
 
+//  rule FakeAuthKeys:
+//    let
+//      authKey = 'g' ^ ~c ^ ~s
+//    in
+//      [
+//        Fr(~c),
+//        Fr(~s)
+//      ]
+//      -->
+//      [
+//        !AuthKeyClient($Server, authKey),
+//        !AuthKeyServer(keyID(authKey), authKey)
+//      ]
 
   rule ClientCloudChat_1 [color=#E2C290]:
     let
@@ -59,11 +72,11 @@
     let
       /* Pattern matching for the incoming message */
       mk1  = msgKey(authKey, msg1)
-      msg1 = <'CLIENT', sessionID, m1>
+      msg1 = <'CLIENT', ~sessionID, m1>
       c1   = senc(msg1, kdfKey(authKey, mk1), kdfIV(authKey, mk1))
 
       /* Outgoing message creation */
-      msg2 = <'SERVER', sessionID, ~m2>
+      msg2 = <'SERVER', ~sessionID, ~m2>
       mk2  = msgKey(authKey, msg2)
       c2   = senc(msg2, kdfKey(authKey, mk2), kdfIV(authKey, mk2))
     in
@@ -84,16 +97,16 @@
          * Server has received the message m1 in session
          * sessionID using the authorization key authKey
          */
-        ServerReceivesCloudMessage(sessionID, m1, authKey),
+        ServerReceivesCloudMessage(~sessionID, m1, authKey),
 
         /*
          * Server has sent the message ~m2 in session
          * sessionID using the authorization key authKey
          */
-        ServerSendsCloudMessage(sessionID, ~m2, authKey)
+        ServerSendsCloudMessage(~sessionID, ~m2, authKey)
       ]->
       [ 
-        ServerCloudChatState_2(<sessionID, authKey, m1, ~m2>),
+        ServerCloudChatState_2(<~sessionID, authKey, m1, ~m2>),
         Out(<keyID(authKey), mk2, c2>)
       ]
 

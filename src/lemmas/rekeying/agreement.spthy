@@ -1,0 +1,27 @@
+/*
+ * If an (honest) initiator iUser thinks that she has negotiated a new 
+ * key newKey1 in session exchangeID with an (honest) responder rUser, 
+ * and rUser believes that she has negotiated a new key newKey2 in session
+ * exchangeID with iUser, then they have computed the same key.
+ *
+ * Expected result: True
+ * Estimated time: ~20 seconds
+ */
+
+  lemma LemmaRekeyingAgreement:
+    "
+      ∀ exchangeID iUser rUser newKey1 newKey2 #i #j.
+        /* Whenever two parties have negotiated a key in the same session */
+        InitiatorHasNegotiatedNewKey(exchangeID, iUser, rUser, newKey1) @i ∧
+        ResponderHasNegotiatedNewKey(exchangeID, iUser, rUser, newKey2) @j ∧
+
+        /* and no secret was revealed */
+        ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
+        ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r) ∧
+        ¬(∃ x #r. RegisteredSessionKey(x) @r)
+        ==>
+        (
+          /* then they have actually negotiated the same key */
+          newKey1 = newKey2
+        )
+  "

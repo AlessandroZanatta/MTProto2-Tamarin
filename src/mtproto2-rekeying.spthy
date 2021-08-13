@@ -6,14 +6,305 @@
  * See: https://core.telegram.org/api/end-to-end/pfs
  */
 
+/*****************************************************************/
+/* Useful functions                                              */
+/*****************************************************************/
 
-  rule RekeyingInitiator_1:
-      []
-    -->
+  functions:
+    ChooseOtherPrincipal/3
+
+  equations:
+    ChooseOtherPrincipal(X, X, Y) = Y,
+    ChooseOtherPrincipal(X, Y, X) = Y
+
+
+/*****************************************************************/
+/* Protocol definition                                           */
+/*****************************************************************/
+
+
+  rule RekeyingInitiator_1 [color=#41a9a9]:
+    let
+      g_i  = 'g' ^ ~i
+
+      m1   = <'HALF_KEY_I', ~exchangeID, g_i>
+      mk1  = msgKey(sessionKey, m1)
+      key1 = kdfKey(sessionKey, mk1)
+      iv1  = kdfIV(sessionKey, mk1)
+      c1   = <keyID(sessionKey), mk1, senc(m1, key1, iv1)>
+    in
+      [
+        In(<iUser, rUser>),
+
+        /* 
+         * Retrieve the session key sessionKey exchanged during the first
+         * secret chat protocol run 
+         */
+        !SecretChatClient(iUser, Iu, Ru, ~old_i, chatID, sessionKey, authKey),
+        
+        /* Generate DH ephemeral key */
+        Fr(~i),
+
+        /* Generate session ID */
+        Fr(~exchangeID)
+      ]
+    --[
+        ChoosePrincipal(iUser, $Alice, $Bob),
+        // NotEq(iUser, rUser),
+        InitiatorSendsHalfKey(~exchangeID, iUser, rUser, g_i)
+      ]->
+      [
+        RekeyingInitiatorState_1(iUser, rUser, ~i, ~exchangeID, sessionKey, authKey),
+        !RekeyingInitiatorEphemeralKey(~i),
+        Out(c1)
+      ]
+
+
+  rule RekeyingResponder_2 [color=#4C6085]:
+    let
+      iUser  = ChooseOtherPrincipal(rUser, Iu, Ru)
+
+      g_i    = 'g' ^ ~i
+      m1     = <'HALF_KEY_I', ~exchangeID, g_i>
+      mk1    = msgKey(sessionKey, m1)
+      key1   = kdfKey(sessionKey, mk1)
+      iv1    = kdfIV(sessionKey, mk1)
+      c1     = <keyID(sessionKey), mk1, senc(m1, key1, iv1)>
+
+      newKey = g_i ^ ~r
+      fp     = fps(newKey)
+
+      g_r    = 'g' ^ ~r
+      m2     = <'HALF_KEY_R', ~exchangeID, g_r, fp>
+      mk2    = msgKey(sessionKey, m2)
+      key2   = kdfKey(sessionKey, mk2)
+      iv2    = kdfIV(sessionKey, mk2)
+      c2     = <keyID(sessionKey), mk2, senc(m2, key2, iv2)> 
+    in
+      [
+        In(rUser),
+        
+        /* Generate responder DH ephemeral key */
+        Fr(~r),
+
+        /* 
+         * Retrieve the session key sessionKey exchanged during the first
+         * secret chat protocol run 
+         */
+        !SecretChatClient(rUser, Iu, Ru, ~old_r, chatID, sessionKey, authKey),
+
+        In(c1)
+      ]
+    --[
+        ChoosePrincipal(rUser, $Alice, $Bob),
+        ResponderReceivesHalfKey(~exchangeID, iUser, rUser, g_i),
+        ResponderSendsHalfKey(~exchangeID, iUser, rUser, g_r, fp)
+      ]->
+      [
+        RekeyingResponderState_2(iUser, rUser, ~r, ~exchangeID, sessionKey, authKey, newKey),
+        !RekeyingResponderEphemeralKey(~r),
+        Out(c2)
+      ]
+
+
+  rule RekeyingInitiator_3 [color=#41a9a9]:
+    let
+      g_r    = 'g' ^ ~r
+
+      /*
+       * This pattern matching is required to avoid partial deconstruction
+       * coming from the ambiguity of the term fp
+       */
+      // fp     = fps('g' ^ ~e1 ^ ~e2)
+      fp     = fps(otherPartyNewKey)
+      m2     = <'HALF_KEY_R', ~exchangeID, g_r, fp>
+      mk2    = msgKey(sessionKey, m2)
+      key2   = kdfKey(sessionKey, mk2)
+      iv2    = kdfIV(sessionKey, mk2)
+      c2     = <keyID(sessionKey), mk2, senc(m2, key2, iv2)>
+
+      newKey = g_r ^ ~i
+
+      m3     = <'FP_ACK', ~exchangeID, fp> 
+      mk3    = msgKey(sessionKey, m3)
+      key3   = kdfKey(sessionKey, mk3)
+      iv3    = kdfIV(sessionKey, mk3)
+      c3     = <keyID(sessionKey), mk3, senc(m3, key3, iv3)>
+    in
+      [
+        RekeyingInitiatorState_1(iUser, rUser, ~i, ~exchangeID, sessionKey, authKey),
+        In(c2)
+      ]
+    --[ 
+        InitiatorReceivesHalfKey(~exchangeID, iUser, rUser, g_r, fp),
+        RekeyingKeyFingerprintMatches(~exchangeID, iUser, rUser, fp, fps(newKey)),
+        InitiatorHasNegotiatedNewKey(~exchangeID, iUser, rUser, newKey),
+        InitiatorSendsAck(~exchangeID, iUser, rUser, fp) 
+      ]->
+      [
+        Out(c3),
+
+        /* End of the rekeying protocol */
+        !RekeyingClient(iUser, iUser, rUser, ~i, ~exchangeID, newKey, authKey)
+      ]
+
+  rule RekeyingResponder_4 [color=#4C6085]:
+    let
+      fp     = fps(newKey)
+
+      m3     = <'FP_ACK', ~exchangeID, fp> 
+      mk3    = msgKey(sessionKey, m3)
+      key3   = kdfKey(sessionKey, mk3)
+      iv3    = kdfIV(sessionKey, mk3)
+      c3     = <keyID(sessionKey), mk3, senc(m3, key3, iv3)>
+    in
+      [
+
+        RekeyingResponderState_2(iUser, rUser, ~r, ~exchangeID, sessionKey, authKey, newKey),
+        In(c3)
+      ]
+    --[
+        ResponderReceivesAck(~exchangeID, iUser, rUser, fp),
+        ResponderHasNegotiatedNewKey(~exchangeID, iUser, rUser, newKey)
+      ]->
+      [
+        /* End of the rekeying protocol */
+        !RekeyingClient(rUser, iUser, rUser, ~r, ~exchangeID, newKey, authKey)
+      ]
+
+/*****************************************************************/
+/* Rekeying chat message sending/receiving rules                 */
+/*****************************************************************/
+
+  rule RekeyingSend [color=#0088CC]:
+    let
+      mk  = msgKey(newKey, ~m)
+      key = kdfKey(newKey, mk)
+      iv  = kdfIV(newKey, mk)
+
+      c   = <keyID(newKey), mk, senc(~m, key, iv)>
+    in
+      [
+        !RekeyingClient(X, iUser, rUser, ~xID, ~exchangeID, newKey, authKey),
+        Fr(~m)
+      ]
+    --[
+        ClientSendsMsgWithNewKey(~xID, X, ~exchangeID, iUser, rUser, newKey, ~m)
+      ]->
+      [ Out(c) ]
+
+
+  rule RekeyingReceive [color=#0088CC]:
+    let
+      mk  = msgKey(newKey, ~m)
+      key = kdfKey(newKey, mk)
+      iv  = kdfIV(newKey, mk)
+
+      c   = <keyID(newKey), mk, senc(~m, key, iv)>
+    in
+      [
+        !RekeyingClient(X, iUser, rUser, ~xID, ~exchangeID, newKey, authKey),
+        In(c)
+      ]
+    --[ ClientReceivesMsgWithNewKey(~xID, X, ~exchangeID, iUser, rUser, newKey, ~m) ]->
       []
 
 
-  rule RekeyingResponder_2:
-      []
-    -->
-      []
+/*****************************************************************/
+/* Attacker capabilities                                         */
+/*****************************************************************/
+
+  rule CompromiseRekeyingInitiatorEphemeralKey [color=#FE4A49]:
+      [ !RekeyingInitiatorEphemeralKey(~i) ]
+    --[ CompromisedRekeyingInitiatorEphemeralKey(~i) ]->
+      [ Out(~i) ]
+
+  rule CompromiseRekeyingResponderEphemeralKey [color=#FE4A49]:
+      [ !RekeyingResponderEphemeralKey(~r) ]
+    --[ CompromisedRekeyingResponderEphemeralKey(~r) ]->
+      [ Out(~r) ]
+
+  /*
+   * Allows the attacker to register a session key with an honest client, 
+   * as if it had successfully run a session of the secret chat protocol 
+   * with that client.
+   */
+  rule RegisterSessionKey [color=#FE4A49]:
+    let
+      sessionKey = 'g' ^ ~a ^ ~b
+    in
+      [ 
+        In(X),
+        Fr(~Y),
+        Fr(~a),
+        Fr(~b),
+        Fr(~chatID),
+        Fr(~authKey)
+      ]
+    --[
+        ChoosePrincipal(X, $Alice, $Bob),
+        RegisteredSessionKey(sessionKey)
+      ]->
+      [
+        !SecretChatClient(X, X, ~Y, ~a, ~chatID, sessionKey, ~authKey),
+        !SecretChatClient(~Y, X, ~Y, ~b, ~chatID, sessionKey, ~authKey),
+        Out(sessionKey),
+        Out(~Y),
+        Out(~b)
+      ]
+
+/*****************************************************************/
+/* Other convenience functions                                   */
+/*****************************************************************/
+
+  /*
+   * In the secret chat threat model the authorization key is considered
+   * to be secure (i.e. not considered part of the threat model).
+   */
+  rule GenerateAuthKey [color=#99C24D]:
+      [ In(X), Fr(~authKey) ]
+    --[ ChoosePrincipal(X, $Alice, $Bob) ]->
+      [ !AuthKeyClient(X, $Server, ~authKey) ]
+
+  rule GenerateSecretChatKey [color=#99C24D]:
+    let
+      X2 = ChooseOtherPrincipal(X1, $Alice, $Bob)
+      sessionKey = 'g' ^ ~i ^ ~r
+    in
+      [ 
+        In(X1),
+        Fr(~i),
+        Fr(~r),
+        Fr(~chatID),
+        !AuthKeyClient(X1, $Server, authKeyX1),
+        !AuthKeyClient(X2, $Server, authKeyX2)
+      ]
+    --[ ChoosePrincipal(X1, $Alice, $Bob) ]->
+      [ 
+        !SecretChatClient(X1, X1, X2, ~i, ~chatID, sessionKey, authKeyX1),
+        !SecretChatClient(X2, X1, X2, ~r, ~chatID, sessionKey, authKeyX2)
+      ]
+
+
+  restriction RestrictionChoosePrincipal:
+    "
+      ∀ X Y Z #i.
+        ChoosePrincipal(X, Y, Z) @i ==> ((X = Y) ∨ (X = Z))
+    "
+
+//  restriction RestrictionNotEq:
+//    "
+//      ∀ x y #i. NotEq(x, y) @i ==> ¬(x = y)
+//    "
+  
+//  restriction RestrictionChooseOnlyOneHonestPrincipal:
+//    "
+//      ∀ X Y A B #i.
+//        ChooseOnlyOneHonestPrincipal(X, Y, A, B) @i
+//        ==>
+//        (
+//          (X = A ∨ X = B) ∧
+//          ¬(Y = A) ∧
+//          ¬(Y = B)
+//        )
+//    "

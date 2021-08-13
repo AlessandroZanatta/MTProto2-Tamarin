@@ -4,7 +4,7 @@
    * If a client X (one of I or R) receives a message m encrypted 
    * with a session key sessionKey in a chat session chatID, then 
    * such message was sent by the other party, unless they skip some
-   *  mandatory check.
+   * mandatory check.
    *
    * NOTE: we cannot force chatID1 = chatID2, because the chat session 
    * identifier is available to the server/attacker, who is free to 
@@ -163,6 +163,9 @@
    * If the clients do not necessarily validate their keys, then the above does
    * not hold. In fact, I, I', R, and R' may be all different (even if the key is
    * the same!).
+   *
+   * Expected result: False
+   * Estimated time: ~30 seconds
    */
   lemma LemmaSecretChatAuthentication5:
     "

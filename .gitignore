@@ -2,7 +2,10 @@
 client_session_key.aes
 
 # Library output
-mtproto2.spthy
+mtproto2-authorization.spthy
+mtproto2-secretchat.spthy
+mtproto2-rekeying.spthy
+mtproto2-cloudchat.spthy
 
 # Analysis output
 out

@@ -17,7 +17,7 @@
         /* Whenever the client sends a secret chat message msg */
         ClientSendsSecretChatMsg(chatID, X, iUser, rUser, sessionKey, msg) @i ∧
         
-        /* but the attacker nows it */
+        /* but the attacker knows it */
         K(msg) @j ∧
 
         /* and no secret was leaked */

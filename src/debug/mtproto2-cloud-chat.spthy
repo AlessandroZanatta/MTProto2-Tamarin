@@ -1,4 +1,6 @@
 
+heuristic: c
+
 /*
  * Negation of the existence of attacks is used to drastically increase
  * the speed at which reachability lemmas are proved (10 times faster or more,
