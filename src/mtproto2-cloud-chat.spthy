@@ -9,35 +9,21 @@
    * server->client messages.
    *
    * Public constants:
-   *  - CLIENT
-   *  - SERVER
+   *  - CtoS
+   *  - StoC
    */
   
 /*****************************************************************/
 /* Protocol rules                                                */
 /*****************************************************************/
 
-//  rule FakeAuthKeys:
-//    let
-//      authKey = 'g' ^ ~c ^ ~s
-//    in
-//      [
-//        Fr(~c),
-//        Fr(~s)
-//      ]
-//      -->
-//      [
-//        !AuthKeyClient($Server, authKey),
-//        !AuthKeyServer(keyID(authKey), authKey)
-//      ]
-
-  rule ClientCloudChat_1 [color=#E2C290]:
+  rule ClientCloudChatSendsMessage [color=#E2C290]:
     let
-      msg1 = <'CLIENT', ~sessionID, ~m1>
-      mk1  = msgKey(authKey, msg1)
-      c1   = senc(msg1, kdfKey(authKey, mk1), kdfIV(authKey, mk1))
+      msg = <'CtoS', ~sessionID, ~m>
+      mk  = msgKey(authKey, msg)
+      c   = senc(msg, kdfKey(authKey, mk), kdfIV(authKey, mk))
     in
-      [ 
+      [
         /* 
          * Retrieve the long-term shared key between client and server 
          */
@@ -54,82 +40,94 @@
          * Fresh message to be sent to the server.
          * This is supposed to remain secret. 
          */
-        Fr(~m1)
+        Fr(~m)
       ]
     --[
         /*
          * The client has sent the cloud message ~m1 in session
          * with id ~sessionID and with authorization key authKey
          */
-        ClientSendsCloudMessage(~sessionID, ~m1, authKey)
+        ClientSendsCloudMessage(~sessionID, ~m, authKey)
       ]->
-      [ 
-        ClientCloudChatState_1(<~sessionID, authKey, ~m1>),
-        Out(<keyID(authKey), mk1, c1>)
-      ]
+      [ Out(<keyID(authKey), mk, c>) ]
   
-  rule ServerCloudChat_2 [color=#0088CC]:
+
+  rule ServerCloudChatReceivesMessage [color=#0088CC]:
     let
       /* Pattern matching for the incoming message */
-      mk1  = msgKey(authKey, msg1)
-      msg1 = <'CLIENT', ~sessionID, m1>
-      c1   = senc(msg1, kdfKey(authKey, mk1), kdfIV(authKey, mk1))
-
-      /* Outgoing message creation */
-      msg2 = <'SERVER', ~sessionID, ~m2>
-      mk2  = msgKey(authKey, msg2)
-      c2   = senc(msg2, kdfKey(authKey, mk2), kdfIV(authKey, mk2))
+      mk  = msgKey(authKey, msg)
+      msg = <'CtoS', ~sessionID, ~m>
+      c   = senc(msg, kdfKey(authKey, mk), kdfIV(authKey, mk))
     in
       [ 
-        In(<kID, mk1, c1>),
+        In(<kID, mk, c>),
 
-        /* Long-term key shared with the server */
-        !AuthKeyServer(kID, authKey),
-
-        /* 
-         * Fresh message to be sent to the client. 
-         * This is supposed to remain secret 
-         */
-        Fr(~m2)
+        /* Long-term key shared with the client */
+        !AuthKeyServer(kID, authKey)
       ]
     --[
         /*
          * Server has received the message m1 in session
          * sessionID using the authorization key authKey
          */
-        ServerReceivesCloudMessage(~sessionID, m1, authKey),
+        ServerReceivesCloudMessage(~sessionID, ~m, authKey)
+      ]->
+      []
 
+
+  rule ServerCloudChatSendsMessage:
+    let
+      kID = keyID(authKey)
+
+      msg = <'StoC', ~sessionID, ~m>
+      mk  = msgKey(authKey, msg)
+      c   = senc(msg, kdfKey(authKey, mk), kdfIV(authKey, mk))
+    in
+      [
+        /* Long-term key shared with the client */
+        !AuthKeyServer(kID, authKey),
+
+        Fr(~sessionID),
+
+        /* 
+         * Fresh message to be sent to the client. 
+         * This is supposed to remain secret 
+         */
+        Fr(~m)
+      ]
+    --[
         /*
-         * Server has sent the message ~m2 in session
+         * Server has sent the message ~m in session
          * sessionID using the authorization key authKey
          */
-        ServerSendsCloudMessage(~sessionID, ~m2, authKey)
+        ServerSendsCloudMessage(~sessionID, ~m, authKey)
       ]->
-      [ 
-        ServerCloudChatState_2(<~sessionID, authKey, m1, ~m2>),
-        Out(<keyID(authKey), mk2, c2>)
-      ]
+      [ Out(<kID, mk, c>) ]
 
-  
-  rule ClientCloudChat_3 [color=#E2C290]:
+
+  rule ClientCloudChatReceivesMessage [color=#E2C290]:
     let
       kID  = keyID(authKey)
       
       /* Pattern matching for the incoming message */
-      msg2 = <'SERVER', ~sessionID, m2>
-      mk2  = msgKey(authKey, msg2)
-      c2   = senc(msg2, kdfKey(authKey, mk2), kdfIV(authKey, mk2))
+      msg = <'StoC', ~sessionID, ~m>
+      mk  = msgKey(authKey, msg)
+      c   = senc(msg, kdfKey(authKey, mk), kdfIV(authKey, mk))
     in
       [ 
-        ClientCloudChatState_1(<~sessionID, authKey, ~m1>),
-        In(<kID, mk2, c2>)
+        /* 
+         * Retrieve the long-term shared key between client and server 
+         */
+        !AuthKeyClient($Server, authKey),
+
+        In(<kID, mk, c>)
       ]
     --[ 
         /*
          * Client has received the message m1 in session
          * sessionID using the authorization key authKey
          */
-        ClientReceivesCloudMessage(~sessionID, m2, authKey)
+        ClientReceivesCloudMessage(~sessionID, ~m, authKey)
       ]->
-      [ ClientCloudChatState_3(<~sessionID, authKey, ~m1, m2>) ]
+      []
 
