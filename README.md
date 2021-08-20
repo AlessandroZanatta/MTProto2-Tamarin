@@ -28,7 +28,7 @@ You can execute security properties lemmas using `make security`. This will run 
  - Secret chat protocol (secret-chat)
  - Rekeying protocol (rekeying)
 
-You can run individual security properties with `make <protocol>`, where `<protocol>` is one of the shorter names between parenthesis (see list above). 
+You can run security properties from a chosen protocol with `make <protocol>`, where `<protocol>` is one of the shorter names between parenthesis (see list above). 
 
 Observational equivalence queries are also available using `make <protocol>-diff`, but these mostly do not work due to the complexity of the model and the high complexity of observational equivalence proofs.
 
