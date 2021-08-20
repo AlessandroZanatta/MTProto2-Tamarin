@@ -1,0 +1,119 @@
+
+
+  lemma LemmaRekeyingInitiatorSendsHalfKey:
+    exists-trace
+    "
+      ∃ iUser rUser eID g_i #i.
+        InitiatorSendsHalfKey(eID, iUser, rUser, g_i) @i ∧
+        ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
+        ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
+        ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
+    "
+
+  lemma LemmaRekeyingResponderReceivesHalfKey:
+    exists-trace
+    "
+      ∃ iUser rUser eID g_i #i.
+        ResponderReceivesHalfKey(eID, iUser, rUser, g_i) @i ∧
+        ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
+        ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
+        ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
+    "
+
+  lemma LemmaRekeyingResponderSendsHalfKey:
+    exists-trace
+    "
+      ∃ iUser rUser eID g_r fp #i.
+        ResponderSendsHalfKey(eID, iUser, rUser, g_r, fp) @i ∧
+        ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
+        ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
+        ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
+    "
+
+  lemma LemmaRekeyingInitiatorReceivesHalfKey:
+    exists-trace
+    "
+      ∃ iUser rUser eID g_r fp #i.
+        InitiatorReceivesHalfKey(eID, iUser, rUser, g_r, fp) @i ∧
+        ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
+        ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
+        ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
+    "
+  
+  lemma LemmaRekeyingRekeyingKeyFingerprintMatches:
+    exists-trace
+    "
+      ∃ iUser rUser eID fp1 fp2 #i.
+        RekeyingKeyFingerprintMatches(eID, iUser, rUser, fp1, fp2) @i ∧
+        ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
+        ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
+        ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
+    "
+
+  lemma LemmaRekeyingInitiatorHasNegotiatedNewKey:
+    exists-trace
+    "
+      ∃ iUser rUser eID newKey #i.
+        InitiatorHasNegotiatedNewKey(eID, iUser, rUser, newKey) @i ∧
+        ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
+        ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
+        ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
+    "
+
+  lemma LemmaRekeyingInitiatorSendsAck:
+    exists-trace
+    "
+      ∃ iUser rUser eID fp #i.
+        InitiatorSendsAck(eID, iUser, rUser, fp) @i ∧
+        ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
+        ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
+        ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
+    "
+
+  lemma LemmaRekeyingResponderReceivesAck:
+    exists-trace
+    "
+      ∃ iUser rUser eID fp #i.
+        ResponderReceivesAck(eID, iUser, rUser, fp) @i ∧
+        ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
+        ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
+        ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
+    "
+
+  lemma LemmaRekeyingResponderHasNegotiatedNewKey:
+    exists-trace
+    "
+      ∃ iUser rUser eID newKey #i.
+        ResponderHasNegotiatedNewKey(eID, iUser, rUser, newKey) @i ∧
+        ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
+        ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
+        ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
+    "
+  
+  lemma LemmaRekeyingClientSendsMsgWithNewKey:
+    exists-trace
+    "
+      ∃ iUser rUser xID exchangeID newKey msg #i.
+        ClientSendsMsgWithNewKey(xID, exchangeID, iUser, rUser, newKey, msg) @i ∧
+        ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
+        ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
+        ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
+  "
+
+  lemma LemmaRekeyingClientReceivesMsgWithNewKey:
+    exists-trace
+    "
+      ∃ iUser rUser xID exchangeID newKey msg #i.
+        ClientReceivesMsgWithNewKey(xID, exchangeID, iUser, rUser, newKey, msg) @i ∧
+        ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
+        ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
+        ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
+  "
+
+  lemma LemmaRekeyingCompromisedRekeyingInitiatorEphemeralKey:
+    exists-trace
+    "∃ x #i. CompromisedRekeyingInitiatorEphemeralKey(x) @i"
+
+  lemma LemmaRekeyingCompromisedRekeyingResponderEphemeralKey:
+    exists-trace
+    "∃ x #i. CompromisedRekeyingResponderEphemeralKey(x) @i"
