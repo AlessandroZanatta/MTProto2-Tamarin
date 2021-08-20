@@ -93,8 +93,8 @@
   lemma LemmaRekeyingClientSendsMsgWithNewKey:
     exists-trace
     "
-      ∃ iUser rUser xID exchangeID newKey msg #i.
-        ClientSendsMsgWithNewKey(xID, exchangeID, iUser, rUser, newKey, msg) @i ∧
+      ∃ sender iUser rUser xID exchangeID newKey msg #i.
+        ClientSendsMsgWithNewKey(xID, sender, exchangeID, iUser, rUser, newKey, msg) @i ∧
         ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
         ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
         ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
@@ -103,8 +103,8 @@
   lemma LemmaRekeyingClientReceivesMsgWithNewKey:
     exists-trace
     "
-      ∃ iUser rUser xID exchangeID newKey msg #i.
-        ClientReceivesMsgWithNewKey(xID, exchangeID, iUser, rUser, newKey, msg) @i ∧
+      ∃ receiver iUser rUser xID exchangeID newKey msg #i.
+        ClientReceivesMsgWithNewKey(xID, receiver, exchangeID, iUser, rUser, newKey, msg) @i ∧
         ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
         ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
         ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
