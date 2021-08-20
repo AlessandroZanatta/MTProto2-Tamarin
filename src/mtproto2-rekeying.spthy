@@ -189,7 +189,7 @@
         Fr(~m)
       ]
     --[
-        ClientSendsMsgWithNewKey(~xID, X, ~exchangeID, iUser, rUser, newKey, ~m)
+        ClientSendsMessageWithNewKey(~xID, X, ~exchangeID, iUser, rUser, newKey, ~m)
       ]->
       [ Out(c) ]
 
@@ -206,7 +206,7 @@
         !RekeyingClient(X, iUser, rUser, ~xID, ~exchangeID, newKey, authKey),
         In(c)
       ]
-    --[ ClientReceivesMsgWithNewKey(~xID, X, ~exchangeID, iUser, rUser, newKey, ~m) ]->
+    --[ ClientReceivesMessageWithNewKey(~xID, X, ~exchangeID, iUser, rUser, newKey, ~m) ]->
       []
 
 
@@ -256,6 +256,11 @@
 /*****************************************************************/
 /* Other convenience functions                                   */
 /*****************************************************************/
+
+  rule AliceAndBob:
+      []
+    --[ AliceAndBob($Alice, $Bob) ]->
+      []
 
   /*
    * In the secret chat threat model the authorization key is considered

@@ -90,21 +90,21 @@
         ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
     "
   
-  lemma LemmaRekeyingClientSendsMsgWithNewKey:
+  lemma LemmaRekeyingClientSendsMessageWithNewKey:
     exists-trace
     "
       ∃ sender iUser rUser xID exchangeID newKey msg #i.
-        ClientSendsMsgWithNewKey(xID, sender, exchangeID, iUser, rUser, newKey, msg) @i ∧
+        ClientSendsMessageWithNewKey(xID, sender, exchangeID, iUser, rUser, newKey, msg) @i ∧
         ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
         ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
         ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
   "
 
-  lemma LemmaRekeyingClientReceivesMsgWithNewKey:
+  lemma LemmaRekeyingClientReceivesMessageWithNewKey:
     exists-trace
     "
       ∃ receiver iUser rUser xID exchangeID newKey msg #i.
-        ClientReceivesMsgWithNewKey(xID, receiver, exchangeID, iUser, rUser, newKey, msg) @i ∧
+        ClientReceivesMessageWithNewKey(xID, receiver, exchangeID, iUser, rUser, newKey, msg) @i ∧
         ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
         ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
         ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
