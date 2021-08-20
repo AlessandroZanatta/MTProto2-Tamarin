@@ -20,8 +20,7 @@
   rule ClientCloudChatSendsMessage [color=#E2C290]:
     let
       msg = <'CtoS', ~sessionID, ~m>
-      mk  = msgKey(authKey, msg)
-      c   = senc(msg, kdfKey(authKey, mk), kdfIV(authKey, mk))
+      c   = senc(msg, kdf(authKey))
     in
       [
         /* 
@@ -49,18 +48,17 @@
          */
         ClientSendsCloudMessage(~sessionID, ~m, authKey)
       ]->
-      [ Out(<keyID(authKey), mk, c>) ]
+      [ Out(<keyID(authKey), c>) ]
   
 
   rule ServerCloudChatReceivesMessage [color=#0088CC]:
     let
       /* Pattern matching for the incoming message */
-      mk  = msgKey(authKey, msg)
       msg = <'CtoS', ~sessionID, ~m>
-      c   = senc(msg, kdfKey(authKey, mk), kdfIV(authKey, mk))
+      c   = senc(msg, kdf(authKey))
     in
       [ 
-        In(<kID, mk, c>),
+        In(<kID, c>),
 
         /* Long-term key shared with the client */
         !AuthKeyServer(kID, authKey)
@@ -80,8 +78,7 @@
       kID = keyID(authKey)
 
       msg = <'StoC', ~sessionID, ~m>
-      mk  = msgKey(authKey, msg)
-      c   = senc(msg, kdfKey(authKey, mk), kdfIV(authKey, mk))
+      c   = senc(msg, kdf(authKey))
     in
       [
         /* Long-term key shared with the client */
@@ -102,7 +99,7 @@
          */
         ServerSendsCloudMessage(~sessionID, ~m, authKey)
       ]->
-      [ Out(<kID, mk, c>) ]
+      [ Out(<kID, c>) ]
 
 
   rule ClientCloudChatReceivesMessage [color=#E2C290]:
@@ -111,8 +108,7 @@
       
       /* Pattern matching for the incoming message */
       msg = <'StoC', ~sessionID, ~m>
-      mk  = msgKey(authKey, msg)
-      c   = senc(msg, kdfKey(authKey, mk), kdfIV(authKey, mk))
+      c   = senc(msg, kdf(authKey))
     in
       [ 
         /* 
@@ -120,7 +116,7 @@
          */
         !AuthKeyClient($Server, authKey),
 
-        In(<kID, mk, c>)
+        In(<kID, c>)
       ]
     --[ 
         /*

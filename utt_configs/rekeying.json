@@ -1,6 +1,6 @@
 {
     "lemma_allow_list": [],
-    "lemma_deny_list": [],
+    "lemma_deny_list": ["LemmaRekeyingAgreement"],
     "global_annotations": {
         "important_facts": [],
         "unimportant_facts": [],

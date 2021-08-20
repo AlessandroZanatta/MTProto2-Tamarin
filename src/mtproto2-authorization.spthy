@@ -132,12 +132,11 @@
         Out(<~nc, ns, aenc(<~nc, ns, ~nk>, pkey)>)
       ]
 
-  /* 4. S -> C: Nc, Ns, senc(Nc, Ns, halfkey){key, iv} */
+  /* 4. S -> C: Nc, Ns, senc(Nc, Ns, halfkey){key} */
   rule Server_4 [color=#0088CC]:
     let
       half = 'g' ^ ~s
       key  = genKey(ns, nk)
-      iv   = genIV(ns, nk)
     in
       [
         ServerState_2(nc, ns, skey, ~s),
@@ -160,21 +159,20 @@
       ]->
       [
         ServerState_4(nc, ns, nk, skey, ~s),
-        Out(<nc, ns, senc(<'StoC', nc, ns, half>, key, iv)>)
+        Out(<nc, ns, senc(<'StoC', nc, ns, half>, key)>)
       ]
 
-  /* 5. C -> S: Nc, Ns, senc(Nc, Ns, halfkey){key, iv} */
+  /* 5. C -> S: Nc, Ns, senc(Nc, Ns, halfkey){key} */
   rule Client_5 [color=#E2C290]:
     let
       g_s        = 'g' ^ ~s
       key  = genKey(ns, ~nk)
-      iv   = genIV(ns, ~nk)
       half       = 'g' ^ ~c
       authKey = g_s ^ ~c
     in
       [
         ClientState_3(~nc, ns, ~nk, pkey, ~c),
-        In(<~nc, ns, senc(<'StoC', ~nc, ns, g_s>, key, iv)>)
+        In(<~nc, ns, senc(<'StoC', ~nc, ns, g_s>, key)>)
       ]
     --[
         /*
@@ -208,7 +206,7 @@
         ClientAcceptsAuthKey(~nc, ns, ~nk, authKey)]->
       [
         ClientState_5(~nc, ns, ~nk, pkey, g_s, ~c, authKey),
-        Out(<~nc, ns, senc(<'CtoS', ~nc, ns, half>, key, iv)>)
+        Out(<~nc, ns, senc(<'CtoS', ~nc, ns, half>, key)>)
       ]
 
 
@@ -217,12 +215,11 @@
     let
       g_c        = 'g' ^ ~c
       key  = genKey(ns, nk)
-      iv   = genIV(ns, nk)
       authKey = g_c ^ ~s
     in
       [ 
         ServerState_4(nc, ns, nk, skey, ~s), 
-        In(<nc, ns, senc(<'CtoS', nc, ns, g_c>, key, iv)>) 
+        In(<nc, ns, senc(<'CtoS', nc, ns, g_c>, key)>) 
       ]
     --[ 
         /*

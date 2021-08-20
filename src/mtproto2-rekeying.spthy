@@ -28,10 +28,7 @@
       g_i  = 'g' ^ ~i
 
       m1   = <'HALF_KEY_I', ~exchangeID, g_i>
-      mk1  = msgKey(sessionKey, m1)
-      key1 = kdfKey(sessionKey, mk1)
-      iv1  = kdfIV(sessionKey, mk1)
-      c1   = <keyID(sessionKey), mk1, senc(m1, key1, iv1)>
+      c1   = <keyID(sessionKey), senc(m1, sessionKey)>
     in
       [
         In(<iUser, rUser>),
@@ -66,20 +63,14 @@
 
       g_i    = 'g' ^ ~i
       m1     = <'HALF_KEY_I', ~exchangeID, g_i>
-      mk1    = msgKey(sessionKey, m1)
-      key1   = kdfKey(sessionKey, mk1)
-      iv1    = kdfIV(sessionKey, mk1)
-      c1     = <keyID(sessionKey), mk1, senc(m1, key1, iv1)>
+      c1     = <keyID(sessionKey), senc(m1, sessionKey)>
 
       newKey = g_i ^ ~r
       fp     = fps(newKey)
 
       g_r    = 'g' ^ ~r
       m2     = <'HALF_KEY_R', ~exchangeID, g_r, fp>
-      mk2    = msgKey(sessionKey, m2)
-      key2   = kdfKey(sessionKey, mk2)
-      iv2    = kdfIV(sessionKey, mk2)
-      c2     = <keyID(sessionKey), mk2, senc(m2, key2, iv2)> 
+      c2     = <keyID(sessionKey), senc(m2, sessionKey)> 
     in
       [
         In(rUser),
@@ -118,18 +109,12 @@
       // fp     = fps('g' ^ ~e1 ^ ~e2)
       fp     = fps(otherPartyNewKey)
       m2     = <'HALF_KEY_R', ~exchangeID, g_r, fp>
-      mk2    = msgKey(sessionKey, m2)
-      key2   = kdfKey(sessionKey, mk2)
-      iv2    = kdfIV(sessionKey, mk2)
-      c2     = <keyID(sessionKey), mk2, senc(m2, key2, iv2)>
+      c2     = <keyID(sessionKey), senc(m2, sessionKey)>
 
       newKey = g_r ^ ~i
 
-      m3     = <'FP_ACK', ~exchangeID, fp> 
-      mk3    = msgKey(sessionKey, m3)
-      key3   = kdfKey(sessionKey, mk3)
-      iv3    = kdfIV(sessionKey, mk3)
-      c3     = <keyID(sessionKey), mk3, senc(m3, key3, iv3)>
+      m3     = <'FP_ACK', ~exchangeID, fp>
+      c3     = <keyID(sessionKey), senc(m3, sessionKey)>
     in
       [
         RekeyingInitiatorState_1(iUser, rUser, ~i, ~exchangeID, sessionKey, authKey),
@@ -152,11 +137,8 @@
     let
       fp     = fps(newKey)
 
-      m3     = <'FP_ACK', ~exchangeID, fp> 
-      mk3    = msgKey(sessionKey, m3)
-      key3   = kdfKey(sessionKey, mk3)
-      iv3    = kdfIV(sessionKey, mk3)
-      c3     = <keyID(sessionKey), mk3, senc(m3, key3, iv3)>
+      m3     = <'FP_ACK', ~exchangeID, fp>
+      c3     = <keyID(sessionKey), senc(m3, sessionKey)>
     in
       [
 
@@ -178,11 +160,7 @@
 
   rule RekeyingSend [color=#0088CC]:
     let
-      mk  = msgKey(newKey, ~m)
-      key = kdfKey(newKey, mk)
-      iv  = kdfIV(newKey, mk)
-
-      c   = <keyID(newKey), mk, senc(~m, key, iv)>
+      c   = <keyID(newKey), senc(~m, newKey)>
     in
       [
         !RekeyingClient(X, iUser, rUser, ~xID, ~exchangeID, newKey, authKey),
@@ -196,11 +174,7 @@
 
   rule RekeyingReceive [color=#0088CC]:
     let
-      mk  = msgKey(newKey, ~m)
-      key = kdfKey(newKey, mk)
-      iv  = kdfIV(newKey, mk)
-
-      c   = <keyID(newKey), mk, senc(~m, key, iv)>
+      c   = <keyID(newKey), senc(~m, newKey)>
     in
       [
         !RekeyingClient(X, iUser, rUser, ~xID, ~exchangeID, newKey, authKey),

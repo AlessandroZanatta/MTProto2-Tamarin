@@ -118,8 +118,8 @@
  * achieved (TODO).
  */
 
-  functions: senc/3, sdec/3, genKey/2, genIV/2, keyID/1
-  equations: sdec(senc(msg, key, iv), key, iv) = msg
+  functions: senc/2, sdec/2, genKey/2, genIV/2, keyID/1, kdf/1
+  equations: sdec(senc(msg, key), key) = msg
 
 /* 
  * Malleability of the ciphertext is *not* modeled.
