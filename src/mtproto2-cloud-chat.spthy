@@ -20,7 +20,9 @@
   rule ClientCloudChatSendsMessage [color=#E2C290]:
     let
       msg = <'CtoS', ~sessionID, ~m>
-      c   = senc(msg, kdf(authKey))
+      mk  = msgKey(msg, authKey)
+      key = genKey(mk, authKey)
+      c   = senc(msg, key)
     in
       [
         /* 
@@ -42,6 +44,7 @@
         Fr(~m)
       ]
     --[
+        Out_ClientCloudChat(c),
         /*
          * The client has sent the cloud message ~m1 in session
          * with id ~sessionID and with authorization key authKey
@@ -55,7 +58,9 @@
     let
       /* Pattern matching for the incoming message */
       msg = <'CtoS', ~sessionID, ~m>
-      c   = senc(msg, kdf(authKey))
+      mk  = msgKey(msg, authKey)
+      key = genKey(mk, authKey)
+      c   = senc(msg, key)
     in
       [ 
         In(<kID, c>),
@@ -64,6 +69,7 @@
         !AuthKeyServer(kID, authKey)
       ]
     --[
+        In_ServerCloudChat(c, ~m),
         /*
          * Server has received the message m1 in session
          * sessionID using the authorization key authKey
@@ -78,7 +84,9 @@
       kID = keyID(authKey)
 
       msg = <'StoC', ~sessionID, ~m>
-      c   = senc(msg, kdf(authKey))
+      mk  = msgKey(msg, authKey)
+      key = genKey(mk, authKey)
+      c   = senc(msg, key)
     in
       [
         /* Long-term key shared with the client */
@@ -93,6 +101,7 @@
         Fr(~m)
       ]
     --[
+        Out_ServerCloudChat(c),
         /*
          * Server has sent the message ~m in session
          * sessionID using the authorization key authKey
@@ -108,7 +117,9 @@
       
       /* Pattern matching for the incoming message */
       msg = <'StoC', ~sessionID, ~m>
-      c   = senc(msg, kdf(authKey))
+      mk  = msgKey(msg, authKey)
+      key = genKey(mk, authKey)
+      c   = senc(msg, key)
     in
       [ 
         /* 
@@ -119,6 +130,7 @@
         In(<kID, c>)
       ]
     --[ 
+        In_ClientCloudChat(c, ~m),
         /*
          * Client has received the message m1 in session
          * sessionID using the authorization key authKey
@@ -127,3 +139,24 @@
       ]->
       []
 
+  lemma source [sources]:
+    "
+      (
+        ∀ m c #i.
+          In_ServerCloudChat(c, m) @i
+          ==>
+          (
+            (∃ #r. Out_ClientCloudChat(c) @r) ∨
+            (∃ #r. KU(m) @r ∧ #r < #i)
+          )
+      ) ∧
+      (
+        ∀ m c #i.
+          In_ClientCloudChat(c, m) @i
+          ==>
+          (
+            (∃ #r. Out_ServerCloudChat(c) @r) ∨
+            (∃ #r. KU(m) @r ∧ #r < #i)
+          )
+      )
+    "

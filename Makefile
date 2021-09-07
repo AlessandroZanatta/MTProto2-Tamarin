@@ -129,6 +129,7 @@ REKEYING_DEBUG += $(SRC_DIR)/epilogue.spthy
 
 # Lemmas
 REKEYING_LEMMAS  = $(SRC_DIR)/$(LEMMAS_DIR)/$(REKEYING)/agreement.spthy
+REKEYING_LEMMAS += $(SRC_DIR)/$(LEMMAS_DIR)/$(REKEYING)/secrecy.spthy
 REKEYING_LEMMAS += $(SRC_DIR)/$(LEMMAS_DIR)/$(REKEYING)/authentication.spthy
 REKEYING_LEMMAS += $(SRC_DIR)/epilogue.spthy
 

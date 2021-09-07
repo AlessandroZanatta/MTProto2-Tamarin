@@ -90,21 +90,21 @@
         ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
     "
   
-  lemma LemmaRekeyingClientSendsMsgWithNewKey:
+  lemma LemmaRekeyingClientSendsMessageWithNewKey:
     exists-trace
     "
       ∃ sender iUser rUser xID exchangeID newKey msg #i.
-        ClientSendsMsgWithNewKey(xID, sender, exchangeID, iUser, rUser, newKey, msg) @i ∧
+        ClientSendsMessageWithNewKey(xID, sender, exchangeID, iUser, rUser, newKey, msg) @i ∧
         ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
         ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
         ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
   "
 
-  lemma LemmaRekeyingClientReceivesMsgWithNewKey:
+  lemma LemmaRekeyingClientReceivesMessageWithNewKey:
     exists-trace
     "
       ∃ receiver iUser rUser xID exchangeID newKey msg #i.
-        ClientReceivesMsgWithNewKey(xID, receiver, exchangeID, iUser, rUser, newKey, msg) @i ∧
+        ClientReceivesMessageWithNewKey(xID, receiver, exchangeID, iUser, rUser, newKey, msg) @i ∧
         ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
         ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
         ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
@@ -117,3 +117,34 @@
   lemma LemmaRekeyingCompromisedRekeyingResponderEphemeralKey:
     exists-trace
     "∃ x #i. CompromisedRekeyingResponderEphemeralKey(x) @i"
+
+  lemma AdversaryCanRespondToInitiator1:
+    exists-trace
+    "∃ eID iUser rUser g_i #i.
+      InitiatorSendsHalfKey(eID, iUser, rUser, g_i) @i ∧
+      ¬(rUser = 'Alice') ∧
+      ¬(rUser = 'Bob') 
+    "
+
+  lemma AdversaryCanInitiateProtocol2:
+    exists-trace
+    "∃ eID iUser rUser g_i #i.
+      ResponderReceivesHalfKey(eID, iUser, rUser, g_i) @i ∧
+      ¬(∃ #j. InitiatorSendsHalfKey(eID, iUser, rUser, g_i) @j)
+    "
+
+  lemma AdversaryCanRespondToInitiator3:
+    exists-trace
+    "∃ eID iUser rUser fp #i.
+      InitiatorSendsAck(eID, iUser, rUser, fp) @i ∧
+      ¬(∃ g_i #j. ResponderReceivesHalfKey(eID, iUser, rUser, g_i) @j)
+    "
+
+  lemma AdversaryCanInitiateProtocol4:
+    exists-trace
+    "∃ eID iUser rUser fp #i.
+      ResponderReceivesAck(eID, iUser, rUser, fp) @i ∧
+      ¬(∃ g_i #j. InitiatorSendsHalfKey(eID, iUser, rUser, g_i) @j)
+    "
+
+  

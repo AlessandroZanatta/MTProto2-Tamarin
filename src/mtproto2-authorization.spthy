@@ -166,9 +166,9 @@
   rule Client_5 [color=#E2C290]:
     let
       g_s        = 'g' ^ ~s
-      key  = genKey(ns, ~nk)
+      key        = genKey(ns, ~nk)
       half       = 'g' ^ ~c
-      authKey = g_s ^ ~c
+      authKey    = g_s ^ ~c
     in
       [
         ClientState_3(~nc, ns, ~nk, pkey, ~c),

@@ -1,5 +1,4 @@
 
-
   /*
    * TODO: this lemma actually holds. Is this an error in the model or what???
    *
@@ -36,9 +35,9 @@
     "
       ∀ exchangeID1 exchangeID2 iUser rUser newKey #i #j.
         /* 
-         * Whenever an honest initiator iUser accepts a new key with Bob in
+         * Whenever an honest initiator iUser accepts a new key with 'Bob' in
          * a session, and an honest responder rUser accepts the same key with
-         * Alice in another session
+         * 'Alice' in another session
          */
         InitiatorHasNegotiatedNewKey(exchangeID1, iUser, 'Bob', newKey) @i ∧
         ResponderHasNegotiatedNewKey(exchangeID2, 'Alice', rUser, newKey) @j ∧
@@ -52,10 +51,10 @@
           /* then the session is the same */
           exchangeID1 = exchangeID2 ∧
 
-          /* and the initiator is Alice */
+          /* and the initiator is 'Alice' */
           iUser = 'Alice' ∧
 
-          /* and the responder is Bob */
+          /* and the responder is 'Bob' */
           rUser = 'Bob'
         )
     "
@@ -115,64 +114,95 @@
     "
 
   /*
-   * TODO: actual result if False! Find the problem
-   *
    * Expected result: True
    * Estimated time: N/A
    */
-//  lemma LemmaRekeyingAuthentication_4:
-//    "
-//      ∀ rID sender exchangeID iUser rUser newKey msg #i.
-//
-//        ClientReceivesMsgWithNewKey(rID, sender, exchangeID, 'Alice', rUser, newKey, msg) @i ∧
-//
-//        /* and no secret was revealed */
-//        // ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
-//        ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
-//        ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
-//        ==>
-//        (
-//          ClientIni
-//        )
-//     "
-
-  lemma Test:
-    exists-trace
+  lemma LemmaRekeyingAuthentication_4:
     "
-      ∃ xID sender exchangeID iUser rUser newKey msg #i.
-        ClientReceivesMsgWithNewKey(xID, sender, exchangeID, iUser, rUser, newKey, msg) @i ∧
-        ¬(
-          ∃ u1 u2 u3 u4 u5 u6 #u7.
-            ClientSendsMsgWithNewKey(u1, u2, u3, u4, u5, u6, msg) @u7
-        ) ∧
-        
+      ∀ rID sender exchangeID rUser newKey msg #i.
+
+        ClientReceivesMessageWithNewKey(rID, sender, exchangeID, 'Alice', rUser, newKey, msg) @i ∧
+
+        /* and no secret was revealed */
+        // ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
         ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
         ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
+        ==>
+        (
+          (
+            ∃ iID Y #j.
+              ClientSendsMessageWithNewKey(iID, Y, exchangeID, 'Alice', rUser, newKey, msg) @j
+          ) ∨
+          (
+            ∃ iID Y #j.
+              ClientSendsMessageWithNewKey(iID, Y, exchangeID, rUser, 'Alice', newKey, msg) @j
+          )
+        )
     "
 
-  lemma Test2:
-    exists-trace
+  /*
+   * Expected result: True
+   * Estimated time: N/A
+   */
+  lemma LemmaRekeyingAuthentication_5:
     "
-      ∃ exchangeID iUser rUser newKey #j.
-        ResponderHasNegotiatedNewKey(exchangeID, iUser, rUser, newKey) @j ∧
-        ¬(
-          ∃ u1 u2 u3 u4 #u5.
-            InitiatorSendsHalfKey(u1, u2, u3, u4) @u5
-        ) ∧
+      ∀ rID sender exchangeID iUser newKey msg #i.
+
+        ClientReceivesMessageWithNewKey(rID, sender, exchangeID, iUser, 'Alice', newKey, msg) @i ∧
+
+        /* and no secret was revealed */
+        // ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
         ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
         ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
-
+        ==>
+        (
+          (
+            ∃ iID Y #j.
+              ClientSendsMessageWithNewKey(iID, Y, exchangeID, 'Alice', iUser, newKey, msg) @j
+          ) ∨
+          (
+            ∃ iID Y #j.
+              ClientSendsMessageWithNewKey(iID, Y, exchangeID, iUser, 'Alice', newKey, msg) @j
+          )
+        )
     "
 
-  lemma Test3:
-    exists-trace
+  /*
+   * Expected result: False
+   * Estimated time: N/A
+   */
+  lemma LemmaRekeyingAuthentication_6:
     "
-      ∃ exchangeID iUser rUser newKey #j.
-        InitiatorHasNegotiatedNewKey(exchangeID, iUser, rUser, newKey) @j ∧
-        ¬(
-          ∃ u1 u2 u3 u4 u5 #u6.
-            ResponderSendsHalfKey(u1, u2, u3, u4, u5) @u6
-        ) ∧
+      ∀ iID rID X Y exchangeID iUser rUser newKey msg #i #j.
+
+        ClientSendsMessageWithNewKey(iID, X, exchangeID, 'Alice', rUser, newKey, msg) @i ∧
+        ClientReceivesMessageWithNewKey(rID, Y, exchangeID, iUser, 'Bob', newKey, msg) @j ∧
+
+        /* and no secret was revealed */
+        // ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
         ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
         ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
+        ==>
+        (iUser = 'Alice' ∧ rUser = 'Bob')
+    "
+
+  /*
+   * Ditto of the previous, with inverted roles.
+   *
+   * Expected result: False
+   * Estimated time: N/A
+   */
+  lemma LemmaRekeyingAuthentication_7:
+    "
+      ∀ iID rID X Y exchangeID iUser rUser newKey msg #i #j.
+
+        ClientSendsMessageWithNewKey(iID, X, exchangeID, 'Bob', rUser, newKey, msg) @i ∧
+        ClientReceivesMessageWithNewKey(rID, Y, exchangeID, iUser, 'Alice', newKey, msg) @j ∧
+
+        /* and no secret was revealed */
+        // ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
+        ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
+        ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
+        ==>
+        (iUser = 'Bob' ∧ rUser = 'Alice')
     "

@@ -1,0 +1,46 @@
+ 
+  /*
+   * Expected result: True
+   * Estimated time: N/A
+   */
+  lemma LemmaRekeyingNewKeySecrecy:
+    "
+      ∀ exchangeID iUser rUser newKey #i1 #i2 #j.
+        /* There is way the initiator has exchanged a new key newKey */
+        InitiatorHasNegotiatedNewKey(exchangeID, iUser, rUser, newKey) @i1 ∧
+        ResponderHasNegotiatedNewKey(exchangeID, iUser, rUser, newKey) @i2 ∧
+
+        /* and the attacker knows it */
+        K(newKey) @j ∧
+        
+        /* and no secret was revealed (before the key was actually echanged) */
+        ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
+        ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r ∧ #r < #i2) ∧
+        ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r ∧ #r < #i2)
+        ==>
+        (
+          ∃ x1 x2 #r1 #r2. 
+            CompromisedRekeyingInitiatorEphemeralKey(x1) @r1 ∧
+            CompromisedRekeyingResponderEphemeralKey(x2) @r2
+        )
+    "
+
+  /*
+   * Expected result: True
+   * Estimated time: N/A
+   */
+  lemma LemmaRekeyingMessageSecrecy:
+    "
+       ¬(∃ sender iUser rUser xID exchangeID newKey msg #i #j.
+        /* There is no way the client sent a message msg */
+        ClientSendsMessageWithNewKey(xID, sender, exchangeID, iUser, rUser, newKey, msg) @i ∧
+
+        /* and the attacker knows it */
+        K(msg) @j ∧
+
+        /* and no secret was revealed (before the key was actually echanged) */
+        ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
+        ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r ∧ #r < #i) ∧
+        ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r ∧ #r < #i)
+      )
+    "
