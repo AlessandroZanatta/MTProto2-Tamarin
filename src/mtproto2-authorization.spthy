@@ -81,7 +81,12 @@
 
   /* 2. S -> C: Nc, Ns, fpk(pkey) */
   rule Server_2 [color=#0088CC]:
-      [ In(nc), !PrivateKey($Server, skey), NS(ns), Fr(~s) ]
+      [ 
+        In(nc),
+        !PrivateKey($Server, skey),
+        NS(ns),
+        Fr(~s)
+      ]
     --[
         /*
          * Server has received a request to start a 
@@ -94,8 +99,7 @@
          * server nonce.
          *
          * Lemmas using this fact are supposed to check whetever
-         * the second term (actual nonce) is equal to 'FIXED_NS'
-         * or not.
+         * the nonce is equal to 'FIXED_NS' or not.
          */
         ServerGeneratesNonce(ns)
       ]->
@@ -165,10 +169,10 @@
   /* 5. C -> S: Nc, Ns, senc(Nc, Ns, halfkey){key} */
   rule Client_5 [color=#E2C290]:
     let
-      g_s        = 'g' ^ ~s
-      key        = genKey(ns, ~nk)
-      half       = 'g' ^ ~c
-      authKey    = g_s ^ ~c
+      g_s     = 'g' ^ ~s
+      key     = genKey(ns, ~nk)
+      half    = 'g' ^ ~c
+      authKey = g_s ^ ~c
     in
       [
         ClientState_3(~nc, ns, ~nk, pkey, ~c),
@@ -213,8 +217,8 @@
   /* 6. S -> C: Nc, Ns, hashNk(Nk, authKey) */
   rule Server_6 [color=#0088CC]:
     let
-      g_c        = 'g' ^ ~c
-      key  = genKey(ns, nk)
+      g_c     = 'g' ^ ~c
+      key     = genKey(ns, nk)
       authKey = g_c ^ ~s
     in
       [ 
@@ -333,61 +337,3 @@
       [ !AuthProtServerEphemeralSecrets(s) ]
     --[ CompromisedServerExponent(s) ]->
       [ Out(s) ]
-
-
-/*****************************************************************/
-/* Post-revealing of secret information                          */
-/*****************************************************************/
-//
-//  /* 
-//   * Reveals the private key of the server AFTER a 
-//   * successful protocol execution.
-//   */
-//  rule PostCompromisePrivateKey [color=#FE4A49]:
-//      [
-//        !ClientEndsProtocol(nc, ns, nk, authKey, c),
-//        !ServerEndsProtocol(nc, ns, nk, authKey, skey, s),
-//        !PrivateKey($Server, skey)
-//      ]
-//    --[ PostCompromisedPrivateKey(skey) ]->
-//      [ Out(skey) ]
-//
-//  
-//  /* 
-//   * Reveals the secret nonce nk AFTER a 
-//   * successful protocol execution.
-//   */
-//  rule PostCompromiseNonce [color=#FE4A49]:
-//      [
-//        !ClientEndsProtocol(nc, ns, nk, authKey, c),
-//        !ServerEndsProtocol(nc, ns, nk, authKey, skey, s)
-//      ]
-//    --[ PostCompromisedNonce(nk) ]->
-//      [ Out(nk) ]
-//
-//
-//  /* 
-//   * Reveals the secret exponent of the client 
-//   * AFTER a successful protocol execution.
-//   */
-//  rule PostCompromiseClientExponent [color=#FE4A49]:
-//      [
-//        !ClientEndsProtocol(nc, ns, nk, authKey, c),
-//        !ServerEndsProtocol(nc, ns, nk, authKey, skey, s)
-//      ]
-//    --[ PostCompromisedClientExponent(c) ]->
-//      [ Out(c) ]
-//
-//
-//  /* 
-//   * Reveals the secret exponent of the server 
-//   * AFTER a successful protocol execution.
-//   */
-//  rule PostCompromiseServerExponent [color=#FE4A49]:
-//      [
-//        !ClientEndsProtocol(nc, ns, nk, authKey, c),
-//        !ServerEndsProtocol(nc, ns, nk, authKey, skey, s)
-//      ]
-//    --[ PostCompromisedServerExponent(s) ]->
-//      [ Out(s) ]
-//
