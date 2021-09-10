@@ -118,33 +118,36 @@
     exists-trace
     "∃ x #i. CompromisedRekeyingResponderEphemeralKey(x) @i"
 
-  lemma AdversaryCanRespondToInitiator1:
+  lemma AdversayCanImpersonateResponder1:
     exists-trace
-    "∃ eID iUser rUser g_i #i.
-      InitiatorSendsHalfKey(eID, iUser, rUser, g_i) @i ∧
-      ¬(rUser = 'Alice') ∧
-      ¬(rUser = 'Bob') 
+    "∃ eID iUser g_i #i.
+      InitiatorSendsHalfKey(eID, iUser, 'Eve', g_i) @i ∧
+      ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
+      ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
     "
 
-  lemma AdversaryCanInitiateProtocol2:
+  lemma AdversaryCanImpersonateResponder2:
     exists-trace
-    "∃ eID iUser rUser g_i #i.
-      ResponderReceivesHalfKey(eID, iUser, rUser, g_i) @i ∧
-      ¬(∃ #j. InitiatorSendsHalfKey(eID, iUser, rUser, g_i) @j)
+    "∃ eID rUser g_i #i.
+      ResponderReceivesHalfKey(eID, 'Eve', rUser, g_i) @i ∧
+      ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
+      ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
     "
 
-  lemma AdversaryCanRespondToInitiator3:
+  lemma AdversayCanImpersonateResponder3:
     exists-trace
-    "∃ eID iUser rUser fp #i.
-      InitiatorSendsAck(eID, iUser, rUser, fp) @i ∧
-      ¬(∃ g_i #j. ResponderReceivesHalfKey(eID, iUser, rUser, g_i) @j)
+    "∃ eID iUser fp #i.
+      InitiatorSendsAck(eID, iUser, 'Eve', fp) @i ∧
+      ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
+      ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
     "
 
-  lemma AdversaryCanInitiateProtocol4:
+  lemma AdversaryCanImpersonateResponder4:
     exists-trace
-    "∃ eID iUser rUser fp #i.
-      ResponderReceivesAck(eID, iUser, rUser, fp) @i ∧
-      ¬(∃ g_i #j. InitiatorSendsHalfKey(eID, iUser, rUser, g_i) @j)
+    "∃ eID rUser fp #i.
+      ResponderReceivesAck(eID, 'Eve', rUser, fp) @i ∧
+      ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
+      ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
     "
 
   

@@ -16,7 +16,6 @@
         ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
         ¬(∃ n #r.    CompromisedNk(n) @r) ∧
         ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
-        ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
         ¬(∃ s #r.    CompromisedServerExponent(s) @r)
     "
 
@@ -29,7 +28,6 @@
         ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
         ¬(∃ n #r.    CompromisedNk(n) @r) ∧
         ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
-        ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
         ¬(∃ s #r.    CompromisedServerExponent(s) @r)
     " 
   
@@ -42,7 +40,6 @@
         ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
         ¬(∃ n #r.    CompromisedNk(n) @r) ∧
         ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
-        ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
         ¬(∃ s #r.    CompromisedServerExponent(s) @r)
     "
 
@@ -55,7 +52,6 @@
         ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
         ¬(∃ n #r.    CompromisedNk(n) @r) ∧
         ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
-        ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
         ¬(∃ s #r.    CompromisedServerExponent(s) @r)
     "
 
@@ -68,7 +64,6 @@
         ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
         ¬(∃ n #r.    CompromisedNk(n) @r) ∧
         ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
-        ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
         ¬(∃ s #r.    CompromisedServerExponent(s) @r)
     " 
 
@@ -81,7 +76,6 @@
         ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
         ¬(∃ n #r.    CompromisedNk(n) @r) ∧
         ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
-        ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
         ¬(∃ s #r.    CompromisedServerExponent(s) @r)
     "
 
@@ -94,7 +88,6 @@
         ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
         ¬(∃ n #r.    CompromisedNk(n) @r) ∧
         ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
-        ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
         ¬(∃ s #r.    CompromisedServerExponent(s) @r)
     "
 
@@ -107,7 +100,6 @@
         ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
         ¬(∃ n #r.    CompromisedNk(n) @r) ∧
         ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
-        ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
         ¬(∃ s #r.    CompromisedServerExponent(s) @r)
     "
 
@@ -120,7 +112,6 @@
         ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
         ¬(∃ n #r.    CompromisedNk(n) @r) ∧
         ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
-        ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
         ¬(∃ s #r.    CompromisedServerExponent(s) @r)
     "
 
@@ -133,7 +124,6 @@
         ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
         ¬(∃ n #r.    CompromisedNk(n) @r) ∧
         ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
-        ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
         ¬(∃ s #r.    CompromisedServerExponent(s) @r)
     "
 
@@ -146,7 +136,6 @@
         ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
         ¬(∃ n #r.    CompromisedNk(n) @r) ∧
         ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
-        ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
         ¬(∃ s #r.    CompromisedServerExponent(s) @r)
     "
 
@@ -159,7 +148,6 @@
         ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
         ¬(∃ n #r.    CompromisedNk(n) @r) ∧
         ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
-        ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
         ¬(∃ s #r.    CompromisedServerExponent(s) @r)
     "
 
@@ -172,7 +160,6 @@
         ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
         ¬(∃ n #r.    CompromisedNk(n) @r) ∧
         ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
-        ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
         ¬(∃ s #r.    CompromisedServerExponent(s) @r)
     "
 
@@ -185,7 +172,6 @@
         ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
         ¬(∃ n #r.    CompromisedNk(n) @r) ∧
         ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
-        ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
         ¬(∃ s #r.    CompromisedServerExponent(s) @r)
     "
 
@@ -198,7 +184,6 @@
         ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
         ¬(∃ n #r.    CompromisedNk(n) @r) ∧
         ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
-        ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
         ¬(∃ s #r.    CompromisedServerExponent(s) @r)
     "
 
@@ -211,7 +196,6 @@
         ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
         ¬(∃ n #r.    CompromisedNk(n) @r) ∧
         ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
-        ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
         ¬(∃ s #r.    CompromisedServerExponent(s) @r)
     "
 
@@ -241,14 +225,6 @@
     "
       ∃ c #i.
         CompromisedClientExponent(c) @i
-    "
-
-
-  lemma LemmaAuthCompromisedClientEphemeralSecrets:
-    exists-trace
-    "
-      ∃ nk c #i.
-        CompromisedClientEphemeralSecrets(nk, c) @i
     "
 
 

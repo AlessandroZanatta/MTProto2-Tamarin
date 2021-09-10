@@ -1,6 +1,4 @@
 
-heuristic: c
-
 /*
  * Negation of the existence of attacks is used to drastically increase
  * the speed at which reachability lemmas are proved (10 times faster or more,
@@ -16,7 +14,6 @@ heuristic: c
           ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
           ¬(∃ n #r.    CompromisedNk(n) @r) ∧
           ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
-          ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
           ¬(∃ s #r.    CompromisedServerExponent(s) @r)
       "
 
@@ -29,7 +26,6 @@ heuristic: c
           ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
           ¬(∃ n #r.    CompromisedNk(n) @r) ∧
           ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
-          ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
           ¬(∃ s #r.    CompromisedServerExponent(s) @r)
       "
       
@@ -42,7 +38,6 @@ heuristic: c
           ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
           ¬(∃ n #r.    CompromisedNk(n) @r) ∧
           ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
-          ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
           ¬(∃ s #r.    CompromisedServerExponent(s) @r)
       "
 
@@ -55,6 +50,5 @@ heuristic: c
           ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
           ¬(∃ n #r.    CompromisedNk(n) @r) ∧
           ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
-          ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
           ¬(∃ s #r.    CompromisedServerExponent(s) @r)
       "

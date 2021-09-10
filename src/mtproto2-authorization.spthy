@@ -37,16 +37,14 @@
     factorise(multiply(x, y)) = <x, y>
 
 /*****************************************************************/
-/* Messages exchanged during the authorization protocol          */
+/* Notes                                                         */
 /*****************************************************************/
 
 /*
- * Two public constants are used: 'FIXED_NS' and 'WEAK_NK'.
+ * One public constant is used: 'FIXED_NS'.
  * 
- * Both represents nonces. The first one represents a constant 
- * nonce that may be used by the server, the second represents
- * a weak (leakable) nonce which is supposed to be kept
- * secret and its sent by the client to the server (encrypted).
+ * It represents a constant nonce that may be used by the server
+ * instead of a random nonce.
  */
 
 
@@ -133,7 +131,7 @@
       ]->
       [ 
         ClientState_3(~nc, ns, ~nk, pkey, ~c),
-        Out(<~nc, ns, aenc(<~nc, ns, ~nk>, pkey)>)
+        Out(<~nc, ns, aenc(<'AUTH_3', ~nc, ns, ~nk>, pkey)>)
       ]
 
   /* 4. S -> C: Nc, Ns, senc(Nc, Ns, halfkey){key} */
@@ -144,7 +142,7 @@
     in
       [
         ServerState_2(nc, ns, skey, ~s),
-        In(aenc(<nc, ns, nk>, pk(skey)))
+        In(aenc(<'AUTH_3', nc, ns, nk>, pk(skey)))
       ]
     --[
         /* 
@@ -163,7 +161,7 @@
       ]->
       [
         ServerState_4(nc, ns, nk, skey, ~s),
-        Out(<nc, ns, senc(<'StoC', nc, ns, half>, key)>)
+        Out(<nc, ns, senc(<'AUTH_4', nc, ns, half>, key)>)
       ]
 
   /* 5. C -> S: Nc, Ns, senc(Nc, Ns, halfkey){key} */
@@ -176,7 +174,7 @@
     in
       [
         ClientState_3(~nc, ns, ~nk, pkey, ~c),
-        In(<~nc, ns, senc(<'StoC', ~nc, ns, g_s>, key)>)
+        In(<~nc, ns, senc(<'AUTH_4', ~nc, ns, g_s>, key)>)
       ]
     --[
         /*
@@ -210,7 +208,7 @@
         ClientAcceptsAuthKey(~nc, ns, ~nk, authKey)]->
       [
         ClientState_5(~nc, ns, ~nk, pkey, g_s, ~c, authKey),
-        Out(<~nc, ns, senc(<'CtoS', ~nc, ns, half>, key)>)
+        Out(<~nc, ns, senc(<'AUTH_5', ~nc, ns, half>, key)>)
       ]
 
 
@@ -223,7 +221,7 @@
     in
       [ 
         ServerState_4(nc, ns, nk, skey, ~s), 
-        In(<nc, ns, senc(<'CtoS', nc, ns, g_c>, key)>) 
+        In(<nc, ns, senc(<'AUTH_5', nc, ns, g_c>, key)>) 
       ]
     --[ 
         /*
@@ -325,12 +323,6 @@
       [ !AuthProtClientEphemeralSecrets(nk, c) ]
     --[ CompromisedClientExponent(c) ]->
       [ Out(c) ]
-
-  /* Reveals all client's ephemeral secrets. */
-  rule CompromiseClientEphemeralSecrets [color=#FE4A49]:
-      [ !AuthProtClientEphemeralSecrets(nk, c) ]
-    --[ CompromisedClientEphemeralSecrets(nk, c) ]->
-      [ Out(<nk, c>) ]
 
   /* Reveals the client's DH secret exponent. */
   rule CompromiseAuthProtServerExponent [color=#FE4A49]:

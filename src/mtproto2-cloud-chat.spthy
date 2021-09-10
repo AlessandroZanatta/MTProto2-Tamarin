@@ -9,8 +9,8 @@
    * server->client messages.
    *
    * Public constants:
-   *  - CtoS
-   *  - StoC
+   *  - CC_CtoS
+   *  - CC_StoC
    */
   
 /*****************************************************************/
@@ -19,10 +19,10 @@
 
   rule ClientCloudChatSendsMessage [color=#E2C290]:
     let
-      msg = <'CtoS', ~sessionID, ~m>
+      msg = <'CC_CtoS', ~sessionID, ~m>
       mk  = msgKey(msg, authKey)
       key = genKey(mk, authKey)
-      c   = senc(msg, key)
+      c   = <keyID(authKey), mk, senc(msg, key)>
     in
       [
         /* 
@@ -51,19 +51,19 @@
          */
         ClientSendsCloudMessage(~sessionID, ~m, authKey)
       ]->
-      [ Out(<keyID(authKey), c>) ]
+      [ Out(c) ]
   
 
   rule ServerCloudChatReceivesMessage [color=#0088CC]:
     let
       /* Pattern matching for the incoming message */
-      msg = <'CtoS', ~sessionID, ~m>
+      msg = <'CC_CtoS', ~sessionID, ~m>
       mk  = msgKey(msg, authKey)
       key = genKey(mk, authKey)
-      c   = senc(msg, key)
+      c   = <kID, mk, senc(msg, key)>
     in
       [ 
-        In(<kID, c>),
+        In(c),
 
         /* Long-term key shared with the client */
         !AuthKeyServer(kID, authKey)
@@ -83,10 +83,10 @@
     let
       kID = keyID(authKey)
 
-      msg = <'StoC', ~sessionID, ~m>
+      msg = <'CC_StoC', ~sessionID, ~m>
       mk  = msgKey(msg, authKey)
       key = genKey(mk, authKey)
-      c   = senc(msg, key)
+      c   = <kID, mk, senc(msg, key)>
     in
       [
         /* Long-term key shared with the client */
@@ -108,7 +108,7 @@
          */
         ServerSendsCloudMessage(~sessionID, ~m, authKey)
       ]->
-      [ Out(<kID, c>) ]
+      [ Out(c) ]
 
 
   rule ClientCloudChatReceivesMessage [color=#E2C290]:
@@ -116,10 +116,10 @@
       kID  = keyID(authKey)
       
       /* Pattern matching for the incoming message */
-      msg = <'StoC', ~sessionID, ~m>
+      msg = <'CC_StoC', ~sessionID, ~m>
       mk  = msgKey(msg, authKey)
       key = genKey(mk, authKey)
-      c   = senc(msg, key)
+      c   = <kID, mk, senc(msg, key)>
     in
       [ 
         /* 
@@ -127,7 +127,7 @@
          */
         !AuthKeyClient($Server, authKey),
 
-        In(<kID, c>)
+        In(c)
       ]
     --[ 
         In_ClientCloudChat(c, ~m),
@@ -139,24 +139,24 @@
       ]->
       []
 
-  lemma source [sources]:
-    "
-      (
-        ∀ m c #i.
-          In_ServerCloudChat(c, m) @i
-          ==>
-          (
-            (∃ #r. Out_ClientCloudChat(c) @r) ∨
-            (∃ #r. KU(m) @r ∧ #r < #i)
-          )
-      ) ∧
-      (
-        ∀ m c #i.
-          In_ClientCloudChat(c, m) @i
-          ==>
-          (
-            (∃ #r. Out_ServerCloudChat(c) @r) ∨
-            (∃ #r. KU(m) @r ∧ #r < #i)
-          )
-      )
-    "
+//  lemma source [sources]:
+//    "
+//      (
+//        ∀ m c #i.
+//          In_ServerCloudChat(c, m) @i
+//          ==>
+//          (
+//            (∃ #r. Out_ClientCloudChat(c) @r) ∨
+//            (∃ #r. KU(m) @r ∧ #r < #i)
+//          )
+//      ) ∧
+//      (
+//        ∀ m c #i.
+//          In_ClientCloudChat(c, m) @i
+//          ==>
+//          (
+//            (∃ #r. Out_ServerCloudChat(c) @r) ∨
+//            (∃ #r. KU(m) @r ∧ #r < #i)
+//          )
+//      )
+//    "

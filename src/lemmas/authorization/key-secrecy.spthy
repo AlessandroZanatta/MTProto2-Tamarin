@@ -20,7 +20,6 @@
           (∃ skey #r. CompromisedPrivateKey(skey) @r) ∨
           (∃ #r.      CompromisedNk(nk) @r) ∨
           (∃ c #r.    CompromisedClientExponent(c) @r) ∨
-          (∃ c #r.    CompromisedClientEphemeralSecrets(nk, c) @r) ∨
           (∃ s #r.    CompromisedServerExponent(s) @r)
         )
 

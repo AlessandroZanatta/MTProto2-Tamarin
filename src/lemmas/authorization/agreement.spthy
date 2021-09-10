@@ -23,7 +23,6 @@
           ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
           ¬(∃ n #r.    CompromisedNk(n) @r) ∧
           ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
-          ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
           ¬(∃ s #r.    CompromisedServerExponent(s) @r)
         )
         ==>
@@ -74,7 +73,6 @@
           // ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
           ¬(∃ n #r.    CompromisedNk(n) @r) ∧
           ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
-          ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
           ¬(∃ s #r.    CompromisedServerExponent(s) @r)
         ==>
         (
@@ -117,7 +115,6 @@
           ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
           // ¬(∃ n #r.    CompromisedNk(n) @r) ∧
           ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
-          ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
           ¬(∃ s #r.    CompromisedServerExponent(s) @r)
         ==>
         (
@@ -159,9 +156,8 @@
         /* and no secret was leaked but the secret DH exponents */
           ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
           ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
-          ¬(∃ n #r.    CompromisedNk(n) @r) ∧
+          ¬(∃ n #r.    CompromisedNk(n) @r)
           // ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
-          ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r)
           // ¬(∃ s #r.    CompromisedServerExponent(s) @r)
         ==>
         (

@@ -141,7 +141,7 @@ REKEYING_DIFF_LEMMAS += $(SRC_DIR)/epilogue.spthy
 # UT-tamarin configuration                             #
 ########################################################
 UTT_EXEC  := uttamarin 
-UTT_FLAGS  = 
+UTT_FLAGS  = -t 80
 
 
 ########################################################
