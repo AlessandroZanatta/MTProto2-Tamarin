@@ -25,19 +25,16 @@
           ServerReceivesCloudMessage(sid, msg, authKey) @j ∧
 
           /* and the attacker knows it */
-          K(msg) @r ∧
-
-          /* and no secret was leaked, but the authorization key authKey */
-          // ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
-          ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
-          ¬(∃ n #r.    CompromisedNk(n) @r) ∧
-          ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
-          ¬(∃ s #r.    CompromisedServerExponent(s) @r)
+          K(msg) @r
         )
         ==>
         (
-          /* then the authorization key was actually compromised */
-          (∃ #r. CompromisedAuthKey(authKey) @r)
+          /* then some secret was compromised */
+          (∃ #r.      CompromisedAuthKey(authKey) @r) ∨
+          (∃ skey #r. CompromisedPrivateKey(skey) @r) ∨
+          (∃ n #r.    CompromisedNk(n) @r) ∨
+          (∃ c #r.    CompromisedClientExponent(c) @r) ∨
+          (∃ s #r.    CompromisedServerExponent(s) @r)
         )
     "
 
@@ -59,19 +56,16 @@
           ClientReceivesCloudMessage(sid, msg, authKey) @i ∧
 
           /* and the attacker knows it */
-          K(msg) @r ∧
-        
-          /* and no secret was leaked, but the authorization key authKey */
-          // ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
-          ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
-          ¬(∃ n #r.    CompromisedNk(n) @r) ∧
-          ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
-          ¬(∃ s #r.    CompromisedServerExponent(s) @r)
+          K(msg) @r
         )
         ==>
         (
-          /* then the authorization key was actually compromised */
-          (∃ #r. CompromisedAuthKey(authKey) @r)
+          /* then some secret was compromised */
+          (∃ #r.      CompromisedAuthKey(authKey) @r) ∨
+          (∃ skey #r. CompromisedPrivateKey(skey) @r) ∨
+          (∃ n #r.    CompromisedNk(n) @r) ∨
+          (∃ c #r.    CompromisedClientExponent(c) @r) ∨
+          (∃ s #r.    CompromisedServerExponent(s) @r)
         )
     "
 
