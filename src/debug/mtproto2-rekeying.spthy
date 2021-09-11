@@ -117,3 +117,37 @@
   lemma LemmaRekeyingCompromisedRekeyingResponderEphemeralKey:
     exists-trace
     "∃ x #i. CompromisedRekeyingResponderEphemeralKey(x) @i"
+
+  lemma AdversayCanImpersonateResponder1:
+    exists-trace
+    "∃ eID iUser g_i #i.
+      InitiatorSendsHalfKey(eID, iUser, 'Eve', g_i) @i ∧
+      ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
+      ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
+    "
+
+  lemma AdversaryCanImpersonateResponder2:
+    exists-trace
+    "∃ eID rUser g_i #i.
+      ResponderReceivesHalfKey(eID, 'Eve', rUser, g_i) @i ∧
+      ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
+      ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
+    "
+
+  lemma AdversayCanImpersonateResponder3:
+    exists-trace
+    "∃ eID iUser fp #i.
+      InitiatorSendsAck(eID, iUser, 'Eve', fp) @i ∧
+      ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
+      ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
+    "
+
+  lemma AdversaryCanImpersonateResponder4:
+    exists-trace
+    "∃ eID rUser fp #i.
+      ResponderReceivesAck(eID, 'Eve', rUser, fp) @i ∧
+      ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
+      ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
+    "
+
+  

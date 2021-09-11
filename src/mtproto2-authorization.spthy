@@ -37,16 +37,14 @@
     factorise(multiply(x, y)) = <x, y>
 
 /*****************************************************************/
-/* Messages exchanged during the authorization protocol          */
+/* Notes                                                         */
 /*****************************************************************/
 
 /*
- * Two public constants are used: 'FIXED_NS' and 'WEAK_NK'.
+ * One public constant is used: 'FIXED_NS'.
  * 
- * Both represents nonces. The first one represents a constant 
- * nonce that may be used by the server, the second represents
- * a weak (leakable) nonce which is supposed to be kept
- * secret and its sent by the client to the server (encrypted).
+ * It represents a constant nonce that may be used by the server
+ * instead of a random nonce.
  */
 
 
@@ -81,7 +79,12 @@
 
   /* 2. S -> C: Nc, Ns, fpk(pkey) */
   rule Server_2 [color=#0088CC]:
-      [ In(nc), !PrivateKey($Server, skey), NS(ns), Fr(~s) ]
+      [ 
+        In(nc),
+        !PrivateKey($Server, skey),
+        NS(ns),
+        Fr(~s)
+      ]
     --[
         /*
          * Server has received a request to start a 
@@ -94,8 +97,7 @@
          * server nonce.
          *
          * Lemmas using this fact are supposed to check whetever
-         * the second term (actual nonce) is equal to 'FIXED_NS'
-         * or not.
+         * the nonce is equal to 'FIXED_NS' or not.
          */
         ServerGeneratesNonce(ns)
       ]->
@@ -129,19 +131,18 @@
       ]->
       [ 
         ClientState_3(~nc, ns, ~nk, pkey, ~c),
-        Out(<~nc, ns, aenc(<~nc, ns, ~nk>, pkey)>)
+        Out(<~nc, ns, aenc(<'AUTH_3', ~nc, ns, ~nk>, pkey)>)
       ]
 
-  /* 4. S -> C: Nc, Ns, senc(Nc, Ns, halfkey){key, iv} */
+  /* 4. S -> C: Nc, Ns, senc(Nc, Ns, halfkey){key} */
   rule Server_4 [color=#0088CC]:
     let
       half = 'g' ^ ~s
       key  = genKey(ns, nk)
-      iv   = genIV(ns, nk)
     in
       [
         ServerState_2(nc, ns, skey, ~s),
-        In(aenc(<nc, ns, nk>, pk(skey)))
+        In(aenc(<'AUTH_3', nc, ns, nk>, pk(skey)))
       ]
     --[
         /* 
@@ -160,21 +161,20 @@
       ]->
       [
         ServerState_4(nc, ns, nk, skey, ~s),
-        Out(<nc, ns, senc(<'StoC', nc, ns, half>, key, iv)>)
+        Out(<nc, ns, senc(<'AUTH_4', nc, ns, half>, key)>)
       ]
 
-  /* 5. C -> S: Nc, Ns, senc(Nc, Ns, halfkey){key, iv} */
+  /* 5. C -> S: Nc, Ns, senc(Nc, Ns, halfkey){key} */
   rule Client_5 [color=#E2C290]:
     let
-      g_s        = 'g' ^ ~s
-      key  = genKey(ns, ~nk)
-      iv   = genIV(ns, ~nk)
-      half       = 'g' ^ ~c
+      g_s     = 'g' ^ ~s
+      key     = genKey(ns, ~nk)
+      half    = 'g' ^ ~c
       authKey = g_s ^ ~c
     in
       [
         ClientState_3(~nc, ns, ~nk, pkey, ~c),
-        In(<~nc, ns, senc(<'StoC', ~nc, ns, g_s>, key, iv)>)
+        In(<~nc, ns, senc(<'AUTH_4', ~nc, ns, g_s>, key)>)
       ]
     --[
         /*
@@ -208,21 +208,20 @@
         ClientAcceptsAuthKey(~nc, ns, ~nk, authKey)]->
       [
         ClientState_5(~nc, ns, ~nk, pkey, g_s, ~c, authKey),
-        Out(<~nc, ns, senc(<'CtoS', ~nc, ns, half>, key, iv)>)
+        Out(<~nc, ns, senc(<'AUTH_5', ~nc, ns, half>, key)>)
       ]
 
 
   /* 6. S -> C: Nc, Ns, hashNk(Nk, authKey) */
   rule Server_6 [color=#0088CC]:
     let
-      g_c        = 'g' ^ ~c
-      key  = genKey(ns, nk)
-      iv   = genIV(ns, nk)
+      g_c     = 'g' ^ ~c
+      key     = genKey(ns, nk)
       authKey = g_c ^ ~s
     in
       [ 
         ServerState_4(nc, ns, nk, skey, ~s), 
-        In(<nc, ns, senc(<'CtoS', nc, ns, g_c>, key, iv)>) 
+        In(<nc, ns, senc(<'AUTH_5', nc, ns, g_c>, key)>) 
       ]
     --[ 
         /*
@@ -325,72 +324,8 @@
     --[ CompromisedClientExponent(c) ]->
       [ Out(c) ]
 
-  /* Reveals all client's ephemeral secrets. */
-  rule CompromiseClientEphemeralSecrets [color=#FE4A49]:
-      [ !AuthProtClientEphemeralSecrets(nk, c) ]
-    --[ CompromisedClientEphemeralSecrets(nk, c) ]->
-      [ Out(<nk, c>) ]
-
   /* Reveals the client's DH secret exponent. */
   rule CompromiseAuthProtServerExponent [color=#FE4A49]:
       [ !AuthProtServerEphemeralSecrets(s) ]
     --[ CompromisedServerExponent(s) ]->
       [ Out(s) ]
-
-
-/*****************************************************************/
-/* Post-revealing of secret information                          */
-/*****************************************************************/
-//
-//  /* 
-//   * Reveals the private key of the server AFTER a 
-//   * successful protocol execution.
-//   */
-//  rule PostCompromisePrivateKey [color=#FE4A49]:
-//      [
-//        !ClientEndsProtocol(nc, ns, nk, authKey, c),
-//        !ServerEndsProtocol(nc, ns, nk, authKey, skey, s),
-//        !PrivateKey($Server, skey)
-//      ]
-//    --[ PostCompromisedPrivateKey(skey) ]->
-//      [ Out(skey) ]
-//
-//  
-//  /* 
-//   * Reveals the secret nonce nk AFTER a 
-//   * successful protocol execution.
-//   */
-//  rule PostCompromiseNonce [color=#FE4A49]:
-//      [
-//        !ClientEndsProtocol(nc, ns, nk, authKey, c),
-//        !ServerEndsProtocol(nc, ns, nk, authKey, skey, s)
-//      ]
-//    --[ PostCompromisedNonce(nk) ]->
-//      [ Out(nk) ]
-//
-//
-//  /* 
-//   * Reveals the secret exponent of the client 
-//   * AFTER a successful protocol execution.
-//   */
-//  rule PostCompromiseClientExponent [color=#FE4A49]:
-//      [
-//        !ClientEndsProtocol(nc, ns, nk, authKey, c),
-//        !ServerEndsProtocol(nc, ns, nk, authKey, skey, s)
-//      ]
-//    --[ PostCompromisedClientExponent(c) ]->
-//      [ Out(c) ]
-//
-//
-//  /* 
-//   * Reveals the secret exponent of the server 
-//   * AFTER a successful protocol execution.
-//   */
-//  rule PostCompromiseServerExponent [color=#FE4A49]:
-//      [
-//        !ClientEndsProtocol(nc, ns, nk, authKey, c),
-//        !ServerEndsProtocol(nc, ns, nk, authKey, skey, s)
-//      ]
-//    --[ PostCompromisedServerExponent(s) ]->
-//      [ Out(s) ]
-//

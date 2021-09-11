@@ -149,11 +149,73 @@
            * session key sessionKey negotiation 
            */
           ( iUser1 = iUser2 ∧ rUser1 = rUser2 ) ∨
+          ( iUser1 = rUser2 ∧ rUser1 = iUser2 ) ∨
 
           /* or they skipped QR validation */
           (
             ∃ x1 x2 #r. 
               OutOfBandKeyComparisonSkipped(x1, x2, sessionKey) @r
+          )
+        )
+    "
+
+
+  /*
+   * If all clients validate their keys and check their DH parameters, then we
+   * can prove something stronger: if an (honest) initiator iUser1 negotiates a
+   * session key sessionKey to chat with rUser1, and an (honest) responder rUser2
+   * negotiates the same key sessionKey to chat with iUser2, then there are only
+   * two parties involved, and in particular iUser1 = iUser2 and rUser1 = rUser2.
+   */
+  lemma LemmaSecretChatAuthentication5:
+    "
+      ∀ aID bID chatID1 chatID2 iUser1 iUser2 rUser1 rUser2 sessionKey #i #j.
+        InitiatorAcceptsEncryptedChat(aID, chatID1, iUser1, rUser1, sessionKey) @i ∧
+        ResponderAcceptsEncryptedChat(bID, chatID2, iUser2, rUser2, sessionKey) @j ∧
+
+        /* and no secret was leaked */
+        ¬(∃ z #r. CompromisedSecretChatInitiatorEphemeralKey(z) @r) ∧
+        ¬(∃ z #r. CompromisedSecretChatResponderEphemeralKey(z) @r)
+        ==>
+        (
+          /* 
+           * then these two clients are actually the two involved in the
+           * session key sessionKey negotiation 
+           */
+          ( iUser1 = iUser2 ∧ rUser1 = rUser2 ) ∨
+
+          /* or they skipped QR validation */
+          (
+            ∃ x1 x2 #r. 
+              OutOfBandKeyComparisonSkipped(x1, x2, sessionKey) @r
+          )
+        )
+    "
+
+  /*
+   * Variant of the above.
+   */
+  lemma LemmaSecretChatAuthentication6:
+    "
+      ∀ aID bID chatID1 chatID2 iUser1 iUser2 rUser1 rUser2 sessionKey #i #j.
+        InitiatorAcceptsEncryptedChat(aID, chatID1, iUser1, rUser1, sessionKey) @i ∧
+        ResponderAcceptsEncryptedChat(bID, chatID2, iUser2, rUser2, sessionKey) @j ∧
+
+        /* and no secret was leaked */
+        ¬(∃ z #r. CompromisedSecretChatInitiatorEphemeralKey(z) @r) ∧
+        ¬(∃ z #r. CompromisedSecretChatResponderEphemeralKey(z) @r)
+        ==>
+        (
+          /* 
+           * then these two clients are actually the two involved in the
+           * session key sessionKey negotiation 
+           */
+          ( iUser1 = iUser2 ∧ rUser1 = rUser2 ) ∨
+
+          /* or they skipped QR validation */
+          (
+            ∃ x1 #r. 
+              OutOfBandKeyComparisonSkipped(x1, rUser2, sessionKey) @r
           )
         )
     "
@@ -167,7 +229,7 @@
    * Expected result: False
    * Estimated time: ~30 seconds
    */
-  lemma LemmaSecretChatAuthentication5:
+  lemma LemmaSecretChatAuthentication7:
     "
       ∀ aID bID chatID iUser1 iUser2 rUser1 rUser2 sessionKey #i #j.
 

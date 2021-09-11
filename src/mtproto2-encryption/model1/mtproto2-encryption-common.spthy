@@ -118,9 +118,8 @@
  * achieved (TODO).
  */
 
-  functions: senc/3, sdec/3, genKey/2, genIV/2, keyID/1
-  equations: sdec(senc(msg, key, iv), key, iv) = msg
-
+  functions: genKey/2, genIV/2, keyID/1
+  builtins: symmetric-encryption
 /* 
  * Malleability of the ciphertext is *not* modeled.
  * TODO

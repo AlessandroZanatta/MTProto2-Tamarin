@@ -1,28 +1,5 @@
 
 /*****************************************************************/
-/* Boolean types                                                 */
-/*****************************************************************/
-
-  functions:
-    true/0,
-    false/0
-
-
-/*****************************************************************/
-/* Diffie-Hellman with small/bad subgroup attacks.               */
-/* See Bhargavan, Blanchet and Kobeissi, 2017.                   */
-/*                                                               */
-/* WEAK, STRONG and BAD are defined as functions because Tamarin */
-/* does not allow the usage of public contants in equations.     */
-/*****************************************************************/
- 
-  /* 
-   * Public constants:
-   *  - ALLOW_WEAK_DH
-   *  - DISALLOW_WEAK_DH
-   */
-
-/*****************************************************************/
 /* Hash functions, including functions with collisions.          */
 /*                                                               */
 /* WEAK_HASH, COLLISION and GOOD_HASH are defined as functions   */

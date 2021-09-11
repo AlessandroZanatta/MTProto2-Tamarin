@@ -32,7 +32,6 @@
           ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
           ¬(∃ n #r.    CompromisedNk(n) @r) ∧
           ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
-          ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
           ¬(∃ s #r.    CompromisedServerExponent(s) @r)
         )
         ==>
@@ -67,7 +66,6 @@
           ¬(∃ skey #r. CompromisedPrivateKey(skey) @r) ∧
           ¬(∃ n #r.    CompromisedNk(n) @r) ∧
           ¬(∃ c #r.    CompromisedClientExponent(c) @r) ∧
-          ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧
           ¬(∃ s #r.    CompromisedServerExponent(s) @r)
         )
         ==>
@@ -80,116 +78,115 @@
 /*****************************************************************/
 /* Perfect Forward Secrecy                                       */
 /*****************************************************************/
-  
-  /*
-   * The secrecy of a message should be preserved for sessions 
-   * that executed correctly even if some information is revealed 
-   * after the session has completed (perfect forward secrecy).
-   *
-   * This query and the next one show that no PFS is guaranteed in cloud chats.
-   */
-
-  /*
-   * Expected result: True
-   * Estimated time: ~10 seconds
-   */
-  lemma LemmaCloudChatSecrecyClientToServerPFS:
-    "
-      ∀ nc ns nk sid msg authKey #i #j #m.
-        (
-          /* Whenever the client has accepted an authorization key */
-          ClientAcceptsAuthKey(nc, ns, nk, authKey) @i ∧
-
-          /* and the server has received a message with such key */
-          ServerReceivesCloudMessage(sid, msg, authKey) @j ∧
-
-          /* and the attacker knows the message */
-          K(msg) @m ∧
-        
-          /* and no secret was leaked before the message was received */
-          ¬(∃ sk #r.   CompromisedAuthKey(sk) @r ∧ #r < #j) ∧
-          ¬(∃ skey #r. CompromisedPrivateKey(skey) @r ∧ #r < #j) ∧
-          ¬(∃ n #r.    CompromisedNk(n) @r ∧ #r < #j) ∧
-          ¬(∃ c #r.    CompromisedClientExponent(c) @r ∧ #r < #j) ∧
-          ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧ // This is redundant, not considering it
-          ¬(∃ s #r.    CompromisedServerExponent(s) @r ∧ #r < #j)
-        )
-        ==>
-        (
-          /* then there actually was a post-compromise of some secret */
-          (∃ #r.      CompromisedAuthKey(authKey) @r ∧ #j < #r) ∨
-          (∃ skey #r. CompromisedPrivateKey(skey) @r ∧ #j < #r) ∨
-          (
-            ∃ c #r1 #r2.
-              CompromisedNk(nk) @r1 ∧
-              CompromisedClientExponent(c) @r2 ∧
-              #j < #r1 ∧
-              #j < #r2
-          ) ∨
-          (
-            ∃ s #r1 #r2.
-              CompromisedNk(nk) @r1 ∧
-              CompromisedServerExponent(s) @r2 ∧
-              #j < #r1 ∧
-              #j < #r2
-          ) ∨
-          (
-            ∃ c s #r1 #r2.
-              CompromisedClientExponent(c) @r1 ∧
-              CompromisedServerExponent(s) @r2 ∧
-              #j < #r1 ∧
-              #j < #r2
-          )
-        )
-    "
-
-  /*
-   * Expected result: True
-   * Estimated time: ~10 seconds
-   */
-  lemma LemmaCloudChatSecrecyServerToClientPFS:
-    "
-      ∀ sid msg authKey #j #m.
-        (
-          /* Whenever the client has received a message */
-          ClientReceivesCloudMessage(sid, msg, authKey) @j ∧
-
-          /* and the attacker knows the message */
-          K(msg) @m ∧
-        
-          /* and no secret was leaked before the message was sent */
-          ¬(∃ sk #r.   CompromisedAuthKey(sk) @r ∧ #r < #j) ∧
-          ¬(∃ skey #r. CompromisedPrivateKey(skey) @r ∧ #r < #j) ∧
-          ¬(∃ n #r.    CompromisedNk(n) @r ∧ #r < #j) ∧
-          ¬(∃ c #r.    CompromisedClientExponent(c) @r ∧ #r < #j) ∧
-          ¬(∃ n c #r.  CompromisedClientEphemeralSecrets(n, c) @r) ∧ // This is redundant, not considering it
-          ¬(∃ s #r.    CompromisedServerExponent(s) @r ∧ #r < #j)
-        )
-        ==>
-        (
-          /* then there actually was a post-compromise of some secret */
-          (∃ #r.      CompromisedAuthKey(authKey) @r ∧ #j < #r) ∨
-          (∃ skey #r. CompromisedPrivateKey(skey) @r ∧ #j < #r) ∨
-          (
-            ∃ nk c #r1 #r2.
-              CompromisedNk(nk) @r1 ∧
-              CompromisedClientExponent(c) @r2 ∧
-              #j < #r1 ∧
-              #j < #r2
-          ) ∨
-          (
-            ∃ nk s #r1 #r2.
-              CompromisedNk(nk) @r1 ∧
-              CompromisedServerExponent(s) @r2 ∧
-              #j < #r1 ∧
-              #j < #r2
-          ) ∨
-          (
-            ∃ c s #r1 #r2.
-              CompromisedClientExponent(c) @r1 ∧
-              CompromisedServerExponent(s) @r2 ∧
-              #j < #r1 ∧
-              #j < #r2
-          )
-        )
-    "
+//  
+//  /*
+//   * The secrecy of a message should be preserved for sessions 
+//   * that executed correctly even if some information is revealed 
+//   * after the session has completed (perfect forward secrecy).
+//   *
+//   * This query and the next one show that no PFS is guaranteed in cloud chats.
+//   */
+//
+//  /*
+//   * Expected result: True
+//   * Estimated time: ~10 seconds
+//   */
+//  lemma LemmaCloudChatSecrecyClientToServerPFS [use_induction]:
+//    "
+//      ∀ nc ns nk sid msg authKey #i #j #m.
+//        (
+//          /* Whenever the client has accepted an authorization key */
+//          ClientAcceptsAuthKey(nc, ns, nk, authKey) @i ∧
+//
+//          /* and the server has received a message with such key */
+//          ServerReceivesCloudMessage(sid, msg, authKey) @j ∧
+//
+//          /* and the attacker knows the message */
+//          K(msg) @m ∧
+//        
+//          /* and no secret was leaked before the message was received */
+//          ¬(∃ sk #r.   CompromisedAuthKey(sk) @r ∧ #r < #j) ∧
+//          ¬(∃ skey #r. CompromisedPrivateKey(skey) @r ∧ #r < #j) ∧
+//          ¬(∃ n #r.    CompromisedNk(n) @r ∧ #r < #j) ∧
+//          ¬(∃ c #r.    CompromisedClientExponent(c) @r ∧ #r < #j) ∧
+//          ¬(∃ s #r.    CompromisedServerExponent(s) @r ∧ #r < #j)
+//        )
+//        ==>
+//        (
+//          /* then there actually was a post-compromise of some secret */
+//          (∃ #r.      CompromisedAuthKey(authKey) @r ∧ #j < #r) ∨
+//          (∃ skey #r. CompromisedPrivateKey(skey) @r ∧ #j < #r) ∨
+//          (
+//            ∃ c #r1 #r2.
+//              CompromisedNk(nk) @r1 ∧
+//              CompromisedClientExponent(c) @r2 ∧
+//              #j < #r1 ∧
+//              #j < #r2
+//          ) ∨
+//          (
+//            ∃ s #r1 #r2.
+//              CompromisedNk(nk) @r1 ∧
+//              CompromisedServerExponent(s) @r2 ∧
+//              #j < #r1 ∧
+//              #j < #r2
+//          ) ∨
+//          (
+//            ∃ c s #r1 #r2.
+//              CompromisedClientExponent(c) @r1 ∧
+//              CompromisedServerExponent(s) @r2 ∧
+//              #j < #r1 ∧
+//              #j < #r2
+//          )
+//        )
+//    "
+//
+//  /*
+//   * Expected result: True
+//   * Estimated time: ~10 seconds
+//   */
+//  lemma LemmaCloudChatSecrecyServerToClientPFS [use_induction]:
+//    "
+//      ∀ sid msg authKey #j #m.
+//        (
+//          /* Whenever the client has received a message */
+//          ClientReceivesCloudMessage(sid, msg, authKey) @j ∧
+//
+//          /* and the attacker knows the message */
+//          K(msg) @m ∧
+//        
+//          /* and no secret was leaked before the message was sent */
+//          ¬(∃ sk #r.   CompromisedAuthKey(sk) @r ∧ #r < #j) ∧
+//          ¬(∃ skey #r. CompromisedPrivateKey(skey) @r ∧ #r < #j) ∧
+//          ¬(∃ n #r.    CompromisedNk(n) @r ∧ #r < #j) ∧
+//          ¬(∃ c #r.    CompromisedClientExponent(c) @r ∧ #r < #j) ∧
+//          ¬(∃ s #r.    CompromisedServerExponent(s) @r ∧ #r < #j)
+//        )
+//        ==>
+//        (
+//          /* then there actually was a post-compromise of some secret */
+//          (∃ #r.      CompromisedAuthKey(authKey) @r ∧ #j < #r) ∨
+//          (∃ skey #r. CompromisedPrivateKey(skey) @r ∧ #j < #r) ∨
+//          (
+//            ∃ nk c #r1 #r2.
+//              CompromisedNk(nk) @r1 ∧
+//              CompromisedClientExponent(c) @r2 ∧
+//              #j < #r1 ∧
+//              #j < #r2
+//          ) ∨
+//          (
+//            ∃ nk s #r1 #r2.
+//              CompromisedNk(nk) @r1 ∧
+//              CompromisedServerExponent(s) @r2 ∧
+//              #j < #r1 ∧
+//              #j < #r2
+//          ) ∨
+//          (
+//            ∃ c s #r1 #r2.
+//              CompromisedClientExponent(c) @r1 ∧
+//              CompromisedServerExponent(s) @r2 ∧
+//              #j < #r1 ∧
+//              #j < #r2
+//          )
+//        )
+//    "
+//

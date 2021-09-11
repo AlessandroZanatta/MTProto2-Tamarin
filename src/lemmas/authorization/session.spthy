@@ -19,8 +19,6 @@
           (∃ #r.      CompromisedNk(nk1) @r) ∨
           (∃ #r.      CompromisedNk(nk2) @r) ∨
           (∃ c #r.    CompromisedClientExponent(c) @r) ∨
-          (∃ c #r.    CompromisedClientEphemeralSecrets(nk1, c) @r) ∨
-          (∃ c #r.    CompromisedClientEphemeralSecrets(nk2, c) @r) ∨
           (∃ s #r.    CompromisedServerExponent(s) @r)
         )
     "
