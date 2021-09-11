@@ -33,15 +33,14 @@
    */
   lemma LemmaRekeyingAuthentication_2:
     "
-      ∀ Alice Bob exchangeID1 exchangeID2 iUser rUser newKey #i #j #ab.
+      ∀ exchangeID1 exchangeID2 iUser rUser newKey #i #j.
         /* 
          * Whenever an honest initiator iUser accepts a new key with 'Bob' in
          * a session, and an honest responder rUser accepts the same key with
          * 'Alice' in another session
          */
-        AliceAndBob(Alice, Bob) @ab ∧
-        InitiatorHasNegotiatedNewKey(exchangeID1, iUser, Bob, newKey) @i ∧
-        ResponderHasNegotiatedNewKey(exchangeID2, Alice, rUser, newKey) @j ∧
+        InitiatorHasNegotiatedNewKey(exchangeID1, iUser, 'Bob', newKey) @i ∧
+        ResponderHasNegotiatedNewKey(exchangeID2, 'Alice', rUser, newKey) @j ∧
         
         /* and no secret was revealed */
         // ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
@@ -52,19 +51,11 @@
           /* then the session is the same */
           exchangeID1 = exchangeID2 ∧
 
-<<<<<<< HEAD
-          /* and the initiator is Alice */
-          iUser = Alice ∧
-
-          /* and the responder is Bob */
-          rUser = Bob
-=======
           /* and the initiator is 'Alice' */
           iUser = 'Alice' ∧
 
           /* and the responder is 'Bob' */
           rUser = 'Bob'
->>>>>>> simpler_senc
         )
     "
 
@@ -76,13 +67,12 @@
    */
   lemma LemmaRekeyingAuthentication_3:
     "
-      ∀ Alice Bob exchangeID rUser newKey #i #ab.
+      ∀ exchangeID rUser newKey #i.
         /* 
          * Whenever an honest responder ends up accepting a new key after
          * a rekeying session exchangeID with 'Alice'
          */
-        AliceAndBob(Alice, Bob) @ab ∧
-        ResponderHasNegotiatedNewKey(exchangeID, Alice, rUser, newKey) @i ∧
+        ResponderHasNegotiatedNewKey(exchangeID, 'Alice', rUser, newKey) @i ∧
 
         /* and no secret was revealed */
         // ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
@@ -96,7 +86,7 @@
            */
           (
             ∃ #j1.
-              InitiatorHasNegotiatedNewKey(exchangeID, Alice, rUser, newKey) @j1
+              InitiatorHasNegotiatedNewKey(exchangeID, 'Alice', rUser, newKey) @j1
               /* injectivity */
               // ∧ ¬(
               //   ∃ #j2.
@@ -112,7 +102,7 @@
            */
           (
             ∃ #j1.
-              InitiatorHasNegotiatedNewKey(exchangeID, rUser, Alice, newKey) @j1
+              InitiatorHasNegotiatedNewKey(exchangeID, rUser, 'Alice', newKey) @j1
               /* injectivity */
               // ∧ ¬(
               //   ∃ #j2.
@@ -129,16 +119,9 @@
    */
   lemma LemmaRekeyingAuthentication_4:
     "
-<<<<<<< HEAD
-      ∀ Alice Bob rID sender exchangeID rUser newKey msg #i #ab.
-
-        AliceAndBob(Alice, Bob) @ab ∧
-        ClientReceivesMessageWithNewKey(rID, sender, exchangeID, Alice, rUser, newKey, msg) @i ∧
-=======
       ∀ rID sender exchangeID rUser newKey msg #i.
 
         ClientReceivesMessageWithNewKey(rID, sender, exchangeID, 'Alice', rUser, newKey, msg) @i ∧
->>>>>>> simpler_senc
 
         /* and no secret was revealed */
         // ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
@@ -148,19 +131,11 @@
         (
           (
             ∃ iID Y #j.
-<<<<<<< HEAD
-              ClientSendsMessageWithNewKey(iID, Y, exchangeID, Alice, rUser, newKey, msg) @j
-          ) ∨
-          (
-            ∃ iID Y #j.
-              ClientSendsMessageWithNewKey(iID, Y, exchangeID, rUser, Alice, newKey, msg) @j
-=======
               ClientSendsMessageWithNewKey(iID, Y, exchangeID, 'Alice', rUser, newKey, msg) @j
           ) ∨
           (
             ∃ iID Y #j.
               ClientSendsMessageWithNewKey(iID, Y, exchangeID, rUser, 'Alice', newKey, msg) @j
->>>>>>> simpler_senc
           )
         )
     "
@@ -171,16 +146,9 @@
    */
   lemma LemmaRekeyingAuthentication_5:
     "
-<<<<<<< HEAD
-      ∀ Alice Bob rID sender exchangeID iUser newKey msg #i #ab.
-
-        AliceAndBob(Alice, Bob) @ab ∧
-        ClientReceivesMessageWithNewKey(rID, sender, exchangeID, iUser, Alice, newKey, msg) @i ∧
-=======
       ∀ rID sender exchangeID iUser newKey msg #i.
 
         ClientReceivesMessageWithNewKey(rID, sender, exchangeID, iUser, 'Alice', newKey, msg) @i ∧
->>>>>>> simpler_senc
 
         /* and no secret was revealed */
         // ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
@@ -190,19 +158,11 @@
         (
           (
             ∃ iID Y #j.
-<<<<<<< HEAD
-              ClientSendsMessageWithNewKey(iID, Y, exchangeID, Alice, iUser, newKey, msg) @j
-          ) ∨
-          (
-            ∃ iID Y #j.
-              ClientSendsMessageWithNewKey(iID, Y, exchangeID, iUser, Alice, newKey, msg) @j
-=======
               ClientSendsMessageWithNewKey(iID, Y, exchangeID, 'Alice', iUser, newKey, msg) @j
           ) ∨
           (
             ∃ iID Y #j.
               ClientSendsMessageWithNewKey(iID, Y, exchangeID, iUser, 'Alice', newKey, msg) @j
->>>>>>> simpler_senc
           )
         )
     "
@@ -213,42 +173,16 @@
    */
   lemma LemmaRekeyingAuthentication_6:
     "
-<<<<<<< HEAD
-      ∀ Alice Bob iID rID X Y exchangeID iUser rUser newKey msg #i #j #ab.
-
-        AliceAndBob(Alice, Bob) @ab ∧
-        ClientSendsMessageWithNewKey(iID, X, exchangeID, Alice, rUser, newKey, msg) @i ∧
-        ClientReceivesMessageWithNewKey(rID, Y, exchangeID, iUser, Bob, newKey, msg) @j ∧
-=======
       ∀ iID rID X Y exchangeID iUser rUser newKey msg #i #j.
 
         ClientSendsMessageWithNewKey(iID, X, exchangeID, 'Alice', rUser, newKey, msg) @i ∧
         ClientReceivesMessageWithNewKey(rID, Y, exchangeID, iUser, 'Bob', newKey, msg) @j ∧
->>>>>>> simpler_senc
 
         /* and no secret was revealed */
         // ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
         ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
         ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
         ==>
-<<<<<<< HEAD
-        ( iUser = Alice ∧ rUser = Bob)
-    "
-
-  /*
-   * Ditto of the previous, with inverted roles.
-   *
-   * Expected result: False
-   * Estimated time: N/A
-   */
-  lemma LemmaRekeyingAuthentication_7:
-    "
-      ∀ Alice Bob iID rID X Y exchangeID iUser rUser newKey msg #i #j #ab.
-
-        AliceAndBob(Alice, Bob) @ab ∧
-        ClientSendsMessageWithNewKey(iID, X, exchangeID, Bob, rUser, newKey, msg) @i ∧
-        ClientReceivesMessageWithNewKey(rID, Y, exchangeID, iUser, Alice, newKey, msg) @j ∧
-=======
         (iUser = 'Alice' ∧ rUser = 'Bob')
     "
 
@@ -264,16 +198,12 @@
 
         ClientSendsMessageWithNewKey(iID, X, exchangeID, 'Bob', rUser, newKey, msg) @i ∧
         ClientReceivesMessageWithNewKey(rID, Y, exchangeID, iUser, 'Alice', newKey, msg) @j ∧
->>>>>>> simpler_senc
 
         /* and no secret was revealed */
         // ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
         ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
         ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
         ==>
-<<<<<<< HEAD
-        ( iUser = Bob ∧ rUser = Alice)
-=======
         (iUser = 'Bob' ∧ rUser = 'Alice')
->>>>>>> simpler_senc
     "
+  

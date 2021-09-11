@@ -1,28 +1,10 @@
-<<<<<<< HEAD
-  
-=======
  
->>>>>>> simpler_senc
   /*
    * Expected result: True
    * Estimated time: N/A
    */
   lemma LemmaRekeyingNewKeySecrecy:
     "
-<<<<<<< HEAD
-       ¬(∃ exchangeID iUser rUser newKey #i #j.
-        /* There is way the initiator has exchanged a new key newKey */
-        InitiatorHasNegotiatedNewKey(exchangeID, iUser, rUser, newKey) @i ∧
-
-        /* and the attacker knows it */
-        K(newKey) @j ∧
-
-        /* and no secret was revealed (before the key was actually echanged) */
-        ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
-        ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r ∧ #r < #i) ∧
-        ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r ∧ #r < #i)
-      )
-=======
       ∀ exchangeID iUser rUser newKey #i1 #i2 #j.
         /* There is way the initiator has exchanged a new key newKey */
         InitiatorHasNegotiatedNewKey(exchangeID, iUser, rUser, newKey) @i1 ∧
@@ -41,7 +23,6 @@
             CompromisedRekeyingInitiatorEphemeralKey(x1) @r1 ∧
             CompromisedRekeyingResponderEphemeralKey(x2) @r2
         )
->>>>>>> simpler_senc
     "
 
   /*
