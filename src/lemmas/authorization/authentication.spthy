@@ -104,9 +104,9 @@
    */
   lemma LemmaAuthProtAuthServerToClient:
     "
-      ∀ nc ns nk authKey #i.
+      ∀ nc ns nk authKey #i1.
         /* Whenever a client receives an ACK from the server */
-        ClientReceivesAck(nc, ns, nk, authKey) @i ∧
+        ClientReceivesAck(nc, ns, nk, authKey) @i1 ∧
         
         /* and no secret was leaked */
         ¬(∃ sk #r.   CompromisedAuthKey(sk) @r) ∧
@@ -118,20 +118,11 @@
         (
           /* 
            * then there is a session matching it on the server
-           *
-           * Note: Trying to prove injectivity seems to make Tamarin use huge
-           * amounts of RAM (~12-16 GB) in a very short period of time (~30/40 seconds).
-           * Be careful if you uncomment the injectivity check.
            */
           ( 
-            ∃ #j1.
-            ServerAcceptsAuthKey(nc, ns, nk, authKey) @j1 
-            // ∧
-            // ¬(
-            //   ∃ #j2.
-            //     ServerAcceptsAuthKey(nc, ns, nk, authKey) @j2 ∧
-            //     ¬(#j1 = #j2)
-            // )
+            ∃ #j.
+              ServerAcceptsAuthKey(nc, ns, nk, authKey) @j ∧
+              (∀ #i2. ClientReceivesAck(nc, ns, nk, authKey) @i2 ==> #i1 = #i2)
           ) ∨
 
           /* or the server has reused the same nonce */
