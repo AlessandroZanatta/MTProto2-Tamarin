@@ -1,5 +1,4 @@
 
-  
 /*****************************************************************/
 /* Helpers                                                       */
 /*****************************************************************/
@@ -44,7 +43,6 @@
         Fr(~m)
       ]
     --[
-        Out_ClientCloudChat(c),
         /*
          * The client has sent the cloud message ~m1 in session
          * with id ~sessionID and with authorization key authKey
@@ -69,7 +67,6 @@
         !AuthKeyServer(kID, authKey)
       ]
     --[
-        In_ServerCloudChat(c, ~m),
         /*
          * Server has received the message m1 in session
          * sessionID using the authorization key authKey
@@ -101,7 +98,6 @@
         Fr(~m)
       ]
     --[
-        Out_ServerCloudChat(c),
         /*
          * Server has sent the message ~m in session
          * sessionID using the authorization key authKey
@@ -130,7 +126,6 @@
         In(c)
       ]
     --[ 
-        In_ClientCloudChat(c, ~m),
         /*
          * Client has received the message m1 in session
          * sessionID using the authorization key authKey
@@ -139,24 +134,3 @@
       ]->
       []
 
-//  lemma source [sources]:
-//    "
-//      (
-//        ∀ m c #i.
-//          In_ServerCloudChat(c, m) @i
-//          ==>
-//          (
-//            (∃ #r. Out_ClientCloudChat(c) @r) ∨
-//            (∃ #r. KU(m) @r ∧ #r < #i)
-//          )
-//      ) ∧
-//      (
-//        ∀ m c #i.
-//          In_ClientCloudChat(c, m) @i
-//          ==>
-//          (
-//            (∃ #r. Out_ServerCloudChat(c) @r) ∨
-//            (∃ #r. KU(m) @r ∧ #r < #i)
-//          )
-//      )
-//    "
