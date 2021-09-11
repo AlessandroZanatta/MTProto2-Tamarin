@@ -4,7 +4,7 @@
    * they do so in the same session, unless something bad happens.
    *
    * Expected result: True
-   * Estimated time: ~10 seconds
+   * Estimated time: ~5 seconds
    */
   lemma LemmaAuthProtSession:
     "

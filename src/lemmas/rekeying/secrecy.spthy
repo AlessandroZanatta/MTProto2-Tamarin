@@ -1,7 +1,7 @@
  
   /*
    * Expected result: True
-   * Estimated time: N/A
+   * Estimated time: ~10 seconds
    */
   lemma LemmaRekeyingNewKeySecrecy:
     "
@@ -16,7 +16,7 @@
 
   /*
    * Expected result: True
-   * Estimated time: N/A
+   * Estimated time: ~1 minute
    */
   lemma LemmaRekeyingMessageSecrecy:
     "

@@ -8,7 +8,7 @@
    * revealed. This assumption is captured by the last part of the formula.
    *
    * Expected result: True
-   * Estimated time: ~10 seconds
+   * Estimated time: ~5 seconds
    */
   lemma LemmaAuthProtAgreement:
     "
@@ -55,7 +55,7 @@
    * there is no guarantee (everything can be learned by the attacker).
    *
    * Expected result: False
-   * Estimated time: ~20 seconds
+   * Estimated time: ~10 seconds
    */
   lemma LemmaAuthProtBrokenAgreement_1:
     "
@@ -97,7 +97,7 @@
    * on the DH exchange.
 
    * Expected result: False
-   * Estimated time: ~30 seconds
+   * Estimated time: ~20 seconds
    */
   lemma LemmaAuthProtBrokenAgreement_2:
     "
@@ -141,7 +141,7 @@
    * that the key agreement actually holds (while secrecy will not).
    *
    * Expected result: True
-   * Estimated time: ~10 seconds
+   * Estimated time: ~5 seconds
    */
   lemma LemmaAuthProtBrokenAgreement_3:
     "

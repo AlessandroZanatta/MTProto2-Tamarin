@@ -86,7 +86,7 @@
    * Variant of the above lemma.
    *
    * Expected result: True
-   * Estimated time: ~10 seconds
+   * Estimated time: ~5 seconds
    */
   lemma LemmaSecretChatAuthentication3:
     "
@@ -166,6 +166,9 @@
    * session key sessionKey to chat with rUser1, and an (honest) responder rUser2
    * negotiates the same key sessionKey to chat with iUser2, then there are only
    * two parties involved, and in particular iUser1 = iUser2 and rUser1 = rUser2.
+   *
+   * Expected result: True
+   * Estimated time: ~10 seconds
    */
   lemma LemmaSecretChatAuthentication5:
     "
@@ -194,6 +197,9 @@
 
   /*
    * Variant of the above.
+   *
+   * Expected result: True
+   * Estimated time: ~10 seconds
    */
   lemma LemmaSecretChatAuthentication6:
     "
@@ -227,7 +233,7 @@
    * the same!).
    *
    * Expected result: False
-   * Estimated time: ~30 seconds
+   * Estimated time: ~10 seconds
    */
   lemma LemmaSecretChatAuthentication7:
     "

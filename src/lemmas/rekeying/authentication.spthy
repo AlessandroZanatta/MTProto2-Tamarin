@@ -1,12 +1,11 @@
 
   /*
-   *
    * Expected result: False
-   * Estimated time: A lot. Be patient.
+   * Estimated time: 2-3 minutes
    */
   lemma LemmaRekeyingAuthentication:
     "
-      ∀ exchangeID iUser1 iUser2 rUser1 rUser2 newKey sessionKeyAlice sessionKeyBob #i #j #ska #skb.
+      ∀ exchangeID iUser1 iUser2 rUser1 rUser2 newKey #i #j.
         /* Whenever two users negotiate the same key in the same session */
         InitiatorHasNegotiatedNewKey(exchangeID, iUser1, rUser1, newKey) @i ∧
         ResponderHasNegotiatedNewKey(exchangeID, iUser2, rUser2, newKey) @j

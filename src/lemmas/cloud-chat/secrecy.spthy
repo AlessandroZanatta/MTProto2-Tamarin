@@ -12,7 +12,7 @@
    * Client -> Server
    * 
    * Expected result: True
-   * Estimated time: ~2 minutes
+   * Estimated time: ~10 seconds
    */
   lemma LemmaCloudChatSecrecyClientToServer:
     "
@@ -43,7 +43,7 @@
 
 
   /*
-   * Client -> Server
+   * Server -> Client
    * 
    * Expected result: True
    * Estimated time: ~10 seconds

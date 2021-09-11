@@ -8,7 +8,7 @@
  * protocol with anyone, including the attacker.
  *
  * Expected result: False
- * Estimated time: ~10 seconds
+ * Estimated time: ~5 seconds
  */
   lemma LemmaAuthProtAuthClientToServer:
     "
@@ -52,7 +52,7 @@
    * is the client who sent the third message of the protocol.
    *
    * Expected result: True
-   * Estimated time: ~10 seconds
+   * Estimated time: ~5 seconds
    */
   lemma LemmaAuthProtAuthClientSentThirdMessage:
     "
@@ -100,7 +100,7 @@
    * does not reuse its server nonce).
    *
    * Expected result: True
-   * Estimated time: ~10 seconds
+   * Estimated time: ~5 seconds
    */
   lemma LemmaAuthProtAuthServerToClient:
     "

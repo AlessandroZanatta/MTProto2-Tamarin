@@ -4,7 +4,7 @@
    * but the attacker knows it, then some secret from that session was leaked.
    *
    * Expected result: True
-   * Estimated time: ~10 seconds
+   * Estimated time: ~5 seconds
    */
   lemma LemmaAuthProtKeySecrecy:
     "
