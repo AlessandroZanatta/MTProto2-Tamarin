@@ -40,7 +40,7 @@
          * Retrieve the session key sessionKey exchanged during the first
          * secret chat protocol run 
          */
-        !SecretChatClient(iUser, iUser, rUser, ~old_i, chatID, sessionKey),
+        !SecretChatClient(iUser, iU, rU, ~old_i, chatID, sessionKey),
         
         /* Generate DH ephemeral key */
         Fr(~i),
@@ -49,8 +49,8 @@
         Fr(~exchangeID)
       ]
     --[
-        NotEq(iUser, rUser),
-        InitiatorSendsHalfKey(~exchangeID, iUser, rUser, g_i)
+        InitiatorSendsHalfKey(~exchangeID, iUser, rUser, g_i),
+        OnlyTwice('Initiator')
       ]->
       [
         RekeyingInitiatorState_1(iUser, rUser, ~i, ~exchangeID, sessionKey),
@@ -62,6 +62,7 @@
   rule RekeyingResponder_2 [color=#4C6085]:
     let
       rUser  = 'Bob'
+      iUser  = ChooseOtherPrincipal(rUser, iU, rU) 
 
       g_i    = 'g' ^ ~i
       m1     = <'HALF_KEY_I', ~exchangeID, g_i>
@@ -79,8 +80,6 @@
       c2     = <keyID(sessionKey), mk2, senc(m2, mk2)> 
     in
       [
-        In(rUser),
-        
         /* Generate responder DH ephemeral key */
         Fr(~r),
 
@@ -88,14 +87,14 @@
          * Retrieve the session key sessionKey exchanged during the first
          * secret chat protocol run 
          */
-        !SecretChatClient(rUser, iUser, rUser, ~old_r, chatID, sessionKey),
+        !SecretChatClient(rUser, iU, rU, ~old_r, chatID, sessionKey),
 
         In(c1)
       ]
     --[
-        NotEq(iUser, rUser),
         ResponderReceivesHalfKey(~exchangeID, iUser, rUser, g_i),
-        ResponderSendsHalfKey(~exchangeID, iUser, rUser, g_r, fp)
+        ResponderSendsHalfKey(~exchangeID, iUser, rUser, g_r, fp),
+        OnlyTwice('Responder')
       ]->
       [
         RekeyingResponderState_2(iUser, rUser, ~r, ~exchangeID, sessionKey, newKey),
@@ -140,8 +139,9 @@
         Out(c3),
 
         /* End of the rekeying protocol */
-        !RekeyingClient(iUser, iUser, rUser, ~i, ~exchangeID, newKey)
+        !RekeyingInitiator(iUser, iUser, rUser, ~i, ~exchangeID, newKey)
       ]
+
 
   rule RekeyingResponder_4 [color=#4C6085]:
     let
@@ -163,7 +163,7 @@
       ]->
       [
         /* End of the rekeying protocol */
-        !RekeyingClient(rUser, iUser, rUser, ~r, ~exchangeID, newKey)
+        !RekeyingResponder(rUser, iUser, rUser, ~r, ~exchangeID, newKey)
       ]
 
 /*****************************************************************/
@@ -172,12 +172,13 @@
 
   rule RekeyingSend [color=#0088CC]:
     let
-      mk  = msgKey(~m, newKey)
+      msg = <'ItoR', ~m>
+      mk  = msgKey(msg, newKey)
       key = genKey(mk, newKey)      
-      c   = <keyID(newKey), mk, senc(~m, key)>
+      c   = <keyID(newKey), mk, senc(msg, key)>
     in
       [
-        !RekeyingClient(X, iUser, rUser, ~xID, ~exchangeID, newKey),
+        !RekeyingInitiator(X, iUser, rUser, ~xID, ~exchangeID, newKey),
         Fr(~m)
       ]
     --[
@@ -189,12 +190,13 @@
 
   rule RekeyingReceive [color=#0088CC]:
     let
-      mk  = msgKey(~m, newKey)
+      msg = <'ItoR', ~m>
+      mk  = msgKey(msg, newKey)
       key = genKey(mk, newKey)      
-      c   = <keyID(newKey), mk, senc(~m, key)>
+      c   = <keyID(newKey), mk, senc(msg, key)>
     in
       [
-        !RekeyingClient(X, iUser, rUser, ~xID, ~exchangeID, newKey),
+        !RekeyingResponder(X, iUser, rUser, ~xID, ~exchangeID, newKey),
         In(c)
       ]
     --[ 
@@ -203,63 +205,32 @@
       ]->
       []
 
-//  lemma source [sources]:
-//    "
-//      ∀ c m #i.
-//        In_Rekeying_msg(c, m) @i
-//        ==>
-//        (
-//          (∃ #j. Out_Rekeying_msg(c) @j) ∨
-//          (∃ #j. KU(m) @j ∧ #j < #i)
-//        )
-//    "
-
-//      ∀ X Y A B #i.
-//        ChooseOnlyOneHonestPrincipal(X, Y, A, B) @i
-//        ==>
-//        (
-//          (X = A ∨ X = B) ∧
-//          ¬(Y = A) ∧
-//          ¬(Y = B)
-//        )
-//    "
 
 /*****************************************************************/
 /* Attacker capabilities                                         */
 /*****************************************************************/
 
-  rule CompromiseRekeyingInitiatorEphemeralKey [color=#FE4A49]:
-      [ !RekeyingInitiatorEphemeralKey(~i) ]
-    --[ CompromisedRekeyingInitiatorEphemeralKey(~i) ]->
-      [ Out(~i) ]
-
-  rule CompromiseRekeyingResponderEphemeralKey [color=#FE4A49]:
-      [ !RekeyingResponderEphemeralKey(~r) ]
-    --[ CompromisedRekeyingResponderEphemeralKey(~r) ]->
-      [ Out(~r) ]
-
-  /*
-   * Allows the attacker to register a session key with an honest client, 
-   * as if it had successfully run a session of the secret chat protocol 
-   * with that client.
-   */
-  rule RegisterSessionKey [color=#FE4A49]:
+  rule AttackerGeneratesSecretChatKey:
     let
-      sessionKey = 'g' ^ ~a ^ ~b
+      sessionKeyAlice = 'g' ^ ~e1 ^ ~e2
+      sessionKeyBob = 'g' ^ ~e3 ^ ~e4
     in
       [ 
-        In(X),
-        Fr(~Y),
-        Fr(~a),
-        Fr(~b),
-        Fr(~chatID),
-        Fr(~authKey)
+        Fr(~e1),
+        Fr(~e2),
+        Fr(~e3),
+        Fr(~e4),
+        Fr(~chatIDAlice),
+        Fr(~chatIDBob)
       ]
-    --[
-        ChoosePrincipal(X, 'Alice', 'Bob'),
-        RegisteredSessionKey(sessionKey)
-      ]->
-      []
+    --[ AttackerRegisteredKey(sessionKeyAlice), AttackerRegisteredKey(sessionKeyBob) ]->
+      [
+        !SecretChatClient('Alice', 'Alice', 'Eve', ~e1, ~chatIDAlice, sessionKeyAlice),
+        !SecretChatClient('Eve', 'Alice', 'Eve', ~e2, ~chatIDAlice, sessionKeyAlice),
+        !SecretChatClient('Bob', 'Eve', 'Bob', ~e3, ~chatIDBob, sessionKeyBob),
+        !SecretChatClient('Eve', 'Eve', 'Bob', ~e4, ~chatIDBob, sessionKeyBob),
+        Out(<sessionKeyAlice, sessionKeyBob>)
+      ]
 
 /*****************************************************************/
 /* Other convenience functions                                   */
@@ -276,34 +247,24 @@
         Fr(~r),
         Fr(~chatID)
       ]
-    --[ ChoosePrincipal(X1, 'Alice', 'Bob') ]->
+    -->
       [ 
         !SecretChatClient(X1, X1, X2, ~i, ~chatID, sessionKey),
-        !SecretChatClient(X2, X1, X2, ~r, ~chatID, sessionKey),
-        !SecretChatClient(X1, X2, X1, ~i, ~chatID, sessionKey),
-        !SecretChatClient(X2, X2, X1, ~r, ~chatID, sessionKey)
+        !SecretChatClient(X2, X1, X2, ~r, ~chatID, sessionKey)
       ]
 
-
-  restriction RestrictionChoosePrincipal:
-    "
-      ∀ X Y Z #i.
-        ChoosePrincipal(X, Y, Z) @i ==> ((X = Y) ∨ (X = Z))
-    "
-
-//  restriction RestrictionNotEq:
-//    "
-//      ∀ x y #i. NotEq(x, y) @i ==> ¬(x = y)
-//    "
   
-//  restriction RestrictionChooseOnlyOneHonestPrincipal:
-//    "
-//      ∀ X Y A B #i.
-//        ChooseOnlyOneHonestPrincipal(X, Y, A, B) @i
-//        ==>
-//        (
-//          (X = A ∨ X = B) ∧
-//          ¬(Y = A) ∧
-//          ¬(Y = B)
-//        )
-//    "
+  restriction RestrictionOnlyTwice:
+    "
+      ∀ x #i #j #k. 
+        OnlyTwice(x) @i ∧
+        OnlyTwice(x) @j ∧
+        OnlyTwice(x) @k 
+        ==>
+        (
+          #i = #j ∨
+          #i = #k ∨
+          #j = #k
+        )
+    "
+

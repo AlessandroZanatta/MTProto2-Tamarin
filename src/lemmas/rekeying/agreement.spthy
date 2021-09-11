@@ -14,12 +14,7 @@
       ∀ exchangeID iUser rUser newKey1 newKey2 #i #j.
         /* Whenever two parties have negotiated a key in the same session */
         InitiatorHasNegotiatedNewKey(exchangeID, iUser, rUser, newKey1) @i ∧
-        ResponderHasNegotiatedNewKey(exchangeID, iUser, rUser, newKey2) @j ∧
-
-        /* and no secret was revealed */
-        ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
-        ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r) ∧
-        ¬(∃ x #r. RegisteredSessionKey(x) @r)
+        ResponderHasNegotiatedNewKey(exchangeID, iUser, rUser, newKey2) @j
         ==>
         (
           /* then they have actually negotiated the same key */

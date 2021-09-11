@@ -5,24 +5,13 @@
    */
   lemma LemmaRekeyingNewKeySecrecy:
     "
-      ∀ exchangeID iUser rUser newKey #i1 #i2 #j.
-        /* There is way the initiator has exchanged a new key newKey */
+      ∀ exchangeID iUser rUser newKey #i1 #i2.
+        /* Whenever two clients negotiate a key */
         InitiatorHasNegotiatedNewKey(exchangeID, iUser, rUser, newKey) @i1 ∧
-        ResponderHasNegotiatedNewKey(exchangeID, iUser, rUser, newKey) @i2 ∧
-
-        /* and the attacker knows it */
-        K(newKey) @j ∧
-        
-        /* and no secret was revealed (before the key was actually echanged) */
-        ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
-        ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r ∧ #r < #i2) ∧
-        ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r ∧ #r < #i2)
+        ResponderHasNegotiatedNewKey(exchangeID, iUser, rUser, newKey) @i2
         ==>
-        (
-          ∃ x1 x2 #r1 #r2. 
-            CompromisedRekeyingInitiatorEphemeralKey(x1) @r1 ∧
-            CompromisedRekeyingResponderEphemeralKey(x2) @r2
-        )
+        /* the attacker does not know it */
+        ¬(∃ #j. K(newKey) @j)
     "
 
   /*
@@ -31,16 +20,12 @@
    */
   lemma LemmaRekeyingMessageSecrecy:
     "
-       ¬(∃ sender iUser rUser xID exchangeID newKey msg #i #j.
-        /* There is no way the client sent a message msg */
-        ClientSendsMessageWithNewKey(xID, sender, exchangeID, iUser, rUser, newKey, msg) @i ∧
+      /* There is no way the client sent a message msg to an honest receiver */
+      ¬(∃ sender receiver iUser rUser xID1 xID2 eID1 eID2 newKey msg #i1 #i2 #j.
+        ClientSendsMessageWithNewKey(xID1, sender, eID1, iUser, rUser, newKey, msg) @i1 ∧
+        ClientReceivesMessageWithNewKey(xID2, receiver, eID2, iUser, rUser, newKey, msg) @i2 ∧
 
         /* and the attacker knows it */
-        K(msg) @j ∧
-
-        /* and no secret was revealed (before the key was actually echanged) */
-        ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
-        ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r ∧ #r < #i) ∧
-        ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r ∧ #r < #i)
+        K(msg) @j
       )
     "

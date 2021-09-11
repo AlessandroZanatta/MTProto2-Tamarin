@@ -5,9 +5,7 @@
     "
       ∃ iUser rUser eID g_i #i.
         InitiatorSendsHalfKey(eID, iUser, rUser, g_i) @i ∧
-        ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
-        ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
-        ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
+        ¬(∃ k #r.AttackerRegisteredKey(k) @r)
     "
 
   lemma LemmaRekeyingResponderReceivesHalfKey:
@@ -15,9 +13,7 @@
     "
       ∃ iUser rUser eID g_i #i.
         ResponderReceivesHalfKey(eID, iUser, rUser, g_i) @i ∧
-        ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
-        ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
-        ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
+        ¬(∃ k #r.AttackerRegisteredKey(k) @r)
     "
 
   lemma LemmaRekeyingResponderSendsHalfKey:
@@ -25,9 +21,7 @@
     "
       ∃ iUser rUser eID g_r fp #i.
         ResponderSendsHalfKey(eID, iUser, rUser, g_r, fp) @i ∧
-        ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
-        ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
-        ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
+        ¬(∃ k #r.AttackerRegisteredKey(k) @r)
     "
 
   lemma LemmaRekeyingInitiatorReceivesHalfKey:
@@ -35,9 +29,7 @@
     "
       ∃ iUser rUser eID g_r fp #i.
         InitiatorReceivesHalfKey(eID, iUser, rUser, g_r, fp) @i ∧
-        ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
-        ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
-        ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
+        ¬(∃ k #r.AttackerRegisteredKey(k) @r)
     "
   
   lemma LemmaRekeyingRekeyingKeyFingerprintMatches:
@@ -45,9 +37,7 @@
     "
       ∃ iUser rUser eID fp1 fp2 #i.
         RekeyingKeyFingerprintMatches(eID, iUser, rUser, fp1, fp2) @i ∧
-        ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
-        ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
-        ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
+        ¬(∃ k #r.AttackerRegisteredKey(k) @r)
     "
 
   lemma LemmaRekeyingInitiatorHasNegotiatedNewKey:
@@ -55,9 +45,7 @@
     "
       ∃ iUser rUser eID newKey #i.
         InitiatorHasNegotiatedNewKey(eID, iUser, rUser, newKey) @i ∧
-        ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
-        ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
-        ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
+        ¬(∃ k #r.AttackerRegisteredKey(k) @r)
     "
 
   lemma LemmaRekeyingInitiatorSendsAck:
@@ -65,9 +53,7 @@
     "
       ∃ iUser rUser eID fp #i.
         InitiatorSendsAck(eID, iUser, rUser, fp) @i ∧
-        ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
-        ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
-        ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
+        ¬(∃ k #r.AttackerRegisteredKey(k) @r)
     "
 
   lemma LemmaRekeyingResponderReceivesAck:
@@ -75,9 +61,7 @@
     "
       ∃ iUser rUser eID fp #i.
         ResponderReceivesAck(eID, iUser, rUser, fp) @i ∧
-        ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
-        ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
-        ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
+        ¬(∃ k #r.AttackerRegisteredKey(k) @r)
     "
 
   lemma LemmaRekeyingResponderHasNegotiatedNewKey:
@@ -85,9 +69,7 @@
     "
       ∃ iUser rUser eID newKey #i.
         ResponderHasNegotiatedNewKey(eID, iUser, rUser, newKey) @i ∧
-        ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
-        ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
-        ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
+        ¬(∃ k #r.AttackerRegisteredKey(k) @r)
     "
   
   lemma LemmaRekeyingClientSendsMessageWithNewKey:
@@ -95,9 +77,7 @@
     "
       ∃ sender iUser rUser xID exchangeID newKey msg #i.
         ClientSendsMessageWithNewKey(xID, sender, exchangeID, iUser, rUser, newKey, msg) @i ∧
-        ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
-        ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
-        ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
+        ¬(∃ k #r.AttackerRegisteredKey(k) @r)
   "
 
   lemma LemmaRekeyingClientReceivesMessageWithNewKey:
@@ -105,49 +85,30 @@
     "
       ∃ receiver iUser rUser xID exchangeID newKey msg #i.
         ClientReceivesMessageWithNewKey(xID, receiver, exchangeID, iUser, rUser, newKey, msg) @i ∧
-        ¬(∃ x #r. RegisteredSessionKey(x) @r) ∧
-        ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
-        ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
+        ¬(∃ k #r.AttackerRegisteredKey(k) @r)
   "
 
-  lemma LemmaRekeyingCompromisedRekeyingInitiatorEphemeralKey:
-    exists-trace
-    "∃ x #i. CompromisedRekeyingInitiatorEphemeralKey(x) @i"
-
-  lemma LemmaRekeyingCompromisedRekeyingResponderEphemeralKey:
-    exists-trace
-    "∃ x #i. CompromisedRekeyingResponderEphemeralKey(x) @i"
 
   lemma AdversayCanImpersonateResponder1:
     exists-trace
     "∃ eID iUser g_i #i.
-      InitiatorSendsHalfKey(eID, iUser, 'Eve', g_i) @i ∧
-      ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
-      ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
+      InitiatorSendsHalfKey(eID, iUser, 'Eve', g_i) @i
     "
 
   lemma AdversaryCanImpersonateResponder2:
     exists-trace
     "∃ eID rUser g_i #i.
-      ResponderReceivesHalfKey(eID, 'Eve', rUser, g_i) @i ∧
-      ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
-      ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
+      ResponderReceivesHalfKey(eID, 'Eve', rUser, g_i) @i
     "
 
   lemma AdversayCanImpersonateResponder3:
     exists-trace
     "∃ eID iUser fp #i.
-      InitiatorSendsAck(eID, iUser, 'Eve', fp) @i ∧
-      ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
-      ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
+      InitiatorSendsAck(eID, iUser, 'Eve', fp) @i
     "
 
   lemma AdversaryCanImpersonateResponder4:
     exists-trace
     "∃ eID rUser fp #i.
-      ResponderReceivesAck(eID, 'Eve', rUser, fp) @i ∧
-      ¬(∃ x #r. CompromisedRekeyingInitiatorEphemeralKey(x) @r) ∧
-      ¬(∃ x #r. CompromisedRekeyingResponderEphemeralKey(x) @r)
+      ResponderReceivesAck(eID, 'Eve', rUser, fp) @i
     "
-
-  
