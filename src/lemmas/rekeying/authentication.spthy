@@ -1,7 +1,7 @@
 
   /*
    * Expected result: False
-   * Estimated time: 2-3 minutes
+   * Estimated time: 4-5 minutes
    */
   lemma LemmaRekeyingAuthentication:
     "
