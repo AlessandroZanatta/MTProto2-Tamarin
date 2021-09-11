@@ -50,6 +50,15 @@
       ]
     --[
         InitiatorSendsHalfKey(~exchangeID, iUser, rUser, g_i),
+
+        /* 
+         * This is used to limitate the number of times this rule can be
+         * instantiated in a trace. This appears to be necessary, otherwise 
+         * proofs keep on instantiating this fact and executing a new run of 
+         * the protocol trying to leak the same secret values, over and over.
+         * 
+         * A better solution, if it exists, has not been found yet.
+         */
         OnlyTwice('Initiator')
       ]->
       [
@@ -94,6 +103,15 @@
     --[
         ResponderReceivesHalfKey(~exchangeID, iUser, rUser, g_i),
         ResponderSendsHalfKey(~exchangeID, iUser, rUser, g_r, fp),
+
+        /* 
+         * This is used to limitate the number of times this rule can be
+         * instantiated in a trace. This appears to be necessary, otherwise 
+         * proofs keep on instantiating this fact and executing a new run of 
+         * the protocol trying to leak the same secret values, over and over.
+         * 
+         * A better solution, if it exists, has not been found yet.
+         */
         OnlyTwice('Responder')
       ]->
       [
