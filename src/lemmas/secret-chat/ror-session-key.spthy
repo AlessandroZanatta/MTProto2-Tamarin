@@ -1,18 +1,15 @@
+
   /*
-   * If the secret key is strong, 
+   * This should not hold, as the adversary should be able to compare the 
+   * fingerprint of the key with the one sent by the responder in message 2.
    *
-   * Expected result: ?
+   * Expected result: False
    * Estimated time: ∞ 
    */
-  rule SecretChatReceiveRoR:
+  rule SecretChatSessionKeyRoR:
       [ 
         !SecretChatClient(X, iUser, rUser, xID, chatID, sessionKey, authKey),
         Fr(~r)
       ]
-    --[
-        ChoosePrincipal(iUser, 'Alice', 'Bob'),
-        ChoosePrincipal(rUser, 'Alice', 'Bob')
-      ]->
-      [
-        Out(diff(sessionKey, ~r))
-      ]
+    -->
+      [ Out(diff(sessionKey, ~r)) ]

@@ -1,20 +1,17 @@
 
 
-    /*
-    * The attacker (the server) should be able to distinguish a 
-    * session key or an exponent by comparing key fingerprints. 
-    * So, the below observational equivalence does not actually hold.
-    *
-    * Expected result: False
-    * Estimated time: ∞ 
-    */
-    rule RealOrRandomExponent:
-        [
-          !SecretChatClient(X, iUser, rUser, xID, chatID, sessionKey, authKey),
-          Fr(~z)
-        ]
-      --[
-          ChoosePrincipal(iUser, 'Alice', 'Bob'),
-          ChoosePrincipal(rUser, 'Alice', 'Bob')
-        ]->
-        [ Out(diff(~z, xID)) ]
+  /*
+   * The attacker (the server) should be able to distinguish a 
+   * session key or an exponent by comparing key fingerprints. 
+   * So, the below observational equivalence does not actually hold.
+   *
+   * Expected result: False
+   * Estimated time: ∞ 
+   */
+  rule SecretChatExponentRoR:
+      [
+        !SecretChatClient(X, iUser, rUser, xID, chatID, sessionKey, authKey),
+        Fr(~z)
+      ]
+    -->
+      [ Out(diff(~z, xID)) ]
