@@ -14,7 +14,7 @@
           Fr(~z)
         ]
       --[
-          ChoosePrincipal(iUser, $Alice, $Bob),
-          ChoosePrincipal(rUser, $Alice, $Bob)
+          ChoosePrincipal(iUser, 'Alice', 'Bob'),
+          ChoosePrincipal(rUser, 'Alice', 'Bob')
         ]->
         [ Out(diff(~z, xID)) ]

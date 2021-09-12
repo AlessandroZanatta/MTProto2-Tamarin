@@ -18,11 +18,7 @@
         ClientSendsSecretChatMsg(chatID, X, iUser, rUser, sessionKey, msg) @i ∧
         
         /* but the attacker knows it */
-        K(msg) @j ∧
-
-        /* and no secret was leaked */
-        ¬(∃ z #r. CompromisedSecretChatInitiatorEphemeralKey(z) @r) ∧
-        ¬(∃ z #r. CompromisedSecretChatResponderEphemeralKey(z) @r)
+        K(msg) @j
         ==>
         (
           /* then clients skipped the QR validation */

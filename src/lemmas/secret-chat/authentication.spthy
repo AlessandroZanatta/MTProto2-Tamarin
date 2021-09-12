@@ -18,11 +18,7 @@
       ∀ chatID1 X iUser rUser msg sessionKey #i.
 
         /* Whenever a client received a secret chat message */
-        ClientReceivesSecretChatMsg(chatID1, X, iUser, rUser, sessionKey, msg) @i ∧
-
-        /* and no secret was leaked */
-        ¬(∃ z #r. CompromisedSecretChatInitiatorEphemeralKey(z) @r) ∧
-        ¬(∃ z #r. CompromisedSecretChatResponderEphemeralKey(z) @r)
+        ClientReceivesSecretChatMsg(chatID1, X, iUser, rUser, sessionKey, msg) @i
         ==>
         (
           /* then it was sent by another (honest) client */
@@ -60,11 +56,7 @@
          * same session and with the same key)
          */
         InitiatorAcceptsEncryptedChat(aID, chatID, iUser, Bob, sessionKey) @i ∧
-        ResponderAcceptsEncryptedChat(bID, chatID, Alice, rUser, sessionKey) @j ∧
-
-        /* and no secret was leaked */
-        ¬(∃ z #r. CompromisedSecretChatInitiatorEphemeralKey(z) @r) ∧
-        ¬(∃ z #r. CompromisedSecretChatResponderEphemeralKey(z) @r)
+        ResponderAcceptsEncryptedChat(bID, chatID, Alice, rUser, sessionKey) @j
         ==>
         (
           /* then the initiator is Alice and the responder is Bob */
@@ -99,11 +91,7 @@
          * same session and with the same key)
          */
         InitiatorAcceptsEncryptedChat(aID, chatID, iUser, Bob, sessionKey) @i ∧
-        ResponderAcceptsEncryptedChat(bID, chatID, Alice, rUser, sessionKey) @j ∧
-
-        /* and no secret was leaked */
-        ¬(∃ z #r. CompromisedSecretChatInitiatorEphemeralKey(z) @r) ∧
-        ¬(∃ z #r. CompromisedSecretChatResponderEphemeralKey(z) @r)
+        ResponderAcceptsEncryptedChat(bID, chatID, Alice, rUser, sessionKey) @j
         ==>
         (
           /* then the initiator is Alice and the responder is Bob */
@@ -137,11 +125,7 @@
          * session key sessionKey
          */
         InitiatorAcceptsEncryptedChat(aID, chatID1, iUser1, rUser1, sessionKey) @i ∧
-        ResponderAcceptsEncryptedChat(bID, chatID2, iUser2, rUser2, sessionKey) @j ∧
-
-        /* and no secret was leaked */
-        ¬(∃ z #r. CompromisedSecretChatInitiatorEphemeralKey(z) @r) ∧
-        ¬(∃ z #r. CompromisedSecretChatResponderEphemeralKey(z) @r)
+        ResponderAcceptsEncryptedChat(bID, chatID2, iUser2, rUser2, sessionKey) @j
         ==>
         (
           /* 
@@ -174,11 +158,7 @@
     "
       ∀ aID bID chatID1 chatID2 iUser1 iUser2 rUser1 rUser2 sessionKey #i #j.
         InitiatorAcceptsEncryptedChat(aID, chatID1, iUser1, rUser1, sessionKey) @i ∧
-        ResponderAcceptsEncryptedChat(bID, chatID2, iUser2, rUser2, sessionKey) @j ∧
-
-        /* and no secret was leaked */
-        ¬(∃ z #r. CompromisedSecretChatInitiatorEphemeralKey(z) @r) ∧
-        ¬(∃ z #r. CompromisedSecretChatResponderEphemeralKey(z) @r)
+        ResponderAcceptsEncryptedChat(bID, chatID2, iUser2, rUser2, sessionKey) @j
         ==>
         (
           /* 
@@ -205,11 +185,7 @@
     "
       ∀ aID bID chatID1 chatID2 iUser1 iUser2 rUser1 rUser2 sessionKey #i #j.
         InitiatorAcceptsEncryptedChat(aID, chatID1, iUser1, rUser1, sessionKey) @i ∧
-        ResponderAcceptsEncryptedChat(bID, chatID2, iUser2, rUser2, sessionKey) @j ∧
-
-        /* and no secret was leaked */
-        ¬(∃ z #r. CompromisedSecretChatInitiatorEphemeralKey(z) @r) ∧
-        ¬(∃ z #r. CompromisedSecretChatResponderEphemeralKey(z) @r)
+        ResponderAcceptsEncryptedChat(bID, chatID2, iUser2, rUser2, sessionKey) @j
         ==>
         (
           /* 
@@ -244,11 +220,7 @@
          * session key sessionKey in the same session
          */
         InitiatorAcceptsEncryptedChat(aID, chatID, iUser1, rUser1, sessionKey) @i ∧
-        ResponderAcceptsEncryptedChat(bID, chatID, iUser2, rUser2, sessionKey) @j ∧
-        
-        /* and no secret was leaked */
-        ¬(∃ z #r. CompromisedSecretChatInitiatorEphemeralKey(z) @r) ∧
-        ¬(∃ z #r. CompromisedSecretChatResponderEphemeralKey(z) @r)
+        ResponderAcceptsEncryptedChat(bID, chatID, iUser2, rUser2, sessionKey) @j
         ==>
         (
           iUser1 = iUser2 ∨
