@@ -11,7 +11,7 @@
    * change it when forwarding messages.
    *
    * Expected result: True
-   * Estimated time: ~1 minute
+   * Estimated time: ~3-4 minute
    */
   lemma LemmaSecretChatAuthentication1:
     "
@@ -40,28 +40,27 @@
   /*
    * If an (honest) initiator negotiates a key sessionKey and an
    * (honest) responder accepts a key sessionKey, then the initiator is
-   * Alice and the responder is Bob.
+   * 'Alice' and the responder is 'Bob'.
    *
    * Expected result: True
    * Estimated time: ~10 seconds
    */
   lemma LemmaSecretChatAuthentication2:
     "
-      ∀ aID bID chatID iUser rUser sessionKey Alice Bob #i #j #ab.
-        AliceAndBob(Alice, Bob) @ab ∧
+      ∀ aID bID chatID iUser rUser sessionKey #i #j.
 
         /* 
-         * Whenever the initiator has accepted a chat with Bob and
-         * the responder has accepted a chat with Alice (both in the
+         * Whenever the initiator has accepted a chat with 'Bob' and
+         * the responder has accepted a chat with 'Alice' (both in the
          * same session and with the same key)
          */
-        InitiatorAcceptsEncryptedChat(aID, chatID, iUser, Bob, sessionKey) @i ∧
-        ResponderAcceptsEncryptedChat(bID, chatID, Alice, rUser, sessionKey) @j
+        InitiatorAcceptsEncryptedChat(aID, chatID, iUser, 'Bob', sessionKey) @i ∧
+        ResponderAcceptsEncryptedChat(bID, chatID, 'Alice', rUser, sessionKey) @j
         ==>
         (
-          /* then the initiator is Alice and the responder is Bob */
+          /* then the initiator is 'Alice' and the responder is 'Bob' */
           (
-            iUser = Alice ∧ rUser = Bob
+            iUser = 'Alice' ∧ rUser = 'Bob'
           ) ∨
 
           /* or clients skipped the QR validation */
@@ -82,21 +81,20 @@
    */
   lemma LemmaSecretChatAuthentication3:
     "
-      ∀ aID bID chatID iUser rUser sessionKey Alice Bob #i #j #ab.
-        AliceAndBob(Alice, Bob) @ab ∧
+      ∀ aID bID chatID iUser rUser sessionKey #i #j.
 
         /* 
-         * Whenever the initiator has accepted a chat with Bob and
-         * the responder has accepted a chat with Alice (both in the
+         * Whenever the initiator has accepted a chat with 'Bob' and
+         * the responder has accepted a chat with 'Alice' (both in the
          * same session and with the same key)
          */
-        InitiatorAcceptsEncryptedChat(aID, chatID, iUser, Bob, sessionKey) @i ∧
-        ResponderAcceptsEncryptedChat(bID, chatID, Alice, rUser, sessionKey) @j
+        InitiatorAcceptsEncryptedChat(aID, chatID, iUser, 'Bob', sessionKey) @i ∧
+        ResponderAcceptsEncryptedChat(bID, chatID, 'Alice', rUser, sessionKey) @j
         ==>
         (
-          /* then the initiator is Alice and the responder is Bob */
+          /* then the initiator is 'Alice' and the responder is 'Bob' */
           (
-            iUser = Alice ∧ rUser = Bob
+            iUser = 'Alice' ∧ rUser = 'Bob'
           ) ∨
           (
             ∃ x1 x2 #r. 
