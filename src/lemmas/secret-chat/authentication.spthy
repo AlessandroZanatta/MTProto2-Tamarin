@@ -11,7 +11,7 @@
    * change it when forwarding messages.
    *
    * Expected result: True
-   * Estimated time: ~3-4 minute
+   * Estimated time: ~2-3 minute
    */
   lemma LemmaSecretChatAuthentication1:
     "
